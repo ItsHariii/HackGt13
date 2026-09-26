@@ -47,57 +47,120 @@ export type Database = {
         };
         Relationships: [];
       };
+      catalog_baseline: {
+        Row: {
+          captured_at: string;
+          id: boolean;
+          listings: NonNullable<Json>;
+          offers: NonNullable<Json>;
+          policies: NonNullable<Json>;
+        };
+        Insert: {
+          captured_at?: string;
+          id?: boolean;
+          listings: NonNullable<Json>;
+          offers: NonNullable<Json>;
+          policies: NonNullable<Json>;
+        };
+        Update: {
+          captured_at?: string;
+          id?: boolean;
+          listings?: NonNullable<Json>;
+          offers?: NonNullable<Json>;
+          policies?: NonNullable<Json>;
+        };
+        Relationships: [];
+      };
       checkout_sessions: {
         Row: {
           agent_key_id: string | null;
+          buyer: Json | null;
           canceled_at: string | null;
           complete_idempotency_key: string | null;
           completed_at: string | null;
+          completing_at: string | null;
           contract_ref: Json | null;
           create_idempotency_key: string | null;
           created_at: string;
           fulfillment_address: Json | null;
           fulfillment_option_id: string | null;
           id: string;
+          items: NonNullable<Json>;
           line_items: NonNullable<Json>;
           messages: NonNullable<Json>;
+          snapshot: Json | null;
           status: string;
           totals: NonNullable<Json>;
           updated_at: string;
         };
         Insert: {
           agent_key_id?: string | null;
+          buyer?: Json | null;
           canceled_at?: string | null;
           complete_idempotency_key?: string | null;
           completed_at?: string | null;
+          completing_at?: string | null;
           contract_ref?: Json | null;
           create_idempotency_key?: string | null;
           created_at?: string;
           fulfillment_address?: Json | null;
           fulfillment_option_id?: string | null;
           id: string;
+          items?: NonNullable<Json>;
           line_items?: NonNullable<Json>;
           messages?: NonNullable<Json>;
+          snapshot?: Json | null;
           status?: string;
           totals?: NonNullable<Json>;
           updated_at?: string;
         };
         Update: {
           agent_key_id?: string | null;
+          buyer?: Json | null;
           canceled_at?: string | null;
           complete_idempotency_key?: string | null;
           completed_at?: string | null;
+          completing_at?: string | null;
           contract_ref?: Json | null;
           create_idempotency_key?: string | null;
           created_at?: string;
           fulfillment_address?: Json | null;
           fulfillment_option_id?: string | null;
           id?: string;
+          items?: NonNullable<Json>;
           line_items?: NonNullable<Json>;
           messages?: NonNullable<Json>;
+          snapshot?: Json | null;
           status?: string;
           totals?: NonNullable<Json>;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      idempotency_keys: {
+        Row: {
+          created_at: string;
+          key: string;
+          request_hash: string;
+          response: Json | null;
+          scope: string;
+          status_code: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          key: string;
+          request_hash: string;
+          response?: Json | null;
+          scope: string;
+          status_code?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          key?: string;
+          request_hash?: string;
+          response?: Json | null;
+          scope?: string;
+          status_code?: number | null;
         };
         Relationships: [];
       };
@@ -136,6 +199,41 @@ export type Database = {
             isOneToOne: true;
             referencedRelation: "variants";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      mock_recalls: {
+        Row: {
+          hazard: string;
+          id: number;
+          posted_at: string;
+          recall_number: string;
+          remedy: string;
+          sku: string;
+        };
+        Insert: {
+          hazard: string;
+          id?: never;
+          posted_at?: string;
+          recall_number: string;
+          remedy: string;
+          sku: string;
+        };
+        Update: {
+          hazard?: string;
+          id?: never;
+          posted_at?: string;
+          recall_number?: string;
+          remedy?: string;
+          sku?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "mock_recalls_sku_fkey";
+            columns: ["sku"];
+            isOneToOne: false;
+            referencedRelation: "variants";
+            referencedColumns: ["sku"];
           },
         ];
       };
@@ -186,6 +284,8 @@ export type Database = {
           return_policy_id: string;
           revision: number;
           seller_id: string;
+          shipping_fee_minor: number;
+          ships_variant_id: string | null;
           stock: number;
           subscription: Json | null;
           updated_at: string;
@@ -203,6 +303,8 @@ export type Database = {
           return_policy_id: string;
           revision?: number;
           seller_id: string;
+          shipping_fee_minor?: number;
+          ships_variant_id?: string | null;
           stock?: number;
           subscription?: Json | null;
           updated_at?: string;
@@ -220,6 +322,8 @@ export type Database = {
           return_policy_id?: string;
           revision?: number;
           seller_id?: string;
+          shipping_fee_minor?: number;
+          ships_variant_id?: string | null;
           stock?: number;
           subscription?: Json | null;
           updated_at?: string;
@@ -246,40 +350,68 @@ export type Database = {
             referencedRelation: "sellers";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "offers_ships_variant_id_fkey";
+            columns: ["ships_variant_id"];
+            isOneToOne: false;
+            referencedRelation: "variants";
+            referencedColumns: ["id"];
+          },
         ];
       };
       orders: {
         Row: {
+          agent_key_id: string | null;
+          buyer: Json | null;
           checkout_session_id: string;
+          contract_ref: Json | null;
           contract_verification: Json | null;
           created_at: string;
           currency: string;
+          fulfillment_address: Json | null;
+          grant_id: string | null;
           id: string;
+          line_items: NonNullable<Json>;
           payment: NonNullable<Json>;
           status: string;
           total_minor: number;
+          totals: NonNullable<Json>;
           updated_at: string;
         };
         Insert: {
+          agent_key_id?: string | null;
+          buyer?: Json | null;
           checkout_session_id: string;
+          contract_ref?: Json | null;
           contract_verification?: Json | null;
           created_at?: string;
           currency?: string;
+          fulfillment_address?: Json | null;
+          grant_id?: string | null;
           id: string;
+          line_items?: NonNullable<Json>;
           payment?: NonNullable<Json>;
           status?: string;
           total_minor: number;
+          totals?: NonNullable<Json>;
           updated_at?: string;
         };
         Update: {
+          agent_key_id?: string | null;
+          buyer?: Json | null;
           checkout_session_id?: string;
+          contract_ref?: Json | null;
           contract_verification?: Json | null;
           created_at?: string;
           currency?: string;
+          fulfillment_address?: Json | null;
+          grant_id?: string | null;
           id?: string;
+          line_items?: NonNullable<Json>;
           payment?: NonNullable<Json>;
           status?: string;
           total_minor?: number;
+          totals?: NonNullable<Json>;
           updated_at?: string;
         };
         Relationships: [
@@ -436,6 +568,7 @@ export type Database = {
           delivered_at: string | null;
           event_id: string;
           event_type: string;
+          failed_at: string | null;
           id: string;
           last_error: string | null;
           next_attempt_at: string;
@@ -448,6 +581,7 @@ export type Database = {
           delivered_at?: string | null;
           event_id: string;
           event_type: string;
+          failed_at?: string | null;
           id?: string;
           last_error?: string | null;
           next_attempt_at?: string;
@@ -460,6 +594,7 @@ export type Database = {
           delivered_at?: string | null;
           event_id?: string;
           event_type?: string;
+          failed_at?: string | null;
           id?: string;
           last_error?: string | null;
           next_attempt_at?: string;
@@ -481,6 +616,130 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      apply_mutation: {
+        Args: {
+          p_actor?: string;
+          p_mutation: string;
+          p_params?: Json;
+          p_scenario?: string;
+          p_sku: string;
+        };
+        Returns: {
+          actor: string;
+          after: Json | null;
+          before: Json | null;
+          created_at: string;
+          id: number;
+          mutation: string;
+          scenario: string | null;
+          target: NonNullable<Json>;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "mutation_log";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      apply_scenario: {
+        Args: { p_actor?: string; p_name: string; p_steps: Json };
+        Returns: {
+          actor: string;
+          after: Json | null;
+          before: Json | null;
+          created_at: string;
+          id: number;
+          mutation: string;
+          scenario: string | null;
+          target: NonNullable<Json>;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "mutation_log";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      capture_baseline: { Args: Record<PropertyKey, never>; Returns: string };
+      claim_session: {
+        Args: { p_idempotency_key: string; p_session_id: string };
+        Returns: boolean;
+      };
+      claim_webhooks: {
+        Args: { p_limit?: number };
+        Returns: {
+          attempts: number;
+          created_at: string;
+          delivered_at: string | null;
+          event_id: string;
+          event_type: string;
+          failed_at: string | null;
+          id: string;
+          last_error: string | null;
+          next_attempt_at: string;
+          order_id: string;
+          payload: NonNullable<Json>;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "webhook_outbox";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      finalize_order: {
+        Args: {
+          p_event: Json;
+          p_order: Json;
+          p_session_id: string;
+          p_snapshot: Json;
+        };
+        Returns: {
+          agent_key_id: string | null;
+          buyer: Json | null;
+          checkout_session_id: string;
+          contract_ref: Json | null;
+          contract_verification: Json | null;
+          created_at: string;
+          currency: string;
+          fulfillment_address: Json | null;
+          grant_id: string | null;
+          id: string;
+          line_items: NonNullable<Json>;
+          payment: NonNullable<Json>;
+          status: string;
+          total_minor: number;
+          totals: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "orders";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      idem_abort: {
+        Args: { p_key: string; p_scope: string };
+        Returns: undefined;
+      };
+      idem_begin: {
+        Args: { p_key: string; p_request_hash: string; p_scope: string };
+        Returns: {
+          response: Json;
+          state: string;
+          status_code: number;
+        }[];
+      };
+      idem_finish: {
+        Args: {
+          p_key: string;
+          p_response: Json;
+          p_scope: string;
+          p_status_code: number;
+        };
+        Returns: undefined;
+      };
       quote: {
         Args: { p_items: Json };
         Returns: {
@@ -489,6 +748,91 @@ export type Database = {
           tax_minor: number;
           total_minor: number;
         }[];
+      };
+      record_nonce: {
+        Args: { p_key_id: string; p_nonce: string };
+        Returns: boolean;
+      };
+      release_session: {
+        Args: { p_messages: Json; p_session_id: string };
+        Returns: undefined;
+      };
+      requeue_failed_webhooks: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
+      reset_catalog: {
+        Args: { p_actor?: string };
+        Returns: {
+          actor: string;
+          after: Json | null;
+          before: Json | null;
+          created_at: string;
+          id: number;
+          mutation: string;
+          scenario: string | null;
+          target: NonNullable<Json>;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "mutation_log";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      set_spec_value: {
+        Args: { p_name: string; p_spec: Json; p_value: string };
+        Returns: Json;
+      };
+      sku_state: { Args: { p_sku: string }; Returns: Json };
+      update_order_status: {
+        Args: { p_event: Json; p_order_id: string; p_status: string };
+        Returns: {
+          agent_key_id: string | null;
+          buyer: Json | null;
+          checkout_session_id: string;
+          contract_ref: Json | null;
+          contract_verification: Json | null;
+          created_at: string;
+          currency: string;
+          fulfillment_address: Json | null;
+          grant_id: string | null;
+          id: string;
+          line_items: NonNullable<Json>;
+          payment: NonNullable<Json>;
+          status: string;
+          total_minor: number;
+          totals: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "orders";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      webhook_result: {
+        Args: { p_error?: string; p_id: string; p_ok: boolean };
+        Returns: {
+          attempts: number;
+          created_at: string;
+          delivered_at: string | null;
+          event_id: string;
+          event_type: string;
+          failed_at: string | null;
+          id: string;
+          last_error: string | null;
+          next_attempt_at: string;
+          order_id: string;
+          payload: NonNullable<Json>;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "webhook_outbox";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
     };
     Enums: {

@@ -45,6 +45,8 @@ select is(
   89177::bigint,
   'Event 1: webcam $49 -> $45 gives $891.77'
 );
+-- Revisions only grow (Chaos Panel resets bump them too), so compare against the value before.
+create temp table rev_before as select revision from demomart.offers where id = 'dm_off_48300';
 update demomart.offers set price_minor = 31900 where id = 'dm_off_48300';
 select is(
   (select total_minor from demomart.quote('[{"sku": "BL-CD-465", "qty": 1}, {"sku": "KS-MESH-TASK", "qty": 1},
@@ -58,7 +60,11 @@ select is(
   87037::bigint,
   'Event 3: contract v8 with the Halden totals $870.37'
 );
-select is((select revision from demomart.offers where id = 'dm_off_48300'), 2, 'Mutations bump the offer revision');
+select is(
+  (select revision from demomart.offers where id = 'dm_off_48300'),
+  (select revision + 1 from rev_before),
+  'Mutations bump the offer revision'
+);
 
 select is(
   (select count(*)::int from public.products p

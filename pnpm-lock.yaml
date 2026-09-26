@@ -29,9 +29,21 @@ importers:
 
   apps/demomart:
     dependencies:
+      '@proofcart/acp':
+        specifier: workspace:*
+        version: link:../../packages/acp
+      '@proofcart/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@proofcart/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@proofcart/platform':
         specifier: workspace:*
         version: link:../../packages/platform
+      '@proofcart/tap':
+        specifier: workspace:*
+        version: link:../../packages/tap
       '@sentry/nextjs':
         specifier: 11.0.0
         version: 11.0.0(next@16.3.6(@opentelemetry/api@1.9.1)(@types/node@24.19.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
@@ -53,6 +65,9 @@ importers:
       server-only:
         specifier: 0.0.1
         version: 0.0.1
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.0.0

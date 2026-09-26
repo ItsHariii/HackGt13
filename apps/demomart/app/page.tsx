@@ -1,87 +1,128 @@
-import { Armchair, Cable, Monitor, Table2 } from "lucide-react";
+import Link from "next/link";
+import { CategoryIcon } from "@/components/category-icon";
+import { listProducts, type ProductView } from "@/lib/catalog";
+import { AVAILABILITY_LABEL, DEPARTMENTS, deliveryLabel } from "@/lib/labels";
+import { formatMinor } from "@/lib/money";
 
-const products = [
-  {
-    icon: Table2,
-    category: "MAKE ROOM",
-    title: "Birchline Compact Desk 46.5″",
-    price: "$229.00",
-    detail: "Small footprint. Room to think.",
-  },
-  {
-    icon: Armchair,
-    category: "SETTLE IN",
-    title: "Kestrel Mesh Task Chair",
-    price: "$189.00",
-    detail: "A little support for your big ideas.",
-  },
-  {
-    icon: Monitor,
-    category: "SEE CLEARLY",
-    title: "Vireo U2727 27″ 4K USB-C",
-    price: "$329.00",
-    detail: "Your day, in sharper focus.",
-  },
-  {
-    icon: Cable,
-    category: "CONNECT THE DOTS",
-    title: "Loop USB-C Cable 100 W, 2 m",
-    price: "$19.00",
-    detail: "One less thing to untangle.",
-  },
-];
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+type Department = keyof typeof DEPARTMENTS;
+
+function priceLabel(p: ProductView) {
+  const prices = p.variants.map((v) => v.offer.priceMinor);
+  const min = Math.min(...prices);
+  return prices.some((x) => x !== min)
+    ? `From ${formatMinor(min)}`
+    : formatMinor(min);
+}
+
+function stockOf(p: ProductView) {
+  if (p.variants.every((v) => v.offer.availability === "out_of_stock"))
+    return "out_of_stock" as const;
+  if (p.variants.some((v) => v.offer.availability === "limited"))
+    return "limited" as const;
+  return "in_stock" as const;
+}
+
+export default async function Home({ searchParams }: PageProps<"/">) {
+  const { d } = await searchParams;
+  const department =
+    typeof d === "string" && d in DEPARTMENTS ? (d as Department) : null;
+  const products = (await listProducts()).filter((p) => p.variants.length > 0);
+  const shown = department
+    ? products.filter((p) => p.department === department)
+    : products;
+
   return (
     <main>
-      <section className="merchant-hero">
+      <section className="merchant-hero compact">
         <div>
           <p className="eyebrow">EVERYDAY THINGS. THOUGHTFULLY PICKED.</p>
           <h1>
             Good things.
             <br />
-            <span>Great workspace.</span>
+            <span>Honest listings.</span>
           </h1>
-          <p>Make a little room for your next big idea.</p>
-          <a className="primary-link" href="#collection">
-            Meet the collection ↓
-          </a>
-        </div>
-        <div className="merchant-illustration" aria-hidden="true">
-          <Monitor size={160} strokeWidth={1} />
-          <div className="desk-line" />
-          <span>THE WORKDAY EDIT / 001</span>
+          <p>
+            {products.length} fictional products across home office, apparel and
+            travel. Agents buy through our ACP checkout; people just browse.
+          </p>
         </div>
       </section>
-      <section id="collection" className="collection">
+      <section
+        id="collection"
+        className="collection"
+        aria-labelledby="collection-title"
+      >
         <div className="collection-heading">
           <div>
-            <p className="eyebrow">THE WORKDAY EDIT</p>
-            <h2>A place to do your thing.</h2>
+            <p className="eyebrow">THE CATALOG</p>
+            <h2 id="collection-title">
+              {department ? DEPARTMENTS[department] : "Everything"}
+            </h2>
           </div>
-          <span>Preview collection · 4 items</span>
+          <nav aria-label="Departments" className="chips">
+            <Link
+              href="/"
+              aria-current={department === null ? "page" : undefined}
+            >
+              All <span>{products.length}</span>
+            </Link>
+            {(Object.keys(DEPARTMENTS) as Department[]).map((key) => (
+              <Link
+                key={key}
+                href={`/?d=${key}`}
+                aria-current={department === key ? "page" : undefined}
+              >
+                {DEPARTMENTS[key]}{" "}
+                <span>
+                  {products.filter((p) => p.department === key).length}
+                </span>
+              </Link>
+            ))}
+          </nav>
         </div>
-        <div className="product-grid">
-          {products.map(({ icon: Icon, category, title, price, detail }) => (
-            <article className="product-card" key={title}>
-              <div className="product-art">
-                <span>{category}</span>
-                <Icon size={95} strokeWidth={1} aria-hidden="true" />
-              </div>
-              <div className="product-info">
-                <h3>{title}</h3>
-                <p>{detail}</p>
-                <div>
-                  <strong>{price}</strong>
-                  <span>Demo item</span>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-        <p className="collection-note">
-          A preview of our fictional catalog. Checkout and live inventory are
-          coming in later phases.
-        </p>
+        <ul className="product-grid">
+          {shown.map((p) => {
+            const first = p.variants[0];
+            const stock = stockOf(p);
+            return (
+              <li key={p.id} className="product-card">
+                <Link href={`/p/${p.slug}`}>
+                  <div className={`product-art tone-${p.department}`}>
+                    <span>{p.category.toUpperCase()}</span>
+                    <CategoryIcon
+                      category={p.category}
+                      department={p.department}
+                    />
+                  </div>
+                  <div className="product-info">
+                    <p className="brand">{p.brand}</p>
+                    <h3>{p.name}</h3>
+                    <p>{p.description}</p>
+                    <div>
+                      <strong>{priceLabel(p)}</strong>
+                      <span className={`stock stock-${stock}`}>
+                        {AVAILABILITY_LABEL[stock]}
+                      </span>
+                    </div>
+                    {first ? (
+                      <p className="fine">
+                        {deliveryLabel(
+                          first.offer.deliveryMinDays,
+                          first.offer.deliveryMaxDays,
+                        )}
+                        {p.variants.length > 1
+                          ? ` · ${p.variants.length} options`
+                          : ""}
+                      </p>
+                    ) : null}
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </section>
     </main>
   );
