@@ -1,0 +1,48 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["tsconfig.base.json"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "SENTRY_*",
+        "SUPABASE_*",
+        "AGENT_*",
+        "PROOFCART_*",
+        "LOG_LEVEL"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "lint": {},
+    "@proofcart/web#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "@proofcart/demomart#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    }
+  },
+  "globalEnv": [
+    "NEXT_PUBLIC_*",
+    "SUPABASE_*",
+    "SENTRY_*",
+    "AGENT_*",
+    "PROOFCART_*",
+    "DEMOMART_*",
+    "LOG_LEVEL"
+  ]
+}

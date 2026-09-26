@@ -1,0 +1,24 @@
+# env files (keep only the template)
+.env
+.env.*
+!.env.example
+
+# deps / builds
+node_modules/
+.next/
+.turbo/
+dist/
+coverage/
+
+# supabase local
+supabase/.branches/
+supabase/.temp/
+
+# misc
+.DS_Store
+*.log
+.vercel/
+
+# Alternate local env filename and TypeScript cache
+env.local
+*.tsbuildinfo
