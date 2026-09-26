@@ -1,0 +1,190 @@
+/* Cartel design tokens (Tailwind CSS v4), ported from the Claude Design
+   project's token file; see docs/DESIGN.md. Fonts are mapped in
+   globals.css to the next/font variables. Blueprint (dark) applies under
+   `.blueprint` or next-themes' `.dark`; per Style Tile v2 it is meant for
+   the workspace, contract and purchase-paused screens. */
+
+@custom-variant blueprint (&:where(.blueprint, .blueprint *, .dark, .dark *));
+
+@theme {
+  /* Color · paper (light) */
+  --color-paper: #fbf7ee;
+  --color-paper-raised: #fffdf7;
+  --color-paper-sheet: #ffffff; /* contract, receipt, tables */
+  --color-paper-shade: #f8f4ea; /* card footers */
+  --color-rule: #ddd5c4; /* 1px card borders */
+  --color-rule-soft: #eee9df; /* row dividers */
+  --color-graphite: #2b2a28; /* body text, line work */
+  --color-graphite-2: #3a3935; /* secondary body */
+  --color-muted: #5e5b56; /* small meta text (6.3:1) */
+  --color-pencil: #8a8680; /* large text / next to icon+label only */
+  --color-ink: #1f3a93;
+  --color-red-pen: #c8352e;
+  --color-red-pen-wash: #fbedeb;
+  --color-green-check: #2f7d32;
+  --color-highlighter: #ffe45c;
+  --color-tape: #e8ddb5;
+  --color-tag: #efe9db; /* Default chip */
+  --color-desk: #e9e3d6; /* canvas behind pages */
+
+  /* Type scale (size / line-height) */
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1rem; /* 12 */
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.25rem; /* 13 */
+  --text-ui: 0.9375rem;
+  --text-ui--line-height: 1.4rem; /* 15 */
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.6rem; /* 17 */
+  --text-h4: 1.375rem;
+  --text-h4--line-height: 1.75rem; /* 22 */
+  --text-h3: 1.75rem;
+  --text-h3--line-height: 2.1rem; /* 28 */
+  --text-h2: 2.75rem;
+  --text-h2--line-height: 3rem; /* 44 */
+  --text-h1: 3.5rem;
+  --text-h1--line-height: 3.7rem; /* 56 */
+  --text-display: 4.5rem;
+  --text-display--line-height: 4.5rem; /* 72 */
+  --tracking-heading: -0.03em;
+  --tracking-stamp: 0.12em;
+  --tracking-label: 0.1em; /* uppercase section labels */
+
+  /* Radii */
+  --radius-sheet: 4px; /* contract, tables, receipts */
+  --radius-card: 8px; /* cards, buttons */
+  --radius-pill: 999px; /* SourcePill, HashPill */
+  --radius-phone: 28px;
+
+  /* Shadows */
+  --shadow-stack:
+    3px 3px 0 -1px var(--color-paper-sheet), 3px 3px 0 0 var(--color-rule),
+    6px 6px 0 -1px var(--color-paper-sheet), 6px 6px 0 0 var(--color-rule);
+  --shadow-stack-1:
+    3px 3px 0 -1px var(--color-paper-sheet), 3px 3px 0 0 var(--color-rule);
+  --shadow-offset: 3px 3px 0 0 var(--color-rule);
+  --shadow-page: 0 30px 60px -30px rgb(43 42 40 / 0.35);
+  --shadow-primary: 3px 3px 0 0 var(--color-ink); /* primary button offset */
+  --shadow-drawer: -24px 0 48px -24px rgb(43 42 40 / 0.45);
+}
+
+/* Blueprint (dark) */
+.blueprint,
+.dark {
+  --color-paper: #14233a;
+  --color-paper-raised: #1b2d48;
+  --color-paper-sheet: #1f3352;
+  --color-paper-shade: #1e3150;
+  --color-rule: #34496a;
+  --color-rule-soft: #27395a;
+  --color-graphite: #e9eef5;
+  --color-graphite-2: #d2dbe8;
+  --color-muted: #b7c4d8;
+  --color-pencil: #9fb0c8;
+  --color-ink: #8fb4ff;
+  --color-red-pen: #ff8a80;
+  --color-red-pen-wash: #3a2a3a;
+  --color-green-check: #8fd694;
+  --color-tag: #223556;
+  --color-desk: #0e1a2c;
+  --shadow-page: 0 30px 60px -30px rgb(0 0 0 / 0.55);
+  --shadow-drawer: -24px 0 48px -24px rgb(0 0 0 / 0.6);
+}
+
+@layer components {
+  /* 24 px dot grid on app pages */
+  .dot-grid {
+    background-color: var(--color-paper);
+    background-image: radial-gradient(
+      rgb(43 42 40 / 0.12) 1px,
+      transparent 1.3px
+    );
+    background-size: 24px 24px;
+  }
+  :where(.blueprint, .dark) .dot-grid {
+    background-image: radial-gradient(
+      rgb(233 238 245 / 0.08) 1px,
+      transparent 1.3px
+    );
+  }
+
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Pencil = tentative: dashed outline + "I assumed" / "Estimate" tag */
+  .pencil {
+    color: var(--color-muted);
+    border: 1px dashed var(--color-pencil);
+    border-radius: 6px;
+  }
+
+  /* Annotation 1: red-pen circle around a failing value */
+  .mark-circle {
+    position: relative;
+    color: var(--color-red-pen);
+    font-weight: 700;
+  }
+  .mark-circle::after {
+    content: "";
+    position: absolute;
+    inset: -7px -12px -6px -10px;
+    border: 2px solid var(--color-red-pen);
+    border-radius: 50%;
+    transform: rotate(-5deg);
+    pointer-events: none;
+  }
+
+  /* Annotation 2: highlighter behind quoted evidence */
+  .mark-highlight {
+    background: linear-gradient(
+      transparent 12%,
+      rgb(255 228 92 / 0.6) 12%,
+      rgb(255 228 92 / 0.6) 88%,
+      transparent 88%
+    );
+    color: var(--color-graphite);
+    padding: 0 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  :where(.blueprint, .dark) .mark-highlight {
+    background: linear-gradient(
+      transparent 12%,
+      rgb(255 228 92 / 0.24) 12%,
+      rgb(255 228 92 / 0.24) 88%,
+      transparent 88%
+    );
+  }
+
+  /* Annotation 3: bracket grouping diff changes */
+  .mark-bracket {
+    position: relative;
+    padding-right: 20px;
+  }
+  .mark-bracket::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 10px;
+    border: 2px solid var(--color-red-pen);
+    border-left: 0;
+    border-radius: 0 10px 10px 0;
+  }
+
+  /* Stamp (committed state); pair with the #stamp SVG filter for uneven ink */
+  .stamp {
+    display: inline-block;
+    border: 3px solid currentColor;
+    border-radius: 3px;
+    padding: 4px 12px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    letter-spacing: var(--tracking-stamp);
+    text-transform: uppercase;
+    transform: rotate(-4deg);
+  }
+}

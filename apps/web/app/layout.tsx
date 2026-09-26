@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
-import Link from "next/link";
-import { Nav } from "@/components/nav";
+import { StampFilter } from "@/components/brand/stamp-filter";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -38,13 +37,8 @@ export default function RootLayout({
           <a href="#main" className="skip-link">
             Skip to content
           </a>
-          <Nav />
+          <StampFilter />
           <div id="main">{children}</div>
-          <footer className="site-footer">
-            <span>Cartel · Consider it carefully.</span>
-            <Link href="/foundation">Foundation status</Link>
-            <span>Built at HackGT 13 / 2026</span>
-          </footer>
         </Providers>
       </body>
     </html>

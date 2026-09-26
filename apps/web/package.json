@@ -31,7 +31,8 @@
     "@cartel/acp": "workspace:*",
     "@cartel/evidence": "workspace:*",
     "@cartel/rule-packs": "workspace:*",
-    "@cartel/tap": "workspace:*"
+    "@cartel/tap": "workspace:*",
+    "@cartel/proof-engine": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
