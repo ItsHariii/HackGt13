@@ -5,8 +5,8 @@ import {
   type Operator,
   Requirement,
   type Value,
-} from "@proofcart/contracts";
-import { type FieldDef, type Pack, readAs } from "@proofcart/proof-engine";
+} from "@cartel/contracts";
+import { type FieldDef, type Pack, readAs } from "@cartel/proof-engine";
 import {
   isEngineField,
   type Ontology,

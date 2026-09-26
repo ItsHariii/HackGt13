@@ -1,11 +1,11 @@
-import type { Fact, Requirement } from "@proofcart/contracts";
-import type { NormalizedProduct } from "@proofcart/evidence";
-import { apparel, homeOffice } from "@proofcart/rule-packs";
+import type { Fact, Requirement } from "@cartel/contracts";
+import type { NormalizedProduct } from "@cartel/evidence";
+import { apparel, homeOffice } from "@cartel/rule-packs";
 import { describe, expect, it, vi } from "vitest";
 import { buildFacets, promoteToRule } from "./facets";
 import {
   identityKey,
-  mapDemoMart,
+  mapGreatHub,
   normalizeProduct,
   transientSnapshotStore,
 } from "./normalize";
@@ -91,7 +91,7 @@ const product: CatalogProduct = {
 describe("normalization and proof", () => {
   it("parses only ontology claims, retaining untyped attributes outside evidence", () => {
     const input: NormalizedProduct = {
-      source: "demomart",
+      source: "greathub",
       externalId: "test",
       title: "Monitor",
       roles: ["monitor"],
@@ -133,8 +133,8 @@ describe("normalization and proof", () => {
       ).facts[0]?.state,
     ).toBe("unknown");
   });
-  it("uses DemoMart JSON-LD mapping and units", () => {
-    const mapped = mapDemoMart(
+  it("uses GreatHub JSON-LD mapping and units", () => {
+    const mapped = mapGreatHub(
       {
         externalId: "desk",
         title: "Desk",
@@ -356,10 +356,10 @@ describe("normalization and proof", () => {
     ).not.toContain('"bytes"');
   });
   it.each([
-    ["demomart", false, "full"],
+    ["greathub", false, "full"],
     ["shopify", false, "handoff"],
     ["upcitemdb", false, "proof_only"],
-    ["demomart", true, "proof_only"],
+    ["greathub", true, "proof_only"],
   ] as const)("resolves %s reference=%s to %s", (source, reference, tier) => {
     expect(checkoutTier(source, reference)).toBe(tier);
   });

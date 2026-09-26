@@ -1,5 +1,5 @@
 {
-  "name": "@proofcart/acp",
+  "name": "@cartel/acp",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,11 +13,11 @@
     "lint": "biome check ."
   },
   "dependencies": {
-    "@proofcart/tap": "workspace:*",
+    "@cartel/tap": "workspace:*",
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@proofcart/contracts": "workspace:*",
-    "@proofcart/payments": "workspace:*"
+    "@cartel/contracts": "workspace:*",
+    "@cartel/payments": "workspace:*"
   }
 }

@@ -1,8 +1,8 @@
-import type { Fact, Requirement } from "@proofcart/contracts";
-import type { ApprovedState, CheckoutState } from "@proofcart/proof-engine";
+import type { Fact, Requirement } from "@cartel/contracts";
+import type { ApprovedState, CheckoutState } from "@cartel/proof-engine";
 import { apparel } from "../apparel";
 import { approveCheckout } from "./approve";
-import { demomartCheckout, demomartOffer, specFact } from "./demomart";
+import { greathubCheckout, greathubOffer, specFact } from "./greathub";
 
 /*
  * "Wedding guest" (SDD §4 S3, §16.1): navy, ≤ $250, arrives by Wed Oct 7,
@@ -164,7 +164,7 @@ export type WeddingInit = { now?: string; finalSale?: boolean };
 
 export function weddingCheckout(init: WeddingInit = {}): CheckoutState {
   const flipped = init.finalSale === true;
-  const dress = demomartOffer({
+  const dress = greathubOffer({
     id: "dm_off_marlow_wrap_navy_m",
     productId: "dm_marlow_wrap_navy",
     sku: "MW-WRAP-NVY-M",
@@ -177,7 +177,7 @@ export function weddingCheckout(init: WeddingInit = {}): CheckoutState {
       ? { finalSale: true, returnWindowDays: 0, returnFeeMinor: 0 }
       : { finalSale: false, returnWindowDays: 30, returnFeeMinor: 0 },
   });
-  const heels = demomartOffer({
+  const heels = greathubOffer({
     id: "dm_off_aster_block_heel_8",
     productId: "dm_aster_block_heel",
     sku: "AS-BLOCK-NVY-8",
@@ -187,7 +187,7 @@ export function weddingCheckout(init: WeddingInit = {}): CheckoutState {
     priceMinor: 7_400,
     deliveryBy: "2026-10-02",
   });
-  return demomartCheckout(
+  return greathubCheckout(
     [
       { role: "dress", offer: dress, facts: MARLOW_WRAP_FACTS },
       { role: "shoes", offer: heels, facts: ASTER_HEEL_FACTS },

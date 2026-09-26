@@ -188,7 +188,7 @@ export function recallLabel(
 export type CpscOptions = {
   store: SnapshotStore;
   fetch?: FetchLike;
-  /** Point at DemoMart's `/api/mock-cpsc` in demo mode; it must speak the same JSON. */
+  /** Point at GreatHub's `/api/mock-cpsc` in demo mode; it must speak the same JSON. */
   baseUrl?: string;
   /** Shown in labels: "CPSC" or "Mock CPSC (demo)". */
   label?: string;

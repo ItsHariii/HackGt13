@@ -1,5 +1,5 @@
-import { effectiveImportance, type Requirement } from "@proofcart/contracts";
-import { fieldDef, type Pack, sameValue } from "@proofcart/proof-engine";
+import { effectiveImportance, type Requirement } from "@cartel/contracts";
+import { fieldDef, type Pack, sameValue } from "@cartel/proof-engine";
 import type { AiCallRecord } from "../calls";
 import {
   draftRequirements,

@@ -8,7 +8,7 @@ import type { Ontology } from "./ontology";
  */
 
 export const SYSTEM_PREFIX = [
-  "You work inside ProofCart, a shopping agent that proves a basket meets a",
+  "You work inside Cartel, a shopping agent that proves a basket meets a",
   "shopper's written requirements before any money moves.",
   "",
   "Rules that never change:",

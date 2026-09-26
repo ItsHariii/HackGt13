@@ -4,7 +4,7 @@ import {
   type Quantity,
   UNIT_DIMENSION,
   type Unit,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import { type Decimal, dec, decOf, div, mul, sub, toNumber } from "./decimal";
 
 /** The unit every quantity of a dimension is compared in (SDD §8.2). */

@@ -10,7 +10,7 @@ import {
   SemVer,
   UNIT_DIMENSION,
   type Value,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import type { Resolved } from "./evidence";
 import {
   AUTHORITIES,

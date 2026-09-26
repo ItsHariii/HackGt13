@@ -1,6 +1,6 @@
-import type { Operator } from "@proofcart/contracts";
-import { FLAGSHIP_BRIEF } from "@proofcart/contracts/fixtures";
-import { WEDDING_BRIEF } from "@proofcart/rule-packs/fixtures";
+import type { Operator } from "@cartel/contracts";
+import { FLAGSHIP_BRIEF } from "@cartel/contracts/fixtures";
+import { WEDDING_BRIEF } from "@cartel/rule-packs/fixtures";
 
 /*
  * The A1 eval set (TASKS T9.6): 20 briefs with the hard requirements a

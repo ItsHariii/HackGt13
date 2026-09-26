@@ -1,4 +1,4 @@
-import type { Box, Money, Quantity, Range, Value } from "@proofcart/contracts";
+import type { Box, Money, Quantity, Range, Value } from "@cartel/contracts";
 import type { FieldDef } from "./fields";
 import { compareQuantity, sortedBox, toBase } from "./units";
 

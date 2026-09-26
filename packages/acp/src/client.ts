@@ -1,7 +1,7 @@
 // A typed ACP checkout client. Every request carries API-Version, Request-Id and
 // (for POST) an Idempotency-Key, and is signed per RFC 9421 when a signer is set.
 
-import { type SigningKey, signRequest, type TapTag } from "@proofcart/tap";
+import { type SigningKey, signRequest, type TapTag } from "@cartel/tap";
 import type { z } from "zod";
 import {
   ACP_API_VERSION,

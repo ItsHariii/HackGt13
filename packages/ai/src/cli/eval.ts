@@ -1,5 +1,5 @@
 import { writeFileSync } from "node:fs";
-import { apparel, homeOffice, travel } from "@proofcart/rule-packs";
+import { apparel, homeOffice, travel } from "@cartel/rule-packs";
 import { memorySink } from "../calls";
 import { modelFor, providerChain } from "../config";
 import { EVAL_CASES } from "../evals/cases";

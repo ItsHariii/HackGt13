@@ -45,25 +45,25 @@ begin
     '{"economics": {"currency": "USD", "maxTotalMinor": 91000}}', body_hash, 'awaiting_signature', '{}', now() + interval '15 minutes');
   insert into public.signing_credentials (user_id, credential_id, public_key) values (a, 'cred-a', '\x01') returning id into cred_id;
   insert into public.signing_challenges (nonce, user_id, contract_version_id, body_hash, challenge)
-  values (repeat('n', 32), a, version_id, body_hash, 'pc1:challenge');
+  values (repeat('n', 32), a, version_id, body_hash, 'ct1:challenge');
   insert into public.contract_signatures (contract_version_id, credential_id, credential_public_key, body_hash, challenge,
     authenticator_data, client_data_json, signature, verified_at)
-  values (version_id, cred_id, '\x01', body_hash, 'pc1:challenge', '\x02', '\x03', '\x04', now());
+  values (version_id, cred_id, '\x01', body_hash, 'ct1:challenge', '\x02', '\x03', '\x04', now());
   perform internal.transition_contract(version_id, 'signed', 'user:' || a, 'contract.signed');
   insert into public.mandates (contract_version_id, trigger, not_after)
   values (version_id, '{"type": "price_lte", "sku": "U2727", "amountMinor": 32000}', now() + interval '2 days');
   insert into public.checkout_snapshots (contract_version_id, merchant_id, acp_session_id, state, state_hash)
-  values (version_id, 'demomart', 'cs_test', '{}', 'sha256:' || repeat('4', 64));
+  values (version_id, 'greathub', 'cs_test', '{}', 'sha256:' || repeat('4', 64));
   insert into public.consent_diffs (contract_version_id, classification, current_total_minor)
   values (version_id, 'identical', 89605) returning id into diff_id;
   insert into public.payment_instruments (user_id, rail, rail_ref, brand, last4)
   values (a, 'visa_acceptance', 'tms_pi_1', 'visa', '1111') returning id into instrument_id;
   exec_id := internal.begin_execution(version_id, 'idem-rls-fixture', diff_id, 'visa_acceptance', instrument_id);
   perform internal.consume_execution_token(exec_id);
-  perform internal.complete_execution(exec_id, 'authorized', 'txn_1', null, 'demomart', 'dm_ord_1');
+  perform internal.complete_execution(exec_id, 'authorized', 'txn_1', null, 'greathub', 'dm_ord_1');
   select id into order_id from public.orders where execution_id = exec_id;
   insert into public.evidence_packs (order_id, storage_path, sha256) values (order_id, a || '/pack.zip', 'sha256:' || repeat('5', 64));
-  insert into public.webhook_events (provider, event_id, event_type, payload) values ('demomart', 'evt_1', 'order_created', '{}');
+  insert into public.webhook_events (provider, event_id, event_type, payload) values ('greathub', 'evt_1', 'order_created', '{}');
   insert into public.ai_calls (plan_id, task, provider, model) values (plan_id, 'A1', 'openai', 'gpt-6-luna');
   insert into public.search_queries (query_hash, query) values ('sha256:' || repeat('6', 64), '{"q": "monitor"}');
   -- Catalog rows the seed leaves empty.
@@ -196,7 +196,7 @@ select throws_ok(
   '42501', null, 'User B cannot create a plan owned by A'
 );
 select throws_ok(
-  $$insert into public.products (source, title) values ('demomart', 'Injected')$$,
+  $$insert into public.products (source, title) values ('greathub', 'Injected')$$,
   '42501', null, 'Clients cannot write the catalog'
 );
 reset role;

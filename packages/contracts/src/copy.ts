@@ -24,7 +24,7 @@ export function formatAge(ageSeconds: number): string {
 
 /**
  * The evidence badge text for a fact or result. `source` is a display name
- * ("Manufacturer", "DemoMart checkout"); `ageSeconds` is time since fetch.
+ * ("Manufacturer", "GreatHub checkout"); `ageSeconds` is time since fetch.
  * Without an age, a verified value is only attributed, never "Confirmed".
  */
 export function evidenceLabel(

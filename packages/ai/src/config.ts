@@ -1,4 +1,4 @@
-import { isConfigured, isHttpUrl } from "@proofcart/platform/env";
+import { isConfigured, isHttpUrl } from "@cartel/platform/env";
 
 /*
  * Configuration for the bounded AI roles (SDD §10.1, §10.4). Everything the

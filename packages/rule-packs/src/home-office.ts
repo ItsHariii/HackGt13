@@ -3,7 +3,7 @@ import {
   type Quantity,
   type Requirement,
   type Value,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import {
   type BasketReader,
   compareQuantity,
@@ -11,7 +11,7 @@ import {
   isQuantity,
   isStringList,
   normalizeText,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 
 /*
  * Home office (SDD §8.3, §16.1): desk width ≤ space; monitor diagonal and

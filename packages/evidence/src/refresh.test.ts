@@ -15,8 +15,8 @@ function wake(ts: number, queue: string, secret = SECRET): Headers {
     .update(`${ts}.${queue}`)
     .digest("hex");
   return new Headers({
-    "x-proofcart-timestamp": String(ts),
-    "x-proofcart-signature": `v1=${sig}`,
+    "x-cartel-timestamp": String(ts),
+    "x-cartel-signature": `v1=${sig}`,
   });
 }
 
@@ -100,7 +100,7 @@ describe("drainQueue", () => {
       "q_fact_refresh",
       async (m) => {
         const id = (m as { offerId: string }).offerId;
-        if (id === "boom") throw new Error("DemoMart down");
+        if (id === "boom") throw new Error("GreatHub down");
         return id === "a" ? "handled" : "skipped";
       },
       { onError: (_e, m) => errors.push(m.msgId) },

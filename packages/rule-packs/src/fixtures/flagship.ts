@@ -1,15 +1,15 @@
-import { contractHash, type Fact } from "@proofcart/contracts";
+import { contractHash, type Fact } from "@cartel/contracts";
 import {
   FLAGSHIP_BRIEF,
   FLAGSHIP_REQUIREMENTS,
   FLAGSHIP_V8_FACTS,
   VIREO_U2727_DEAL_TRAP_FACTS,
   VIREO_U2727_FACTS,
-} from "@proofcart/contracts/fixtures";
-import type { ApprovedState, CheckoutState } from "@proofcart/proof-engine";
+} from "@cartel/contracts/fixtures";
+import type { ApprovedState, CheckoutState } from "@cartel/proof-engine";
 import { homeOffice } from "../home-office";
 import { approveCheckout, UNMODELED_PARENT } from "./approve";
-import { demomartCheckout, demomartOffer, specFact } from "./demomart";
+import { greathubCheckout, greathubOffer, specFact } from "./greathub";
 
 /*
  * The flagship home-office demo (SDD §16.1) as checkout states over time:
@@ -18,7 +18,7 @@ import { demomartCheckout, demomartOffer, specFact } from "./demomart";
  *   T2    event 2, the deal trap: U2727 $329 → $319 and USB-C 90 W → 15 W on
  *         the same SKU (block; the total would have been $881.07)
  *   T8    contract v8: Halden M27Q-USBC, total $870.37, max $885
- * Product facts are the ones pinned in @proofcart/contracts/fixtures.
+ * Product facts are the ones pinned in @cartel/contracts/fixtures.
  */
 
 export const FLAGSHIP_T7 = "2026-09-26T14:02:11Z";
@@ -32,7 +32,7 @@ const SUNDAY = "2026-09-27";
 export const FLAGSHIP_PACKS = [homeOffice];
 
 export const flagshipOffers = {
-  desk: demomartOffer({
+  desk: greathubOffer({
     id: "dm_off_birchline_465",
     productId: "dm_birchline_465",
     sku: "BL-CD-465",
@@ -41,7 +41,7 @@ export const flagshipOffers = {
     priceMinor: 22_900,
     deliveryBy: MONDAY,
   }),
-  chair: demomartOffer({
+  chair: greathubOffer({
     id: "dm_off_kestrel_mesh",
     productId: "dm_kestrel_mesh",
     sku: "KS-MESH-TASK",
@@ -51,7 +51,7 @@ export const flagshipOffers = {
     deliveryBy: SUNDAY,
   }),
   vireo: (priceMinor = 32_900, sellerId = "dm_seller_1") =>
-    demomartOffer({
+    greathubOffer({
       id: "dm_off_vireo_u2727",
       productId: "dm_vireo_u2727",
       sku: "U2727",
@@ -61,7 +61,7 @@ export const flagshipOffers = {
       deliveryBy: SUNDAY,
       sellerId,
     }),
-  vireoE: demomartOffer({
+  vireoE: greathubOffer({
     id: "dm_off_vireo_u2727e",
     productId: "dm_vireo_u2727e",
     sku: "U2727E",
@@ -70,7 +70,7 @@ export const flagshipOffers = {
     priceMinor: 27_900,
     deliveryBy: SUNDAY,
   }),
-  halden: demomartOffer({
+  halden: greathubOffer({
     id: "dm_off_halden_m27q",
     productId: "dm_halden_m27q",
     sku: "M27Q-USBC",
@@ -79,7 +79,7 @@ export const flagshipOffers = {
     priceMinor: 30_900,
     deliveryBy: SUNDAY,
   }),
-  cable: demomartOffer({
+  cable: greathubOffer({
     id: "dm_off_loop_100w_2m",
     productId: "dm_loop_100w_2m",
     sku: "LOOP-C100-2M",
@@ -89,7 +89,7 @@ export const flagshipOffers = {
     deliveryBy: SUNDAY,
   }),
   webcam: (priceMinor = 4_900) =>
-    demomartOffer({
+    greathubOffer({
       id: "dm_off_pica_1080",
       productId: "dm_pica_1080",
       sku: "PICA-1080",
@@ -138,7 +138,7 @@ export function flagshipCheckout(init: FlagshipCheckoutInit): CheckoutState {
             offer: flagshipOffers.vireo(init.vireoMinor, init.vireoSeller),
             facts: init.vireoFacts ?? VIREO_U2727_FACTS,
           };
-  return demomartCheckout(
+  return greathubCheckout(
     [
       { role: "desk", offer: flagshipOffers.desk, facts: f.desk ?? [] },
       { role: "chair", offer: flagshipOffers.chair, facts: f.chair ?? [] },

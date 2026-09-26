@@ -6,14 +6,14 @@ import {
   normalizeProduct,
   type SearchProvider,
   transientSnapshotStore,
-} from "@proofcart/catalog";
+} from "@cartel/catalog";
 import {
   CatalogError,
   cachedSearch,
   localSearch,
   planContext,
   storeProduct,
-} from "@proofcart/catalog/supabase";
+} from "@cartel/catalog/supabase";
 import {
   createIcecat,
   createShopifyCatalog,
@@ -22,8 +22,8 @@ import {
   newRateBudget,
   normalizeGtin,
   SourceError,
-} from "@proofcart/evidence";
-import { supabaseEvidenceStore } from "@proofcart/evidence/supabase";
+} from "@cartel/evidence";
+import { supabaseEvidenceStore } from "@cartel/evidence/supabase";
 import { ALL_PACKS, sources } from "./evidence";
 import { createAdminClient } from "./supabase/admin";
 import { createClient } from "./supabase/server";
@@ -110,7 +110,7 @@ export function catalogProviders(): SearchProvider[] {
   // checker, not a product catalog; unsupported stretch adapters are not advertised.
   return [...sources()]
     .filter((source) =>
-      ["demomart", "upcitemdb", "shopify", "icecat"].includes(source),
+      ["greathub", "upcitemdb", "shopify", "icecat"].includes(source),
     )
     .map((source) => ({
       source,
@@ -131,7 +131,7 @@ export function catalogProviders(): SearchProvider[] {
         }
         const db = createAdminClient(signal);
         return cachedSearch(db, source, query, limit, signal, async () => {
-          if (source === "demomart")
+          if (source === "greathub")
             return localSearch(db, query, source, limit, signal);
           const store = supabaseEvidenceStore(db);
           const ids: string[] = [];

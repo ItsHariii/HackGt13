@@ -1,5 +1,5 @@
-import type { Requirement } from "@proofcart/contracts";
-import { FLAGSHIP_REQUIREMENTS } from "@proofcart/contracts/fixtures";
+import type { Requirement } from "@cartel/contracts";
+import { FLAGSHIP_REQUIREMENTS } from "@cartel/contracts/fixtures";
 import { describe, expect, it } from "vitest";
 import { limitsFromRequirements } from "./requirements";
 

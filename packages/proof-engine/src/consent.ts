@@ -18,7 +18,7 @@ import {
   type ProofResult,
   type Requirement,
   type Verdict,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import { decOf, div, mul } from "./decimal";
 import { evaluate } from "./evaluate";
 import type { Resolved } from "./evidence";

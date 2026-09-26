@@ -8,7 +8,7 @@ declare
   v_brand text := nullif(btrim(p_product->>'brand'), '');
   v_mpn text := nullif(btrim(p_product->>'mpn'), '');
 begin
-  if p_product->>'source' not in ('demomart','upcitemdb','icecat','openfoodfacts','ebay')
+  if p_product->>'source' not in ('greathub','upcitemdb','icecat','openfoodfacts','ebay')
     or nullif(p_product->>'externalId','') is null then
     raise exception 'invalid catalog identity';
   end if;
@@ -91,7 +91,7 @@ begin
   insert into public.baskets(plan_id,label) values(v_plan,'A') returning id into v_basket;
   for v_item in select * from public.kit_items where kit_slug=p_slug order by sort_order,id loop
     select id into v_offer from public.offers where product_id=v_item.product_id
-      order by reference_only, (source='demomart') desc, (availability in ('in_stock','limited')) desc,retrieved_at desc,id limit 1;
+      order by reference_only, (source='greathub') desc, (availability in ('in_stock','limited')) desc,retrieved_at desc,id limit 1;
     if v_offer is null then raise exception 'kit_offer_unavailable'; end if;
     insert into public.basket_items(basket_id,role,offer_id,qty) values(v_basket,v_item.role,v_offer,v_item.qty);
   end loop;

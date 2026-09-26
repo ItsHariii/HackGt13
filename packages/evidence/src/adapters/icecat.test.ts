@@ -1,5 +1,5 @@
-import { fieldDef } from "@proofcart/proof-engine";
-import { apparel, homeOffice, travel } from "@proofcart/rule-packs";
+import { fieldDef } from "@cartel/proof-engine";
+import { apparel, homeOffice, travel } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import dell from "../__fixtures__/icecat-dell-u2723qe.json";
 import viewsonic from "../__fixtures__/icecat-viewsonic-vp2785.json";
@@ -110,13 +110,13 @@ describe("Icecat client", () => {
     const icecat = createIcecat({
       store,
       fetch,
-      username: "proofcart",
+      username: "cartel",
       apiToken: "secret-token",
     });
     const { sheet } = await icecat.byGtin("00884116415589");
     expect(sheet?.GeneralInfo.BrandPartCode).toBe("DELL-U2723QE");
     expect(calls[0]?.url).toBe(
-      "https://live.icecat.biz/api?UserName=proofcart&Language=en&GTIN=0884116415589",
+      "https://live.icecat.biz/api?UserName=cartel&Language=en&GTIN=0884116415589",
     );
     expect(calls[0]?.headers.get("api-token")).toBe("secret-token");
     expect(sources[0]?.url).not.toContain("secret-token");

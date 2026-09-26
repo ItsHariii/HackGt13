@@ -1,6 +1,6 @@
-import { isConfigured } from "@proofcart/platform/env";
-import { healthReport } from "@proofcart/platform/health";
-import { requestId } from "@proofcart/platform/request-id";
+import { isConfigured } from "@cartel/platform/env";
+import { healthReport } from "@cartel/platform/health";
+import { requestId } from "@cartel/platform/request-id";
 import { logger } from "@/lib/logger";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     requestId: id,
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     supabaseKey: process.env.SUPABASE_SECRET_KEY,
-    jwksUrl: process.env.PROOFCART_JWKS_URL,
+    jwksUrl: process.env.CARTEL_JWKS_URL,
     publicEnvReady: isConfigured(
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     ),

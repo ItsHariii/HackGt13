@@ -1,4 +1,4 @@
-// Merchant-side charging (SDD §13.4): what DemoMart calls once the agent
+// Merchant-side charging (SDD §13.4): what GreatHub calls once the agent
 // signature, the grant and the contract all check out.
 
 import {

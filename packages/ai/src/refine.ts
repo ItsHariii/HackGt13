@@ -2,8 +2,8 @@ import {
   type Requirement,
   type RequirementPatch,
   RequirementPatch as RequirementPatchSchema,
-} from "@proofcart/contracts";
-import type { FieldDef, Pack } from "@proofcart/proof-engine";
+} from "@cartel/contracts";
+import type { FieldDef, Pack } from "@cartel/proof-engine";
 import { ontologyFor } from "./ontology";
 import { systemFor, untrustedBlock } from "./prompts";
 import { buildRequirements, targetFor } from "./requirements";

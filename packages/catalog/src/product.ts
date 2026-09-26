@@ -4,20 +4,20 @@ import type {
   Offer,
   ProofResult,
   Requirement,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import {
   type NormalizedProduct,
   SOURCE_AUTHORITY,
   type SourceRecord,
   toDrafts,
-} from "@proofcart/evidence";
+} from "@cartel/evidence";
 import {
   evaluateResults,
   fieldDef,
   type Pack,
   resolveFacts,
   type SourceInfo,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 import { identityKey } from "./normalize";
 
 export type CatalogOffer = {
@@ -62,7 +62,7 @@ export function checkoutTier(
 ): CheckoutTier {
   return referenceOnly
     ? "proof_only"
-    : source === "demomart"
+    : source === "greathub"
       ? "full"
       : source === "shopify"
         ? "handoff"

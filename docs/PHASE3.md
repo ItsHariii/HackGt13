@@ -4,7 +4,7 @@ Implemented September 26, 2026 against SDD §7, §8.4, §12 and the Phase 3 chec
 
 ## Delivered
 
-`@proofcart/contracts` (dependencies: `zod` 4, `canonicalize` 5; dev: `fast-check` 4):
+`@cartel/contracts` (dependencies: `zod` 4, `canonicalize` 5; dev: `fast-check` 4):
 
 | Module | Contents |
 |---|---|
@@ -17,7 +17,7 @@ Implemented September 26, 2026 against SDD §7, §8.4, §12 and the Phase 3 chec
 | `hash.ts` | `canonicalize()`, `sha256Hex()`, `hashJson()`, `contractHash()`, `reportHash()`, `factsDigest()`, `requirementSetHash()` |
 | `ap2.ts` | `toAp2(contract, signature)`, `toMajor()` |
 | `copy.ts` | `evidenceLabel()`, `verdictLabel()`, `provenanceLabel()`, `reasonLabel()`, `classificationLabel()`, `changeClassLabel()`, `formatAge()` |
-| `fixtures/` (`@proofcart/contracts/fixtures`) | The SDD §16.1 flagship: brief, requirements, contract v8, the facts each item relied on, and the Vireo U2727 before and after the deal trap. Hashes are pinned by tests. |
+| `fixtures/` (`@cartel/contracts/fixtures`) | The SDD §16.1 flagship: brief, requirements, contract v8, the facts each item relied on, and the Vireo U2727 before and after the deal trap. Hashes are pinned by tests. |
 
 ## Verified locally
 
@@ -38,7 +38,7 @@ Implemented September 26, 2026 against SDD §7, §8.4, §12 and the Phase 3 chec
 - **`ConsentDiff` adds `schema`, `contractHash` and `evaluatedAt`.** Each classified change records the policy rule that decided it in `basis`, for example `floor.hard_pass_to_fail`.
 - **`factsDigest` covers claims, not provenance.** It hashes `{field, value, state, conflict}` and leaves out fact IDs, sources and timestamps. A refresh therefore isn't flagged as a fact change, which Strict mode would otherwise turn into a re-approval.
 - **`requirementSetHash`** is `hashJson` over the requirements sorted by ID. The SDD didn't define it.
-- **AP2.** Field names were checked against the AP2 Python SDK models (`ap2.models.mandate`, `payment_request`) on 2026-09-26. AP2 carries `user_authorization` on `PaymentMandate`, which ProofCart doesn't issue. The export therefore returns `user_authorization` (base64url JSON of the WebAuthn assertion and body hash) next to `{ intentMandate, cartMandate }`. `merchant_authorization` is `null`, because only the merchant can sign cart contents. Amounts are W3C decimal major units, using ISO 4217 exponents.
+- **AP2.** Field names were checked against the AP2 Python SDK models (`ap2.models.mandate`, `payment_request`) on 2026-09-26. AP2 carries `user_authorization` on `PaymentMandate`, which Cartel doesn't issue. The export therefore returns `user_authorization` (base64url JSON of the WebAuthn assertion and body hash) next to `{ intentMandate, cartMandate }`. `merchant_authorization` is `null`, because only the merchant can sign cart contents. Amounts are W3C decimal major units, using ISO 4217 exponents.
 - **`evidenceLabel(state, source, ageSeconds, reason?)`.** The optional `reason` makes an `unknown` read "Sources disagree" when it's a conflict. A `verified` value without an age reads "{Source} says", never "Confirmed".
 
 ## Placeholders

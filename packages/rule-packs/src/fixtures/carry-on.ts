@@ -1,7 +1,7 @@
-import type { Box, Fact } from "@proofcart/contracts";
-import { packDefaults } from "@proofcart/proof-engine";
+import type { Box, Fact } from "@cartel/contracts";
+import { packDefaults } from "@cartel/proof-engine";
 import { travel } from "../travel";
-import { demomartOffer, specFact } from "./demomart";
+import { greathubOffer, specFact } from "./greathub";
 
 /*
  * "Carry-on" (SDD §16.1): the Fieldnote 21" (21.5 × 14 × 9 in) passes a
@@ -22,7 +22,7 @@ export const CARRY_ON_REQUIREMENTS = packDefaults(travel, {
 
 type Item = {
   role: string;
-  offer: ReturnType<typeof demomartOffer>;
+  offer: ReturnType<typeof greathubOffer>;
   facts: Fact[];
 };
 
@@ -37,7 +37,7 @@ function item(
   const productId = `dm_${key}`;
   return {
     role,
-    offer: demomartOffer({
+    offer: greathubOffer({
       id: `dm_off_${key}`,
       productId,
       sku,

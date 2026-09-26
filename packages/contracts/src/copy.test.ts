@@ -13,8 +13,8 @@ import { EVIDENCE_STATES, Importance, ReasonCode, Verdict } from "./primitives";
 
 describe("evidenceLabel", () => {
   it("uses Confirmed only for verified, always with source and age", () => {
-    expect(evidenceLabel("verified", "DemoMart checkout", 42)).toBe(
-      "Confirmed · DemoMart checkout · just now",
+    expect(evidenceLabel("verified", "GreatHub checkout", 42)).toBe(
+      "Confirmed · GreatHub checkout · just now",
     );
     expect(evidenceLabel("verified", "Manufacturer", null)).toBe(
       "Manufacturer says",

@@ -4,9 +4,9 @@ import { ThemeToggle } from "./theme-toggle";
 export function Nav() {
   return (
     <header className="site-header">
-      <Link href="/" className="wordmark" aria-label="ProofCart home">
+      <Link href="/" className="wordmark" aria-label="Cartel home">
         <ScanLine size={23} strokeWidth={1.75} aria-hidden="true" />
-        ProofCart<span className="wordmark-dot">.</span>
+        Cartel<span className="wordmark-dot">.</span>
       </Link>
       <nav aria-label="Main navigation">
         <Link href="/#how-it-works" className="nav-secondary">

@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
-import type { Database } from "@proofcart/contracts/db";
+import type { Database } from "@cartel/contracts/db";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export type Db = SupabaseClient<Database>;
@@ -76,20 +76,20 @@ export function anonClient(): Db {
 }
 
 /**
- * Untyped clients pointed at the demomart schema. ProofCart's generated types deliberately
+ * Untyped clients pointed at the greathub schema. Cartel's generated types deliberately
  * exclude it, so these exist only to prove who can and cannot reach it.
  */
-export function demomartClient(key: "secret" | "publishable") {
+export function greathubClient(key: "secret" | "publishable") {
   return createClient(
     local.url,
     key === "secret" ? local.secretKey : local.publishableKey,
-    { ...options, db: { schema: "demomart" } },
+    { ...options, db: { schema: "greathub" } },
   );
 }
 
 export type TestUser = { id: string; client: Db };
 
-/** An anonymous session, the way a first-time ProofCart visitor starts. */
+/** An anonymous session, the way a first-time Cartel visitor starts. */
 export async function createUser(): Promise<TestUser> {
   const client = anonClient();
   const { data, error } = await client.auth.signInAnonymously();
@@ -147,11 +147,11 @@ export async function signedContract(
   const contractId = randomUUID();
   const versionId = randomUUID();
   const body = {
-    schema: "proofcart.contract/1",
+    schema: "cartel.contract/1",
     contractId,
     version: 1,
     economics: { currency: "USD", maxTotalMinor: 91_000 },
-    merchants: [{ id: "demomart" }],
+    merchants: [{ id: "greathub" }],
   };
   const bodyHash = sha256(JSON.stringify(body));
   must(
@@ -197,7 +197,7 @@ export async function signedContract(
         credential_id: credential.id,
         credential_public_key: "\\x01",
         body_hash: bodyHash,
-        challenge: `pc1:${bodyHash}:${randomUUID()}`,
+        challenge: `ct1:${bodyHash}:${randomUUID()}`,
         authenticator_data: "\\x02",
         client_data_json: "\\x03",
         signature: "\\x04",

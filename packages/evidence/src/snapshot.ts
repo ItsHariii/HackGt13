@@ -1,4 +1,4 @@
-import { sha256Hex } from "@proofcart/contracts";
+import { sha256Hex } from "@cartel/contracts";
 import { bytesToText, type HttpResponse } from "./http";
 import type { SourceRecord, SourceType } from "./types";
 

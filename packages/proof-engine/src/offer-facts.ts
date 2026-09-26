@@ -1,4 +1,4 @@
-import type { EvidenceState, Fact, Offer } from "@proofcart/contracts";
+import type { EvidenceState, Fact, Offer } from "@cartel/contracts";
 
 export type OfferFactMeta = {
   sourceId: string;

@@ -1,4 +1,4 @@
-import { canonicalize, sha256Hex } from "@proofcart/contracts";
+import { canonicalize, sha256Hex } from "@cartel/contracts";
 import { normalizeGtin } from "../claims";
 import {
   type FetchLike,
@@ -19,7 +19,7 @@ import { inferRoles } from "./roles";
 
 /*
  * Shopify Catalog over UCP (SDD §11.2, T7.5): JSON-RPC `tools/call` against
- * the global catalog's MCP endpoint. Every request names ProofCart's agent
+ * the global catalog's MCP endpoint. Every request names Cartel's agent
  * profile (`/.well-known/ucp`), which Shopify fetches and version-checks, so
  * the profile must be publicly reachable. Prices are integer minor units.
  *
@@ -260,7 +260,7 @@ export function normalizeUcpProduct(
 
 export type ShopifyOptions = {
   store: SnapshotStore;
-  /** ProofCart's public UCP agent profile, e.g. https://proofcart.app/.well-known/ucp. */
+  /** Cartel's public UCP agent profile, e.g. https://cartel.app/.well-known/ucp. */
   agentProfileUrl: string;
   endpoint?: string;
   fetch?: FetchLike;
@@ -473,7 +473,7 @@ export function createShopifyCatalog(opts: ShopifyOptions) {
 }
 
 /**
- * ProofCart's UCP platform profile, served at `/.well-known/ucp`. Shopify
+ * Cartel's UCP platform profile, served at `/.well-known/ucp`. Shopify
  * fetches it on every catalog call to check the version and capabilities.
  */
 export function ucpAgentProfile(opts: { keys?: readonly object[] } = {}) {

@@ -5,7 +5,7 @@ import type {
   Requirement,
   Value,
   Verdict,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import { atLeast, type Resolved } from "./evidence";
 import type { FieldDef } from "./fields";
 import { boxFits, compareQuantity } from "./units";

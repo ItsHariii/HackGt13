@@ -7,7 +7,7 @@ import type {
   ReasonCode,
   Requirement,
   Value,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import {
   capState,
   derivedState,
@@ -60,7 +60,7 @@ export type EvaluationInput = {
   /** Source ID → authority, for conflict resolution. */
   sources?: Readonly<Record<string, SourceInfo>>;
   quotes?: readonly MerchantQuote[];
-  /** Order settings ProofCart itself sends to checkout, e.g. `order.substitutions_allowed`. */
+  /** Order settings Cartel itself sends to checkout, e.g. `order.substitutions_allowed`. */
   order?: Readonly<Record<string, Value>>;
 };
 

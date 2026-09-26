@@ -2,7 +2,7 @@ import { generateKeyPairSync } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import { isConfigured, supabaseConfigured } from "./env";
 import { healthReport } from "./health";
-import { proofcartJwks, publicJwks } from "./jwks";
+import { cartelJwks, publicJwks } from "./jwks";
 import { requestId } from "./request-id";
 
 describe("configuration", () => {
@@ -50,25 +50,25 @@ describe("public signing keys", () => {
     const grant = generateKeyPairSync("ed25519").privateKey.export({
       format: "jwk",
     });
-    const jwks = proofcartJwks({
+    const jwks = cartelJwks({
       agentJwk: JSON.stringify(agent),
-      agentKid: "pc-agent-test",
-      grantJwk: JSON.stringify({ ...grant, kid: "pc-grant-test" }),
+      agentKid: "ct-agent-test",
+      grantJwk: JSON.stringify({ ...grant, kid: "ct-grant-test" }),
     });
     expect(jwks?.keys.map((k) => k.kid)).toEqual([
-      "pc-agent-test",
-      "pc-grant-test",
+      "ct-agent-test",
+      "ct-grant-test",
     ]);
     expect(JSON.stringify(jwks)).not.toContain(grant.d);
     expect(
-      proofcartJwks({
+      cartelJwks({
         agentJwk: JSON.stringify(agent),
-        agentKid: "pc-agent-test",
+        agentKid: "ct-agent-test",
         grantJwk: "{",
       })?.keys,
     ).toHaveLength(1);
     expect(
-      proofcartJwks({
+      cartelJwks({
         agentJwk: undefined,
         agentKid: "x",
         grantJwk: JSON.stringify(grant),
@@ -85,20 +85,20 @@ describe("public signing keys", () => {
     const grant = generateKeyPairSync("ed25519").privateKey.export({
       format: "jwk",
     });
-    const jwks = proofcartJwks({
+    const jwks = cartelJwks({
       agentJwk: JSON.stringify(current),
-      agentKid: "pc-agent-new",
+      agentKid: "ct-agent-new",
       grantJwk: JSON.stringify(grant),
-      grantKid: "pc-grant-test",
+      grantKid: "ct-grant-test",
       previous: [
-        { jwk: JSON.stringify(retired), kid: "pc-agent-old" },
-        { jwk: JSON.stringify(current), kid: "pc-agent-new" },
+        { jwk: JSON.stringify(retired), kid: "ct-agent-old" },
+        { jwk: JSON.stringify(current), kid: "ct-agent-new" },
       ],
     });
     expect(jwks?.keys.map((k) => k.kid)).toEqual([
-      "pc-agent-new",
-      "pc-grant-test",
-      "pc-agent-old",
+      "ct-agent-new",
+      "ct-grant-test",
+      "ct-agent-old",
     ]);
     expect(JSON.stringify(jwks)).not.toContain(retired.d);
   });

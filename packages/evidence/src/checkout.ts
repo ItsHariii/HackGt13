@@ -1,5 +1,5 @@
-import type { CheckoutSession, LineItem } from "@proofcart/acp";
-import { CORE_FIELDS } from "@proofcart/proof-engine";
+import type { CheckoutSession, LineItem } from "@cartel/acp";
+import { CORE_FIELDS } from "@cartel/proof-engine";
 import { claim, freshUntilFor } from "./claims";
 import { type Availability, type ClaimedFact, SOURCE_AUTHORITY } from "./types";
 
@@ -7,7 +7,7 @@ import { type Availability, type ClaimedFact, SOURCE_AUTHORITY } from "./types";
  * Offer facts from a merchant's ACP checkout (SDD §11.1, §13.2). The checkout
  * is the authority for its own price, availability, terms and delivery, so
  * these are `verified` (delivery is still only an `estimate`). Line items
- * without DemoMart's `x_proofcart` extension carry no terms and yield price only.
+ * without GreatHub's `x_cartel` extension carry no terms and yield price only.
  */
 
 export type CheckoutOfferUpdate = {
@@ -70,7 +70,7 @@ export function checkoutLines(
     ) ?? session.fulfillment_options[0];
   const freshUntil = freshUntilFor(OFFER_FRESHNESS, retrievedAt) ?? retrievedAt;
   return session.line_items.map((line) => {
-    const x = line.item.x_proofcart;
+    const x = line.item.x_cartel;
     const price = unitPrice(line);
     const c = (
       field: string,

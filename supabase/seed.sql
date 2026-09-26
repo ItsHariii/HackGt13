@@ -1,4 +1,4 @@
--- DemoMart catalog and Explore kits. Fictional brands only (SDD §16).
+-- GreatHub catalog and Explore kits. Fictional brands only (SDD §16).
 -- Flagship items and prices match the canonical demo dataset (SDD §16.1) exactly:
 --   Birchline Compact Desk 46.5" $229 · Kestrel Mesh Task Chair $189 · Vireo U2727 $329
 --   Loop USB-C Cable 100 W $19 · Pica 1080p Webcam $49  => $815.00 + $24.00 shipping + $57.05 tax = $896.05
@@ -7,11 +7,11 @@
 -- GTINs are GTIN-14 under a fictional company prefix, with valid GS1 check digits.
 
 -- Sellers and policies --------------------------------------------------------------------------
-insert into demomart.sellers (id, name) values
-  ('dm_seller_1', 'DemoMart'),
+insert into greathub.sellers (id, name) values
+  ('dm_seller_1', 'GreatHub'),
   ('dm_seller_2', 'Northwind Outlet (marketplace seller)');
 
-insert into demomart.policies (id, kind, name, terms) values
+insert into greathub.policies (id, kind, name, terms) values
   ('ret_30_free', 'return', '30-day free returns', '{"returnable": true, "windowDays": 30, "feeMinor": 0, "finalSale": false}'),
   ('ret_30_fee', 'return', '30-day returns, $7.95 fee', '{"returnable": true, "windowDays": 30, "feeMinor": 795, "finalSale": false}'),
   ('ret_14_free', 'return', '14-day free returns', '{"returnable": true, "windowDays": 14, "feeMinor": 0, "finalSale": false}'),
@@ -322,20 +322,20 @@ create function pg_temp.spec(p_spec text) returns jsonb language sql immutable a
   from unnest(string_to_array(p_spec, ' | ')) with ordinality as t(kv, ord);
 $$;
 
-insert into demomart.products (slug, brand, name, department, category, roles, description)
+insert into greathub.products (slug, brand, name, department, category, roles, description)
 select distinct on (slug) slug, brand, product_name, department, category, roles, description
 from seed_catalog
 order by slug, n;
 
-insert into demomart.variants (product_id, sku, gtin, mpn, option_label, sort_order)
+insert into greathub.variants (product_id, sku, gtin, mpn, option_label, sort_order)
 select p.id, s.sku, pg_temp.gtin14(s.n), s.mpn, s.option_label, s.n
-from seed_catalog s join demomart.products p on p.slug = s.slug;
+from seed_catalog s join greathub.products p on p.slug = s.slug;
 
-insert into demomart.listings (variant_id, title, spec)
+insert into greathub.listings (variant_id, title, spec)
 select v.id, s.product_name || coalesce(' — ' || s.option_label, ''), pg_temp.spec(s.spec)
-from seed_catalog s join demomart.variants v on v.sku = s.sku;
+from seed_catalog s join greathub.variants v on v.sku = s.sku;
 
-insert into demomart.offers (
+insert into greathub.offers (
   id, listing_id, seller_id, price_minor, availability, stock,
   delivery_min_days, delivery_max_days, final_sale, return_policy_id
 )
@@ -343,37 +343,37 @@ select 'dm_off_' || (48000 + s.n * 100), l.id, 'dm_seller_1', s.price_minor,
   case when s.stock = 0 then 'out_of_stock' when s.stock < 5 then 'limited' else 'in_stock' end,
   s.stock, s.delivery_min, s.delivery_max, s.return_policy = 'final_sale', s.return_policy
 from seed_catalog s
-join demomart.variants v on v.sku = s.sku
-join demomart.listings l on l.variant_id = v.id;
+join greathub.variants v on v.sku = s.sku
+join greathub.listings l on l.variant_id = v.id;
 
--- ProofCart's catalog as the demomart adapter would first ingest it. Offers are stored already
+-- Cartel's catalog as the greathub adapter would first ingest it. Offers are stored already
 -- stale (fresh_until = retrieved_at), so nothing is proven until a live ACP/JSON-LD refresh.
 -- Facts are not seeded: every fact must come from a real source snapshot.
 insert into public.products (source, external_id, merchant_id, title, brand, gtin, mpn, category, roles, upid)
-select 'demomart', s.sku, 'demomart', l.title, s.brand, v.gtin, s.mpn, s.category, s.roles, 'demomart:' || s.slug
+select 'greathub', s.sku, 'greathub', l.title, s.brand, v.gtin, s.mpn, s.category, s.roles, 'greathub:' || s.slug
 from seed_catalog s
-join demomart.variants v on v.sku = s.sku
-join demomart.listings l on l.variant_id = v.id;
+join greathub.variants v on v.sku = s.sku
+join greathub.listings l on l.variant_id = v.id;
 
 insert into public.product_external_refs (product_id, source, external_id, upid, gtin, url)
-select p.id, 'demomart', p.external_id, p.upid, p.gtin, 'http://localhost:3001/p/' || s.slug
+select p.id, 'greathub', p.external_id, p.upid, p.gtin, 'http://localhost:3001/p/' || s.slug
 from public.products p join seed_catalog s on s.sku = p.external_id
-where p.source = 'demomart';
+where p.source = 'greathub';
 
 insert into public.offers (
   product_id, source, external_id, merchant_id, seller_id, price_minor, currency, availability,
   delivery_earliest, delivery_latest, final_sale, return_policy, url, retrieved_at, fresh_until
 )
-select p.id, 'demomart', o.id, 'demomart', o.seller_id, o.price_minor, o.currency,
+select p.id, 'greathub', o.id, 'greathub', o.seller_id, o.price_minor, o.currency,
   (case o.availability when 'limited' then 'limited' when 'out_of_stock' then 'out_of_stock' else 'in_stock' end)::public.availability,
   current_date + o.delivery_min_days, current_date + o.delivery_max_days, o.final_sale, pol.terms,
   'http://localhost:3001/p/' || s.slug, now(), now()
 from seed_catalog s
-join public.products p on p.source = 'demomart' and p.external_id = s.sku
-join demomart.variants v on v.sku = s.sku
-join demomart.listings l on l.variant_id = v.id
-join demomart.offers o on o.listing_id = l.id
-join demomart.policies pol on pol.id = o.return_policy_id;
+join public.products p on p.source = 'greathub' and p.external_id = s.sku
+join greathub.variants v on v.sku = s.sku
+join greathub.listings l on l.variant_id = v.id
+join greathub.offers o on o.listing_id = l.id
+join greathub.policies pol on pol.id = o.return_policy_id;
 
 -- Kits (SDD §11.5, §16.1) ------------------------------------------------------------------------
 insert into public.kits (slug, title, pack, description, hero_figure, sort_order) values
@@ -426,16 +426,16 @@ from (values
   ('carry-on-kit', 'toiletry_bottle', 'FN-TB34-3', 3),
   ('carry-on-kit', 'adapter', 'VT-UTA', 4)
 ) as k(kit_slug, role, sku, ord)
-join public.products p on p.source = 'demomart' and p.external_id = k.sku;
+join public.products p on p.source = 'greathub' and p.external_id = k.sku;
 
 drop table seed_catalog;
 
 -- Offers carry the listed pack size, so the Chaos Panel's pack_size_shrink has something to shrink.
-update demomart.offers o
+update greathub.offers o
 set pack_size = substring(e.value ->> 'value' from '^\d+')::integer
-from demomart.listings l, jsonb_array_elements(l.spec) e
+from greathub.listings l, jsonb_array_elements(l.spec) e
 where o.listing_id = l.id and lower(e.value ->> 'name') = 'pack size'
   and substring(e.value ->> 'value' from '^\d+') is not null;
 
--- The state the Chaos Panel's Reset restores (demomart.reset_catalog).
-select demomart.capture_baseline();
+-- The state the Chaos Panel's Reset restores (greathub.reset_catalog).
+select greathub.capture_baseline();

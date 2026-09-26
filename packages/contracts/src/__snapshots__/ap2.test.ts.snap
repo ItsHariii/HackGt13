@@ -6,7 +6,7 @@ exports[`toAp2 > matches the snapshot for contract v8 1`] = `
     "contents": {
       "cart_expiry": "2026-09-26T14:27:30Z",
       "id": "c_flagship@8",
-      "merchant_name": "demomart",
+      "merchant_name": "greathub",
       "payment_request": {
         "details": {
           "display_items": [
@@ -96,7 +96,7 @@ exports[`toAp2 > matches the snapshot for contract v8 1`] = `
   "intentMandate": {
     "intent_expiry": "2026-09-26T14:27:30Z",
     "merchants": [
-      "demomart",
+      "greathub",
     ],
     "natural_language_description": "Build my home office for under $1,000. The desk has to fit a 48-inch alcove, I want a 27-inch 4K monitor that charges my MacBook over one USB-C cable, and everything has to arrive by Monday. Don't substitute anything without asking.",
     "requires_refundability": false,
@@ -109,6 +109,6 @@ exports[`toAp2 > matches the snapshot for contract v8 1`] = `
     ],
     "user_cart_confirmation_required": true,
   },
-  "user_authorization": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiYm9keUhhc2giOiJzaGEyNTY6MzgyNmIyYmM3OTBmZGNjMWJiMDk0NDI4MDhkY2E1ZjJhZjQyMTFiYTIzMjgyMTY3NTE5NDg5ZGU1MjQ1ODQ3NCIsImNyZWRlbnRpYWxJZCI6IlptbDRkSFZ5WlMxamNtVmtaVzUwYVdGcyIsImF1dGhlbnRpY2F0b3JEYXRhIjoiWm1sNGRIVnlaUzFoZFhSb1pXNTBhV05oZEc5eUxXUmhkR0UiLCJjbGllbnREYXRhSlNPTiI6IlptbDRkSFZ5WlMxamJHbGxiblF0WkdGMFlRIiwic2lnbmF0dXJlIjoiWm1sNGRIVnlaUzF6YVdkdVlYUjFjbVUifQ",
+  "user_authorization": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiYm9keUhhc2giOiJzaGEyNTY6YzVhY2Y3YTY0MWY2Yzk3Nzc5NWE2YjIyMTNlOTUyOGUxYTAwNjZlOGQ3ZjJjOGMwY2ZkZmExODQ3N2E1MjI0OCIsImNyZWRlbnRpYWxJZCI6IlptbDRkSFZ5WlMxamNtVmtaVzUwYVdGcyIsImF1dGhlbnRpY2F0b3JEYXRhIjoiWm1sNGRIVnlaUzFoZFhSb1pXNTBhV05oZEc5eUxXUmhkR0UiLCJjbGllbnREYXRhSlNPTiI6IlptbDRkSFZ5WlMxamJHbGxiblF0WkdGMFlRIiwic2lnbmF0dXJlIjoiWm1sNGRIVnlaUzF6YVdkdVlYUjFjbVUifQ",
 }
 `;

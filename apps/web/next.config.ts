@@ -3,14 +3,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   transpilePackages: [
-    "@proofcart/catalog",
-    "@proofcart/acp",
-    "@proofcart/contracts",
-    "@proofcart/evidence",
-    "@proofcart/platform",
-    "@proofcart/proof-engine",
-    "@proofcart/rule-packs",
-    "@proofcart/tap",
+    "@cartel/catalog",
+    "@cartel/acp",
+    "@cartel/contracts",
+    "@cartel/evidence",
+    "@cartel/platform",
+    "@cartel/proof-engine",
+    "@cartel/rule-packs",
+    "@cartel/tap",
   ],
   poweredByHeader: false,
 };

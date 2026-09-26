@@ -25,7 +25,7 @@ import {
   verifyRequest,
 } from "./rfc9421";
 
-const KEY_ID = "pc-agent-property";
+const KEY_ID = "ct-agent-property";
 const hasWebCrypto = (await ed25519Backend()) === "webcrypto";
 
 interface Target {
@@ -46,9 +46,9 @@ interface Signed extends Target {
 const signed: fc.Arbitrary<Signed> = fc.record({
   method: fc.constantFrom("GET", "POST", "PUT", "DELETE"),
   authority: fc.constantFrom(
-    "demomart.example",
-    "demomart.example:8443",
-    "shop.demomart.example",
+    "greathub.example",
+    "greathub.example:8443",
+    "shop.greathub.example",
   ),
   path: fc.webPath(),
   query: fc.constantFrom("", "?sku=U2727", "?a=1&b=two%20words"),
@@ -196,7 +196,7 @@ describe.skipIf(!hasWebCrypto)("backend parity", () => {
     const body = '{"payment_data":{"token":"t"}}';
     const request: Signed = {
       method: "POST",
-      authority: "demomart.example",
+      authority: "greathub.example",
       path: "/acp/checkout_sessions/cs_1/complete",
       query: "",
       body,

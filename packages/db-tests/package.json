@@ -1,5 +1,5 @@
 {
-  "name": "@proofcart/db-tests",
+  "name": "@cartel/db-tests",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,10 +9,10 @@
     "test:db": "vitest run --config vitest.db.config.ts"
   },
   "dependencies": {
-    "@proofcart/catalog": "workspace:*",
-    "@proofcart/contracts": "workspace:*",
-    "@proofcart/evidence": "workspace:*",
-    "@proofcart/rule-packs": "workspace:*",
+    "@cartel/catalog": "workspace:*",
+    "@cartel/contracts": "workspace:*",
+    "@cartel/evidence": "workspace:*",
+    "@cartel/rule-packs": "workspace:*",
     "@supabase/supabase-js": "2.117.2"
   }
 }

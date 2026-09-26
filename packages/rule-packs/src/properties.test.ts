@@ -1,14 +1,14 @@
-import { ConsentDiff, evidenceRank, type Fact } from "@proofcart/contracts";
+import { ConsentDiff, evidenceRank, type Fact } from "@cartel/contracts";
 import {
   FLAGSHIP_REQUIREMENTS,
   VIREO_U2727_FACTS,
-} from "@proofcart/contracts/fixtures";
+} from "@cartel/contracts/fixtures";
 import {
   type CheckoutState,
   consentDiff,
   evaluate,
   evaluateResults,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import {
@@ -25,7 +25,7 @@ import {
  *   3. any hard pass → unknown ⇒ at least reapprove
  *   4. a hard requirement never passes below minStateToPass
  *   5. report.hash is stable under permutations of the input arrays
- * Invariants 6, 7 and 9 are covered in @proofcart/contracts and the engine's
+ * Invariants 6, 7 and 9 are covered in @cartel/contracts and the engine's
  * money and evidence tests; 8 belongs to the solver.
  */
 

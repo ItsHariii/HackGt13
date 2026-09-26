@@ -1,7 +1,7 @@
 // Thin typed client for the Visa Acceptance (Cybersource) REST API with HTTP
-// Signature auth (shared secret, HmacSHA256). Only the calls ProofCart needs.
+// Signature auth (shared secret, HmacSHA256). Only the calls Cartel needs.
 
-import { buf, fromBase64, toBase64, utf8 } from "@proofcart/tap";
+import { buf, fromBase64, toBase64, utf8 } from "@cartel/tap";
 
 export interface VisaAcceptanceConfig {
   /** `apitest.cybersource.com` (sandbox) or `api.cybersource.com`. */

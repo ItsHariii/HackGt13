@@ -3,7 +3,7 @@ import {
   type Offer,
   ProofReport,
   type Requirement,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import { describe, expect, it } from "vitest";
 import {
   buildReport,
@@ -406,7 +406,7 @@ describe("scopes", () => {
     ]);
   });
 
-  it("order: settings ProofCart sends are verified; missing ones are unknown", () => {
+  it("order: settings Cartel sends are verified; missing ones are unknown", () => {
     const results = evaluateResults(
       input({
         requirements: [

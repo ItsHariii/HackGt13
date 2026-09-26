@@ -45,11 +45,11 @@ export function publicJwks(raw: string | undefined, kid: string | undefined) {
 }
 
 /**
- * ProofCart's JWKS (SDD §13.3, T8.2): the agent key signs RFC 9421 requests and
+ * Cartel's JWKS (SDD §13.3, T8.2): the agent key signs RFC 9421 requests and
  * the grant key signs scoped payment grants. Null unless the agent key is set.
  * `previous` keeps retired kids published so in-flight signatures still verify.
  */
-export function proofcartJwks(env: {
+export function cartelJwks(env: {
   agentJwk: string | undefined;
   agentKid: string | undefined;
   grantJwk: string | undefined;

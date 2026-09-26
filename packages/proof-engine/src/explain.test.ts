@@ -2,7 +2,7 @@ import {
   EVIDENCE_STATES,
   type ProofResult,
   ReasonCode,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import { describe, expect, it } from "vitest";
 import {
   explain,
@@ -94,10 +94,10 @@ describe("explain", () => {
           reason: "not_satisfied",
           observed: { value: 15, unit: "W" },
         }),
-        { def: PD, source: "DemoMart" },
+        { def: PD, source: "GreatHub" },
       ),
     ).toBe(
-      "USB-C power: DemoMart says 15 W, which doesn't meet at least 65 W.",
+      "USB-C power: GreatHub says 15 W, which doesn't meet at least 65 W.",
     );
     expect(
       explain(
@@ -160,7 +160,7 @@ describe("explain", () => {
         for (const reason of [null, ...ReasonCode.options]) {
           const text = explain(result({ verdict, evidenceState, reason }), {
             def: PD,
-            source: "DemoMart",
+            source: "GreatHub",
             ageSeconds: 30,
           });
           expect(text).not.toMatch(banned);

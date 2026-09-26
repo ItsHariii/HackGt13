@@ -4,10 +4,10 @@ import {
   factRefreshHandler,
   supabaseQueueStore,
   verifyQueueWake,
-} from "@proofcart/evidence/supabase";
-import { isConfigured } from "@proofcart/platform/env";
-import { requestId } from "@proofcart/platform/request-id";
-import { ALL_PACKS, demomartAdapter, evidenceStore } from "@/lib/evidence";
+} from "@cartel/evidence/supabase";
+import { isConfigured } from "@cartel/platform/env";
+import { requestId } from "@cartel/platform/request-id";
+import { ALL_PACKS, evidenceStore, greathubAdapter } from "@/lib/evidence";
 import { logger } from "@/lib/logger";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     db,
     store,
     packs: ALL_PACKS,
-    demomart: await demomartAdapter(store),
+    greathub: await greathubAdapter(store),
   });
   const queue = supabaseQueueStore(db);
   const totals = { handled: 0, skipped: 0, failed: 0, deadLettered: 0 };

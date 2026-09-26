@@ -72,7 +72,7 @@ export type ProofSummary = z.infer<typeof ProofSummary>;
 
 export const PackVersions = z.record(z.string().min(1), SemVer);
 
-export const REPORT_SCHEMA = "proofcart.report/1";
+export const REPORT_SCHEMA = "cartel.report/1";
 
 /** SDD §8.4. `hash` covers every other field (see `reportHash`). */
 export const ProofReport = z

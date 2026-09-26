@@ -1,5 +1,5 @@
-import type { Value } from "@proofcart/contracts";
-import { fieldDef, type Pack, readAs } from "@proofcart/proof-engine";
+import type { Value } from "@cartel/contracts";
+import { fieldDef, type Pack, readAs } from "@cartel/proof-engine";
 import { claim, normalizeGtin } from "../claims";
 import {
   type FetchLike,

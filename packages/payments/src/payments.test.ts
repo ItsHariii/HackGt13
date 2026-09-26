@@ -3,7 +3,7 @@ import {
   generateEd25519Jwk,
   importPrivateJwk,
   importPublicJwk,
-} from "@proofcart/tap";
+} from "@cartel/tap";
 import { describe, expect, it } from "vitest";
 import { classifyVisa, paymentSourceFor, SimulatedRail } from "./charge";
 import { mintGrant, verifyGrant } from "./grant";
@@ -163,21 +163,21 @@ describe("rails", () => {
 });
 
 describe("scoped payment grant", async () => {
-  const { privateJwk, publicJwk } = await generateEd25519Jwk("pc-grant-test");
+  const { privateJwk, publicJwk } = await generateEd25519Jwk("ct-grant-test");
   const key = {
-    keyId: "pc-grant-test",
+    keyId: "ct-grant-test",
     privateKey: await importPrivateJwk(privateJwk),
   };
   const pub = await importPublicJwk(publicJwk);
   const resolveKey = async (kid: string) =>
-    kid === "pc-grant-test" ? pub : null;
+    kid === "ct-grant-test" ? pub : null;
   const now = 1_790_000_000;
   const hash = `sha256:${"b".repeat(64)}`;
   const claims = {
-    iss: "https://proofcart.example",
-    aud: "https://demomart.example",
+    iss: "https://cartel.example",
+    aud: "https://greathub.example",
     sub: "user:00000000-0000-4000-8000-000000000001",
-    merchantId: "demomart",
+    merchantId: "greathub",
     contractId: "c_7f2",
     contractVersion: 8,
     contractHash: hash,
@@ -188,8 +188,8 @@ describe("scoped payment grant", async () => {
   } as const;
   const expect0 = {
     resolveKey,
-    audience: "https://demomart.example/",
-    merchantId: "demomart",
+    audience: "https://greathub.example/",
+    merchantId: "greathub",
     amountMinor: 87037,
     currency: "USD",
     contractHash: hash,

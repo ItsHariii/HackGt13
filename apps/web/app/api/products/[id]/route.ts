@@ -1,5 +1,5 @@
-import { productProof, specRows } from "@proofcart/catalog";
-import { CatalogError, loadProducts } from "@proofcart/catalog/supabase";
+import { productProof, specRows } from "@cartel/catalog";
+import { CatalogError, loadProducts } from "@cartel/catalog/supabase";
 import {
   activeRequirements,
   apiError,

@@ -1,5 +1,5 @@
 {
-  "name": "@proofcart/solver",
+  "name": "@cartel/solver",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "lint": "biome check ."
   },
   "dependencies": {
-    "@proofcart/contracts": "workspace:*",
+    "@cartel/contracts": "workspace:*",
     "highs": "1.15.3"
   },
   "devDependencies": {

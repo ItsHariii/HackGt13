@@ -3,15 +3,15 @@ import type { Hash } from "./primitives";
 
 /**
  * Offline verification of a stored WebAuthn assertion over a contract (SDD
- * §12.2). Anyone holding the signature record — DemoMart at `/complete`, or a
+ * §12.2). Anyone holding the signature record — GreatHub at `/complete`, or a
  * dispute reviewer with the Evidence Pack — can check it with Web Crypto only.
  */
 
 export interface AssertionExpectations {
   bodyHash: Hash;
-  /** ProofCart's origin(s), e.g. `https://proofcart.example`. */
+  /** Cartel's origin(s), e.g. `https://cartel.example`. */
   expectedOrigin: string | readonly string[];
-  /** ProofCart's RP ID, e.g. `proofcart.example`. */
+  /** Cartel's RP ID, e.g. `cartel.example`. */
   expectedRpId: string;
   requireUserVerification?: boolean;
 }
@@ -162,7 +162,7 @@ export async function verifyContractSignature(
   if (authData.length < 37) return fail("malformed");
   if (clientData.type !== "webauthn.get") return fail("wrong_type");
 
-  const m = /^pc1:([0-9a-f]{64}):([\x21-\x7e]{1,128})$/.exec(challenge);
+  const m = /^ct1:([0-9a-f]{64}):([\x21-\x7e]{1,128})$/.exec(challenge);
   if (!m || `sha256:${m[1]}` !== expect.bodyHash)
     return fail("challenge_mismatch");
 

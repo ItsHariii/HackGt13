@@ -12,7 +12,7 @@ export default function Workspace() {
         arrive in the next implementation phases.
       </p>
       <Link href="/" className="text-link">
-        <ArrowLeft size={16} aria-hidden="true" /> Back to ProofCart
+        <ArrowLeft size={16} aria-hidden="true" /> Back to Cartel
       </Link>
     </main>
   );

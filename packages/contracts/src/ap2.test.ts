@@ -20,7 +20,7 @@ describe("toAp2", () => {
     expect(out.intentMandate.natural_language_description).toBe(
       FLAGSHIP_CONTRACT_V8.intent.text,
     );
-    expect(out.intentMandate.merchants).toEqual(["demomart"]);
+    expect(out.intentMandate.merchants).toEqual(["greathub"]);
     expect(out.intentMandate.skus).toContain("M27Q-USBC");
     expect(out.intentMandate.user_cart_confirmation_required).toBe(true);
     expect(out.intentMandate.intent_expiry).toBe(
@@ -30,7 +30,7 @@ describe("toAp2", () => {
     expect(out.cartMandate.contents.cart_expiry).toBe(
       FLAGSHIP_CONTRACT_V8.expiresAt,
     );
-    expect(out.cartMandate.contents.merchant_name).toBe("demomart");
+    expect(out.cartMandate.contents.merchant_name).toBe("greathub");
     expect(out.cartMandate.merchant_authorization).toBeNull();
   });
 

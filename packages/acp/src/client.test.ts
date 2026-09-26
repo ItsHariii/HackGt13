@@ -57,7 +57,7 @@ function client(handler: (req: Capture) => Promise<Response> | Response) {
     };
   };
   const acp = new AcpClient({
-    baseUrl: "https://demomart.example/",
+    baseUrl: "https://greathub.example/",
     signer,
     timeoutMs: 50,
     fetch: (async (input, init) => {
@@ -102,7 +102,7 @@ describe("AcpClient", () => {
     expect(headers?.get("idempotency-key")).toBe("idem-fixed");
     expect(headers?.get("content-type")).toBe("application/json");
     expect(calls[0]?.url).toBe(
-      "https://demomart.example/acp/checkout_sessions",
+      "https://greathub.example/acp/checkout_sessions",
     );
   });
 
@@ -112,7 +112,7 @@ describe("AcpClient", () => {
     const headers = calls[0]?.headers;
     expect(calls[0]?.method).toBe("GET");
     expect(calls[0]?.url).toBe(
-      "https://demomart.example/acp/checkout_sessions/cs%2F1",
+      "https://greathub.example/acp/checkout_sessions/cs%2F1",
     );
     expect(headers?.get("idempotency-key")).toBeNull();
     expect(headers?.get("request-id")).toMatch(
@@ -125,7 +125,7 @@ describe("AcpClient", () => {
     const { acp, signed } = client(() => json(SESSION));
     await acp.createSession({ items: [{ id: "sku", quantity: 1 }] });
     await acp.completeSession("cs_1", {
-      payment_data: { token: "grant.jws", provider: "proofcart" },
+      payment_data: { token: "grant.jws", provider: "cartel" },
     });
     expect(signed.map((s) => s.tag)).toEqual([
       "agent-browser-auth",

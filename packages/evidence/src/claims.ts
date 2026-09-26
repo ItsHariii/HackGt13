@@ -1,11 +1,11 @@
-import type { EvidenceState, Quantity, Value } from "@proofcart/contracts";
+import type { EvidenceState, Quantity, Value } from "@cartel/contracts";
 import {
   type Authority,
   capState,
   type FieldDef,
   freshnessMs,
   isQuantity,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 import type {
   ClaimedFact,
   FactDraft,

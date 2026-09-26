@@ -1,4 +1,4 @@
-import { decimal, definePack, isQuantity } from "@proofcart/proof-engine";
+import { decimal, definePack, isQuantity } from "@cartel/proof-engine";
 
 /*
  * Travel (SDD §8.3, §16.1 "Carry-on"): bag dimensions against an airline

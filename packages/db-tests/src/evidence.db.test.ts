@@ -1,13 +1,13 @@
 import {
-  createDemoMartAdapter,
+  createGreatHubAdapter,
   createIcecat,
   jsonLdClaims,
   normalizeUpcItem,
   snapshot,
   type UpcItem,
-} from "@proofcart/evidence";
-import dell from "@proofcart/evidence/fixtures/icecat-dell-u2723qe.json";
-import search from "@proofcart/evidence/fixtures/upcitemdb-search-monitor.json";
+} from "@cartel/evidence";
+import dell from "@cartel/evidence/fixtures/icecat-dell-u2723qe.json";
+import search from "@cartel/evidence/fixtures/upcitemdb-search-monitor.json";
 import {
   drainQueue,
   enrichWithIcecat,
@@ -17,8 +17,8 @@ import {
   supabaseEvidenceStore,
   supabaseQueueStore,
   writeClaims,
-} from "@proofcart/evidence/supabase";
-import { apparel, homeOffice, travel } from "@proofcart/rule-packs";
+} from "@cartel/evidence/supabase";
+import { apparel, homeOffice, travel } from "@cartel/rule-packs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { admin, must } from "./fixtures";
 
@@ -187,7 +187,7 @@ describe("evidence ingestion", () => {
 });
 
 describe("fact refresh worker", () => {
-  // A seeded DemoMart offer; its row is restored afterwards so other suites see the seed.
+  // A seeded GreatHub offer; its row is restored afterwards so other suites see the seed.
   const SKU = "LOOP-C100-2M";
   let offer: {
     id: string;
@@ -203,7 +203,7 @@ describe("fact refresh worker", () => {
         .select(
           "id, price_minor, retrieved_at, fresh_until, products!inner(external_id)",
         )
-        .eq("source", "demomart")
+        .eq("source", "greathub")
         .eq("products.external_id", SKU)
         .single(),
     );
@@ -227,7 +227,7 @@ describe("fact refresh worker", () => {
       .eq("id", offer.id);
   });
 
-  it("drains q_fact_refresh and re-prices the offer from a DemoMart checkout", async () => {
+  it("drains q_fact_refresh and re-prices the offer from a GreatHub checkout", async () => {
     const session = {
       id: "cs_refresh",
       status: "ready_for_payment",
@@ -249,8 +249,8 @@ describe("fact refresh worker", () => {
       links: [],
     };
     const seen: string[] = [];
-    const demomart = createDemoMartAdapter({
-      baseUrl: "http://demomart.test",
+    const greathub = createGreatHubAdapter({
+      baseUrl: "http://greathub.test",
       store,
       fetch: async (input, init) => {
         seen.push(`${init?.method} ${new URL(String(input)).pathname}`);
@@ -265,7 +265,7 @@ describe("fact refresh worker", () => {
     const res = await drainQueue(
       queue,
       FACT_REFRESH_QUEUE,
-      factRefreshHandler({ db: admin, store, packs: PACKS, demomart }),
+      factRefreshHandler({ db: admin, store, packs: PACKS, greathub }),
       {
         batch: 50,
       },

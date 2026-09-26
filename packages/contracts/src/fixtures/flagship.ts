@@ -257,13 +257,13 @@ export const VIREO_U2727_DEAL_TRAP_FACTS: Fact[] = VIREO_U2727_FACTS.map((f) =>
 const TERMS_30 = { finalSale: false, returnWindowDays: 30, returnFeeMinor: 0 };
 
 export const FLAGSHIP_CONTRACT_V8: ContractBody = {
-  schema: "proofcart.contract/1",
+  schema: "cartel.contract/1",
   contractId: "c_flagship",
   version: 8,
-  // v7 is modeled by flagshipV7() in @proofcart/rule-packs/fixtures, whose
+  // v7 is modeled by flagshipV7() in @cartel/rule-packs/fixtures, whose
   // tests recompute this hash.
   parentHash:
-    "sha256:2c0ab399589eee3511b0b53ab5fe3284a3759280436a667c7830f0b943da9ecc",
+    "sha256:270fef1bca29605fc18c9cf9c45daf75f6f96fc27d7de4aab877024fb9b5d4df",
   planId: "p_flagship",
   subject: "user:5f0c7a52-3b8e-4d61-9a2f-1c6e8b4d7a90",
   intent: {
@@ -275,7 +275,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
   items: [
     {
       role: "desk",
-      merchant: "demomart",
+      merchant: "greathub",
       sellerId: "dm_seller_1",
       sku: "BL-CD-465",
       gtin: "00812345000108",
@@ -288,7 +288,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
     },
     {
       role: "chair",
-      merchant: "demomart",
+      merchant: "greathub",
       sellerId: "dm_seller_1",
       sku: "KS-MESH-TASK",
       gtin: "00812345000207",
@@ -301,7 +301,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
     },
     {
       role: "monitor",
-      merchant: "demomart",
+      merchant: "greathub",
       sellerId: "dm_seller_1",
       sku: "M27Q-USBC",
       gtin: "00812345000016",
@@ -314,7 +314,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
     },
     {
       role: "cable",
-      merchant: "demomart",
+      merchant: "greathub",
       sellerId: "dm_seller_1",
       sku: "LOOP-C100-2M",
       gtin: "00812345000405",
@@ -327,7 +327,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
     },
     {
       role: "webcam",
-      merchant: "demomart",
+      merchant: "greathub",
       sellerId: "dm_seller_1",
       sku: "PICA-1080",
       gtin: "00812345000504",
@@ -346,7 +346,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
     taxEstimateMinor: 5_537,
     maxTotalMinor: 88_500,
   },
-  merchants: [{ id: "demomart", origin: "https://demomart.example" }],
+  merchants: [{ id: "greathub", origin: "https://greathub.example" }],
   autonomy: autonomyPolicy("balanced"),
   waivers: [
     {
@@ -357,9 +357,9 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
   ],
   mandate: null,
   proof: {
-    // The proof-engine report for flagshipV8() in @proofcart/rule-packs/fixtures.
+    // The proof-engine report for flagshipV8() in @cartel/rule-packs/fixtures.
     reportHash:
-      "sha256:4106fdcae4ee25cba45493b4f61049c146c6e4a1975b8e0fb55c63f3d0846bde",
+      "sha256:b929733c3696a9ddad47804c664f1692d2142fba72e62ea9a35abea46a11e4bc",
     engineVersion: "1.0.0",
     packs: { "home-office": "1.0.0" },
   },
@@ -374,7 +374,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
  */
 export const FLAGSHIP_V8_SIGNATURE: ContractSignature = {
   bodyHash:
-    "sha256:3826b2bc790fdcc1bb09442808dca5f2af4211ba23282167519489de52458474",
+    "sha256:c5acf7a641f6c977795a6b2213e9528e1a0066e8d7f2c8c0cfdfa18477a52248",
   credentialId: "Zml4dHVyZS1jcmVkZW50aWFs",
   authenticatorData: "Zml4dHVyZS1hdXRoZW50aWNhdG9yLWRhdGE",
   clientDataJSON: "Zml4dHVyZS1jbGllbnQtZGF0YQ",

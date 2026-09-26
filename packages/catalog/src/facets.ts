@@ -3,9 +3,9 @@ import {
   type Operator,
   Requirement,
   type Value,
-} from "@proofcart/contracts";
-import { fieldAppliesTo, packsForRoles } from "@proofcart/evidence";
-import { fieldDef, type Pack, resolveFacts } from "@proofcart/proof-engine";
+} from "@cartel/contracts";
+import { fieldAppliesTo, packsForRoles } from "@cartel/evidence";
+import { fieldDef, type Pack, resolveFacts } from "@cartel/proof-engine";
 import { type CatalogProduct, sourceInfo } from "./product";
 
 export type Facet = {

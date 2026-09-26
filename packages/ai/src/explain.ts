@@ -1,4 +1,4 @@
-import type { Pack } from "@proofcart/proof-engine";
+import type { Pack } from "@cartel/proof-engine";
 import { ontologyFor } from "./ontology";
 import { systemFor } from "./prompts";
 import type { AiRunner, RunResult } from "./router";

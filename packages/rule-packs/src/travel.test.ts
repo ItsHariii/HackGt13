@@ -1,12 +1,12 @@
-import type { ProofResult } from "@proofcart/contracts";
-import { evaluateResults, explain, fieldDef } from "@proofcart/proof-engine";
+import type { ProofResult } from "@cartel/contracts";
+import { evaluateResults, explain, fieldDef } from "@cartel/proof-engine";
 import { describe, expect, it } from "vitest";
 import {
   CARRY_ON_NOW,
   CARRY_ON_PACKS,
   CARRY_ON_REQUIREMENTS,
   carryOnItems,
-  demomartCheckout,
+  greathubCheckout,
 } from "./fixtures";
 
 type Key = keyof typeof carryOnItems;
@@ -14,7 +14,7 @@ type Key = keyof typeof carryOnItems;
 /** Evaluates one item against the carry-on defaults; returns the result for its role's rule. */
 function check(key: Key, requirementId: string): ProofResult {
   const item = carryOnItems[key];
-  const checkout = demomartCheckout([item], { now: CARRY_ON_NOW });
+  const checkout = greathubCheckout([item], { now: CARRY_ON_NOW });
   const results = evaluateResults({
     ...checkout,
     requirements: CARRY_ON_REQUIREMENTS,

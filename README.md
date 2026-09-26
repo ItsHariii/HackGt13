@@ -1,6 +1,6 @@
-# ProofCart
+# Cartel
 
-ProofCart puts explicit requirements, inspectable evidence, and an exact approval between a shopping decision and a payment. This repository currently implements the **Phase 1 foundation** from [the task list](docs/TASKS.md): two app shells, a typed workspace, Supabase identity and a private Realtime spike, health checks, observability hooks, and CI. Shopping, proof evaluation, payment execution, and domain schemas belong to later phases.
+Cartel puts explicit requirements, inspectable evidence, and an exact approval between a shopping decision and a payment. This repository currently implements the **Phase 1 foundation** from [the task list](docs/TASKS.md): two app shells, a typed workspace, Supabase identity and a private Realtime spike, health checks, observability hooks, and CI. Shopping, proof evaluation, payment execution, and domain schemas belong to later phases.
 
 ## Run the app shells
 
@@ -11,13 +11,13 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-- ProofCart: http://localhost:3000
-- DemoMart: http://localhost:3001
+- Cartel: http://localhost:3000
+- GreatHub: http://localhost:3001
 - Realtime test panel: http://localhost:3000/foundation
 
 The shells work without credentials. The test panel reports missing configuration; health returns HTTP 503 until its real dependencies are ready. Fonts are downloaded by `next/font` at build time and then served by the apps.
 
-If port 3000 is occupied, run each app separately with `pnpm --filter @proofcart/web exec next dev --port 3100` and `pnpm --filter @proofcart/demomart exec next dev --port 3101`. Update the local base/JWKS URLs accordingly.
+If port 3000 is occupied, run each app separately with `pnpm --filter @cartel/web exec next dev --port 3100` and `pnpm --filter @cartel/greathub exec next dev --port 3101`. Update the local base/JWKS URLs accordingly.
 
 ## Run local Supabase
 
@@ -30,17 +30,17 @@ pnpm exec supabase status
 
 Studio is at http://127.0.0.1:54323; local email is at http://127.0.0.1:54324. The local stack uses Postgres 17. The `0000_foundation.sql` migration enables the required extensions and creates isolated `foundation_*` tables for the spike. Phase 2 starts at `0001` and supplies the actual shopping data model.
 
-If app env files do not already exist, copy `apps/web/.env.example` to `apps/web/.env.local`, and the equivalent for DemoMart. **Preserve existing files.** Next.js reads each app's `.env.local`; the root `env.local` is not loaded automatically.
+If app env files do not already exist, copy `apps/web/.env.example` to `apps/web/.env.local`, and the equivalent for GreatHub. **Preserve existing files.** Next.js reads each app's `.env.local`; the root `env.local` is not loaded automatically.
 
 Use values from `supabase status`:
 
-| Variable | ProofCart | DemoMart |
+| Variable | Cartel | GreatHub |
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Local API URL | Same local API URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Local publishable key | Not needed |
 | `SUPABASE_SECRET_KEY` | Local secret key | Local secret key |
-| `PROOFCART_JWKS_URL` | `http://localhost:3000/.well-known/jwks.json` | Same URL |
-| `PROOFCART_BASE_URL` | Not needed | `http://localhost:3000` |
+| `CARTEL_JWKS_URL` | `http://localhost:3000/.well-known/jwks.json` | Same URL |
+| `CARTEL_BASE_URL` | Not needed | `http://localhost:3000` |
 
 Restart the apps after changing env values. Only `NEXT_PUBLIC_` variables are browser-visible; never use that prefix for secret keys. Full future-phase settings remain in the root [.env.example](.env.example).
 
@@ -50,7 +50,7 @@ External services used later:
 |---|---|---|
 | OpenAI (primary AI) | `OPENAI_API_KEY`, `OPENAI_MODEL_PRIMARY`, `OPENAI_MODEL_FAST` | `gpt-6-sol` + `gpt-6-luna` for demos; set both to `gpt-6-luna` while testing |
 | Meta Model API (fallback AI) | `META_MODEL_API_KEY`, `META_BASE_URL`, `META_MODEL_*` | Muse Spark, OpenAI-compatible at `https://api.meta.ai/v1` |
-| Visa Acceptance sandbox | `VISA_ACCEPTANCE_*` | Needed in both apps; DemoMart calls the Payments API |
+| Visa Acceptance sandbox | `VISA_ACCEPTANCE_*` | Needed in both apps; GreatHub calls the Payments API |
 | Authorize.net sandbox | `AUTHORIZE_NET_*` | Fallback rail |
 | Icecat | `ICECAT_USERNAME`, `ICECAT_API_TOKEN` | Manufacturer specs; Open Icecat covers sponsor brands only |
 | UPCitemdb | `UPCITEMDB_USER_KEY` (optional) | Replaces Best Buy (no access). Keyless trial: 100 requests/day per IP |
@@ -91,16 +91,16 @@ In development, POST `/api/internal/diagnostics` with an `Origin` matching the l
 
 ## Deploy later
 
-Create Vercel projects rooted at `apps/web` and `apps/demomart`, using Next.js and Node 24. Keep workspace files outside the root directory available to the build. Install from the repository root with `pnpm install --frozen-lockfile`; build each app with its `pnpm build` script. Assign each project's environment variables separately. Both apps use the same Supabase project for each environment: dev for previews, prod for the stable demo.
+Create Vercel projects rooted at `apps/web` and `apps/greathub`, using Next.js and Node 24. Keep workspace files outside the root directory available to the build. Install from the repository root with `pnpm install --frozen-lockfile`; build each app with its `pnpm build` script. Assign each project's environment variables separately. Both apps use the same Supabase project for each environment: dev for previews, prod for the stable demo.
 
 The repository includes GitHub Actions jobs named `quality` and `database`. Set them as required PR checks in repository settings. Domain assignment, HTTPS verification, cloud linking, cloud migrations, Google credentials, and Sentry delivery require the corresponding accounts/configuration and are not completed by this scaffold.
 
-To link a cloud dev project later, use `pnpm exec supabase login` and `pnpm exec supabase link --project-ref YOUR_DEV_PROJECT_REF`. Review the target before applying any cloud migrations. Only `public` is exposed through the Data API; `internal` and the future `demomart` schema must stay unexposed. A Supabase secret key bypasses RLS project-wide, so separate secret keys alone do not provide schema isolation for DemoMart; its later database access design must enforce that boundary.
+To link a cloud dev project later, use `pnpm exec supabase login` and `pnpm exec supabase link --project-ref YOUR_DEV_PROJECT_REF`. Review the target before applying any cloud migrations. Only `public` is exposed through the Data API; `internal` and the future `greathub` schema must stay unexposed. A Supabase secret key bypasses RLS project-wide, so separate secret keys alone do not provide schema isolation for GreatHub; its later database access design must enforce that boundary.
 
 ## Repository layout
 
-- `apps/web`: ProofCart, paper/blueprint UI, session provider, private Realtime panel.
-- `apps/demomart`: fictional merchant shell on port 3001.
+- `apps/web`: Cartel, paper/blueprint UI, session provider, private Realtime panel.
+- `apps/greathub`: fictional merchant shell on port 3001.
 - `packages/platform`: environment checks, safe JWKS export, health, logging, request IDs.
 - Other `packages/*`: typed module boundaries reserved for subsequent phases; domain implementations are intentionally absent.
 - `supabase`: local configuration, infrastructure migration, SQL permission tests.

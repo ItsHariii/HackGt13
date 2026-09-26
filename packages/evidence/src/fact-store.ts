@@ -1,5 +1,5 @@
-import { canonicalize, type Value } from "@proofcart/contracts";
-import { type FieldDef, sameValue } from "@proofcart/proof-engine";
+import { canonicalize, type Value } from "@cartel/contracts";
+import { type FieldDef, sameValue } from "@cartel/proof-engine";
 import type { FactDraft, StoredFact, SubjectKind } from "./types";
 
 /*

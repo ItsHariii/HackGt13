@@ -1,5 +1,5 @@
 {
-  "name": "@proofcart/payments",
+  "name": "@cartel/payments",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,8 +13,8 @@
     "lint": "biome check ."
   },
   "dependencies": {
-    "@proofcart/contracts": "workspace:*",
-    "@proofcart/tap": "workspace:*",
+    "@cartel/contracts": "workspace:*",
+    "@cartel/tap": "workspace:*",
     "zod": "^4.6.5"
   }
 }

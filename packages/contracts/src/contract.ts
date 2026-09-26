@@ -125,7 +125,7 @@ export const Waiver = z.strictObject({
 });
 export type Waiver = z.infer<typeof Waiver>;
 
-export const CONTRACT_SCHEMA = "proofcart.contract/1";
+export const CONTRACT_SCHEMA = "cartel.contract/1";
 
 /**
  * The canonical statement of what the user authorizes (SDD §12.1). Its JCS
@@ -243,7 +243,7 @@ export type ContractSignature = z.infer<typeof ContractSignature>;
 
 /** The WebAuthn challenge string that binds a signature to a body hash. */
 export function signingChallenge(bodyHash: Hash, nonce: string): string {
-  return `pc1:${bodyHash.slice("sha256:".length)}:${nonce}`;
+  return `ct1:${bodyHash.slice("sha256:".length)}:${nonce}`;
 }
 
 /** Longest lifetime of a scoped payment grant, in seconds (SDD §13.2). */
@@ -252,8 +252,8 @@ export const GRANT_MAX_LIFETIME_S = 600;
 const NumericDate = z.number().int().positive();
 
 /**
- * JWS claims of the grant ProofCart mints for one guarded execution. The
- * merchant verifies it against ProofCart's JWKS before charging.
+ * JWS claims of the grant Cartel mints for one guarded execution. The
+ * merchant verifies it against Cartel's JWKS before charging.
  */
 export const ScopedPaymentGrant = z
   .strictObject({

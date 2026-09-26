@@ -4,7 +4,7 @@ Implemented September 26, 2026 against SDD §10 and the Phase 9 checklist.
 
 ## Delivered
 
-`@proofcart/ai` (dependencies: `ai` 7, `@ai-sdk/openai`, `@ai-sdk/openai-compatible`, `zod` 4, `@proofcart/contracts`, `@proofcart/proof-engine`, `@proofcart/platform`, `@supabase/supabase-js`; dev: `@proofcart/evidence`, `@proofcart/rule-packs`, `jiti`). Entry points: `@proofcart/ai`, `@proofcart/ai/supabase` (the `ai_calls` sink and spend reader) and `@proofcart/ai/evals`.
+`@cartel/ai` (dependencies: `ai` 7, `@ai-sdk/openai`, `@ai-sdk/openai-compatible`, `zod` 4, `@cartel/contracts`, `@cartel/proof-engine`, `@cartel/platform`, `@supabase/supabase-js`; dev: `@cartel/evidence`, `@cartel/rule-packs`, `jiti`). Entry points: `@cartel/ai`, `@cartel/ai/supabase` (the `ai_calls` sink and spend reader) and `@cartel/ai/evals`.
 
 | Module | Contents |
 |---|---|
@@ -16,7 +16,7 @@ Implemented September 26, 2026 against SDD §10 and the Phase 9 checklist.
 | `schemas.ts` | Zod output schemas for A1–A5 |
 | `requirements.ts` | A1: `draftRequirements`, `streamRequirements`, `buildRequirements` (the guard) |
 | `roles.ts` | A2: `planRoles`, `mergeRoles`, `packRoles` |
-| `extract.ts` | A3: `extractFacts`, `createFactExtractor` (plugs into `@proofcart/evidence` `extractQuotedFacts`) |
+| `extract.ts` | A3: `extractFacts`, `createFactExtractor` (plugs into `@cartel/evidence` `extractQuotedFacts`) |
 | `refine.ts` | A4: `refineRequirements`, `buildPatches` |
 | `explain.ts` | A5: `explain`, `templateExplanation`, `unsupportedNumbers` |
 | `quote.ts` | `locateQuote`: whitespace/Unicode-normalized quote lookup with a span in the original text |
@@ -46,7 +46,7 @@ Root scripts: `pnpm ai:smoke`, `pnpm ai:cost [--since 24h|7d|YYYY-MM-DD]`, `pnpm
 
 ### Eval and injection (T9.6, T9.7)
 
-- 20 briefs: 8 home office, 6 apparel, 6 travel, all resolved against a fixed date, Saturday 2026-09-26. `ho-flagship` and `ap-wedding` reuse the fixtures in `@proofcart/rule-packs`.
+- 20 briefs: 8 home office, 6 apparel, 6 travel, all resolved against a fixed date, Saturday 2026-09-26. `ho-flagship` and `ap-wedding` reuse the fixtures in `@cartel/rule-packs`.
 - Each expected hard requirement has field, role, operator, value and the quote. `alt` lists accepted equivalent readings, such as `basket.delivered_total` vs `offer.price` for a one-item budget.
 - **Field-level** scoring matches field + role. **Exact** scoring also matches operator and value (via `sameValue`). Only requirements whose `effectiveImportance` is hard are counted, so a hard requirement the guard downgraded to `ai_inferred` counts as missed.
 - Four injection listings (an "approve the purchase" instruction, a fake closing `</untrusted>` tag, a request for an unrequested field, a JSON override). Each is extracted clean and injected. A case passes when the facts are identical, the planted value never appears, and no unrequested field comes back.

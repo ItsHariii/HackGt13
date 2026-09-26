@@ -1,4 +1,4 @@
-import type { Pack } from "@proofcart/proof-engine";
+import type { Pack } from "@cartel/proof-engine";
 import { ontologyFor } from "./ontology";
 import { systemFor, untrustedBlock } from "./prompts";
 import type { AiRunner, RunResult } from "./router";
@@ -7,11 +7,11 @@ import { type Extraction, ExtractionSchema } from "./schemas";
 /*
  * A3: fact candidates from unstructured text (SDD §10.1, §10.2). This is the
  * only role that ever sees merchant text, it has no tools, and its output is
- * a proposal: `@proofcart/evidence` verifies every quote against the source
+ * a proposal: `@cartel/evidence` verifies every quote against the source
  * and parses every value before a fact exists.
  */
 
-/** The shape `@proofcart/evidence` asks for, kept structural on purpose. */
+/** The shape `@cartel/evidence` asks for, kept structural on purpose. */
 export type ExtractionFieldInput = {
   field: string;
   label: string;
@@ -82,7 +82,7 @@ export async function extractFacts(
 }
 
 /**
- * An extractor for `extractQuotedFacts` in `@proofcart/evidence`. A failure
+ * An extractor for `extractQuotedFacts` in `@cartel/evidence`. A failure
  * returns nothing rather than throwing: with no candidates the fields simply
  * stay unknown, which is the documented "no AI" behaviour.
  */

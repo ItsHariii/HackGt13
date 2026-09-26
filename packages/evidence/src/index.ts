@@ -1,7 +1,7 @@
 // evidence: snapshots, source adapters and the fact store (SDD §11, TASKS Phase 7).
-// Supabase wiring lives in `@proofcart/evidence/supabase` so pure consumers don't load it.
+// Supabase wiring lives in `@cartel/evidence/supabase` so pure consumers don't load it.
 export * from "./adapters/cpsc";
-export * from "./adapters/demomart";
+export * from "./adapters/greathub";
 export * from "./adapters/icecat";
 export * from "./adapters/roles";
 export * from "./adapters/shopify";

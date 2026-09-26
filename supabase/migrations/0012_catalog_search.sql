@@ -18,7 +18,7 @@ create index products_upid_idx on public.products (upid) where upid is not null;
 create table public.product_external_refs (
   id uuid primary key default gen_random_uuid(),
   product_id uuid not null references public.products (id) on delete cascade,
-  source text not null check (source in ('shopify', 'upcitemdb', 'icecat', 'openfoodfacts', 'demomart', 'ebay')),
+  source text not null check (source in ('shopify', 'upcitemdb', 'icecat', 'openfoodfacts', 'greathub', 'ebay')),
   external_id text not null,
   upid text,
   gtin text check (public.is_valid_gtin(gtin)),

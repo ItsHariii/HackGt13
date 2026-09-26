@@ -1,5 +1,5 @@
-import { extractQuotedFacts } from "@proofcart/evidence";
-import { homeOffice, travel } from "@proofcart/rule-packs";
+import { extractQuotedFacts } from "@cartel/evidence";
+import { homeOffice, travel } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import {
   INJECTION_CASES,

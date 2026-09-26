@@ -1,5 +1,5 @@
-import { searchStream } from "@proofcart/catalog";
-import { CatalogError } from "@proofcart/catalog/supabase";
+import { searchStream } from "@cartel/catalog";
+import { CatalogError } from "@cartel/catalog/supabase";
 import {
   activeRequirements,
   apiError,

@@ -1,11 +1,11 @@
-import { Importance, Operator } from "@proofcart/contracts";
+import { Importance, Operator } from "@cartel/contracts";
 import { z } from "zod";
 
 /*
  * What each bounded role may return (SDD §10.1). These are the model-facing
  * shapes, deliberately flat and stringly-typed: values arrive as the text a
  * person would write ("65 W", "$900", "2026-09-28") and the deterministic
- * parser in `@proofcart/proof-engine` turns them into typed values. A model
+ * parser in `@cartel/proof-engine` turns them into typed values. A model
  * never emits a `Requirement`, a `Fact` or anything the engine trusts.
  *
  * Every optional field is nullable rather than absent: structured outputs are

@@ -1,6 +1,6 @@
-import { effectiveImportance } from "@proofcart/contracts";
-import { FLAGSHIP_BRIEF } from "@proofcart/contracts/fixtures";
-import { apparel, homeOffice, travel } from "@proofcart/rule-packs";
+import { effectiveImportance } from "@cartel/contracts";
+import { FLAGSHIP_BRIEF } from "@cartel/contracts/fixtures";
+import { apparel, homeOffice, travel } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import { ontologyFor } from "./ontology";
 import { systemFor, untrustedBlock } from "./prompts";

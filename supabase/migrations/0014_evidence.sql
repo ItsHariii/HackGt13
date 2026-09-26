@@ -3,7 +3,7 @@
 -- Adapters reuse a recent snapshot of the same URL instead of calling the source again (SDD §11.6).
 create index sources_url_fetched_idx on public.sources (url, source_type, fetched_at desc);
 
--- Applies a fact write plan computed by @proofcart/evidence (planFactWrites) in one transaction.
+-- Applies a fact write plan computed by @cartel/evidence (planFactWrites) in one transaction.
 --
 -- p_groups is an array, one entry per (subject, field):
 --   { subject_kind, subject_id, field,

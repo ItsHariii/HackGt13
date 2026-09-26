@@ -8,15 +8,15 @@ import {
   type Requirement,
   requirementSetHash,
   type Waiver,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import {
   type ApprovedState,
   approvalItems,
   type CheckoutState,
   evaluate,
   type Pack,
-} from "@proofcart/proof-engine";
-import { DEMOMART, DEMOMART_ORIGIN } from "./demomart";
+} from "@cartel/proof-engine";
+import { GREATHUB, GREATHUB_ORIGIN } from "./greathub";
 
 export const FIXTURE_SUBJECT = "user:5f0c7a52-3b8e-4d61-9a2f-1c6e8b4d7a90";
 
@@ -72,7 +72,7 @@ export async function approveCheckout(
     requirements,
     items,
     economics: { ...economics, maxTotalMinor: init.maxTotalMinor },
-    merchants: [{ id: DEMOMART, origin: DEMOMART_ORIGIN }],
+    merchants: [{ id: GREATHUB, origin: GREATHUB_ORIGIN }],
     autonomy: init.autonomy ?? autonomyPolicy("balanced"),
     waivers: init.waivers ?? [],
     mandate: init.mandate ?? null,

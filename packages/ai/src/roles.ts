@@ -1,5 +1,5 @@
-import type { Requirement } from "@proofcart/contracts";
-import type { Pack } from "@proofcart/proof-engine";
+import type { Requirement } from "@cartel/contracts";
+import type { Pack } from "@cartel/proof-engine";
 import { ontologyFor } from "./ontology";
 import { systemFor } from "./prompts";
 import type { AiRunner, RunResult } from "./router";

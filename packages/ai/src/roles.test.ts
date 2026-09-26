@@ -1,4 +1,4 @@
-import { homeOffice } from "@proofcart/rule-packs";
+import { homeOffice } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import { mergeRoles, packRoles, planRoles } from "./roles";
 import { scriptedModel, testRouter } from "./testing";

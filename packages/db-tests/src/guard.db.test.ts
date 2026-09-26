@@ -11,7 +11,7 @@ import {
   type TestUser,
 } from "./fixtures";
 
-// The guard as the ProofCart API will call it: secret key, srv_* RPCs, error codes as messages.
+// The guard as the Cartel API will call it: secret key, srv_* RPCs, error codes as messages.
 describe("payment guard over the Data API", () => {
   let user: TestUser;
   let planId: string;
@@ -58,7 +58,7 @@ describe("payment guard over the Data API", () => {
         p_execution: executionId,
         p_status: "authorized",
         p_rail_ref: "txn_test",
-        p_merchant_id: "demomart",
+        p_merchant_id: "greathub",
         p_merchant_order_id: `dm_ord_${randomUUID().replaceAll("-", "")}`,
       }),
     );

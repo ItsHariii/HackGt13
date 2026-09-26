@@ -1,4 +1,4 @@
-import type { Database } from "@proofcart/contracts/db";
+import type { Database } from "@cartel/contracts/db";
 import { createClient } from "@supabase/supabase-js";
 import { formatUsd, priceOf } from "../pricing";
 import { readSpend } from "../supabase";

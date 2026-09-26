@@ -11,7 +11,7 @@ import {
   summarize,
   type Verdict,
   type Waiver,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import { type Resolved, unknownResolved } from "./evidence";
 import { judge } from "./verdict";
 import { buildView, type EvaluationInput, type View } from "./view";

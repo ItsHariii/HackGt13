@@ -135,7 +135,7 @@ export function maxSeverity(
   return ORDER[worst] ?? "identical";
 }
 
-export const DIFF_SCHEMA = "proofcart.diff/1";
+export const DIFF_SCHEMA = "cartel.diff/1";
 
 /** Approved state vs live state, each change classified (SDD §7.7). */
 export const ConsentDiff = z

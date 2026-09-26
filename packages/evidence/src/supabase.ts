@@ -1,9 +1,5 @@
-import {
-  type EvidenceState,
-  ReasonCode,
-  type Value,
-} from "@proofcart/contracts";
-import type { Database, Json } from "@proofcart/contracts/db";
+import { type EvidenceState, ReasonCode, type Value } from "@cartel/contracts";
+import type { Database, Json } from "@cartel/contracts/db";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { unitColumns } from "./claims";
 import {
