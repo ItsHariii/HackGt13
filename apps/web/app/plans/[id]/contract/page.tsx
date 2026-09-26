@@ -7,6 +7,7 @@ import {
   type ContractMode,
 } from "@/components/contract/contract-document";
 import { PlanHeader } from "@/components/plan/plan-header";
+import { loadStoredContract, type StoredContract } from "@/lib/contract-data";
 import { formatStamp } from "@/lib/contract-view";
 import {
   FLAGSHIP,
@@ -32,8 +33,16 @@ export default async function ContractPage({
   searchParams,
 }: PageProps<"/plans/[id]/contract">) {
   const { id } = await params;
-  if (id !== FLAGSHIP) notFound();
   const q = await searchParams;
+  if (id !== FLAGSHIP) {
+    const v = one(q.v);
+    const stored = await loadStoredContract(
+      id,
+      v && /^\d+$/.test(v) ? Number(v) : undefined,
+    );
+    if (!stored) notFound();
+    return <StoredContractPage planId={id} stored={stored} />;
+  }
   const version = one(q.v) === "7" ? 7 : 8;
   const review = version === 8 && one(q.review) === "1";
   const view = await flagshipContract(version);
@@ -107,6 +116,81 @@ export default async function ContractPage({
               reason: revision.reason,
             }
           }
+        />
+      </main>
+    </div>
+  );
+}
+
+const STATUS_TEXT: Record<string, string> = {
+  armed: "Its standing mandate is armed.",
+  executing: "Checkout is running.",
+  executed: "Paid within the signed maximum.",
+  superseded: "A newer version replaced it.",
+  expired: "It expired before checkout.",
+  signed: "Ready for checkout.",
+  failed: "Checkout failed; nothing more will run under it.",
+  invalidated: "It was invalidated and can't be used.",
+};
+
+/** A saved plan's contract: real versions, signed with Phase 12 passkeys. */
+function StoredContractPage({
+  planId,
+  stored,
+}: {
+  planId: string;
+  stored: StoredContract;
+}) {
+  const { view } = stored;
+  const unsigned = ["draft", "awaiting_signature"].includes(stored.status);
+  const mode: ContractMode = unsigned
+    ? {
+        kind: "review",
+        ...(stored.status === "awaiting_signature"
+          ? { versionId: stored.versionId }
+          : {}),
+      }
+    : {
+        kind: "signed",
+        status: STATUS_TEXT[stored.status] ?? `Status: ${stored.status}.`,
+        statusHref: `/plans/${planId}/checkout`,
+      };
+  return (
+    <div
+      data-blueprint
+      className="min-h-dvh bg-[#f7f3ea] text-graphite dark:bg-paper"
+    >
+      <PlanHeader
+        back={{ href: `/plans/${planId}`, label: view.title }}
+        step={4}
+      />
+      <main className="flex flex-col gap-6 px-4 pt-6 sm:px-6">
+        {stored.versions.length > 1 && (
+          <nav
+            aria-label="Contract versions"
+            className="flex flex-wrap justify-center gap-2"
+          >
+            {stored.versions.map((x) => (
+              <Link
+                key={x.version}
+                href={`/plans/${planId}/contract?v=${x.version}`}
+                aria-current={x.version === view.version ? "page" : undefined}
+                className={cn(
+                  "inline-flex h-8 items-center rounded-pill border px-3 font-semibold text-small",
+                  x.version === view.version
+                    ? "border-graphite bg-paper-raised"
+                    : "border-rule text-muted hover:border-graphite",
+                )}
+              >
+                v{x.version} · {x.status.replace(/_/g, " ")}
+              </Link>
+            ))}
+          </nav>
+        )}
+        <ContractDocument
+          view={view}
+          mode={mode}
+          revision={stored.revision ?? undefined}
         />
       </main>
     </div>

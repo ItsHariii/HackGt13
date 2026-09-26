@@ -1,27 +1,36 @@
 "use client";
 import { useProofStream } from "@/components/doodle/events";
 import { Figure } from "@/components/doodle/figure";
-import { useSequence } from "@/components/doodle/use-frames";
+import { ProofWalker } from "@/components/doodle/proof-walker";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const planStream = (planId: string) => (UUID.test(planId) ? planId : null);
 
 /**
- * The Inspector beside the proof headline (SDD §17.9 "Proof streaming"):
- * it stamps once per `proof_result` broadcast (≈150 ms a row), then gives
- * a thumbs-up if nothing failed. Demo plans have no stream, so it stands
- * idle. The headline next to it is the text equivalent.
+ * The Inspector by the proof headline, standing idle until results stream
+ * in; then it steps down into the list (ProofRows). Demo plans have no
+ * stream, so it stays here.
  */
 export function ProofInspector({ planId }: { planId: string }) {
-  const stream = useProofStream(UUID.test(planId) ? planId : null);
-  const rest =
-    stream.results.length > 0 && stream.fail === 0 ? "thumbs" : "idle";
-  const pose = useSequence(
-    ["stamp1", "stamp2", "stamp3", rest],
-    stream.latest?.id ?? null,
-    {
-      ms: 50,
-      rest: "idle",
-    },
+  const stream = useProofStream(planStream(planId));
+  if (stream.results.length > 0) return null;
+  return <Figure who="inspector" pose="idle" h={56} className="-my-2" />;
+}
+
+/** The walking Inspector inside the proof list (Motion board 03). */
+export function ProofListInspector({
+  planId,
+  hardRules,
+}: {
+  planId: string;
+  hardRules: number;
+}) {
+  const stream = useProofStream(planStream(planId));
+  return (
+    <ProofWalker
+      requirementId={stream.latest?.requirementId ?? null}
+      eventId={stream.latest?.id ?? null}
+      done={stream.results.length >= hardRules && stream.fail === 0}
+    />
   );
-  return <Figure who="inspector" pose={pose} h={56} className="-my-2" />;
 }

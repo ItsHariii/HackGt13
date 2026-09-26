@@ -736,10 +736,12 @@ export type Database = {
           attempts: number;
           contract_version_id: string;
           created_at: string;
+          fired_at: string | null;
           id: string;
           last_checked_at: string | null;
           next_check_at: string;
           not_after: string;
+          outcome: Json | null;
           status: Database["public"]["Enums"]["mandate_status"];
           trigger: NonNullable<Json>;
           updated_at: string;
@@ -748,10 +750,12 @@ export type Database = {
           attempts?: number;
           contract_version_id: string;
           created_at?: string;
+          fired_at?: string | null;
           id?: string;
           last_checked_at?: string | null;
           next_check_at?: string;
           not_after: string;
+          outcome?: Json | null;
           status?: Database["public"]["Enums"]["mandate_status"];
           trigger: NonNullable<Json>;
           updated_at?: string;
@@ -760,10 +764,12 @@ export type Database = {
           attempts?: number;
           contract_version_id?: string;
           created_at?: string;
+          fired_at?: string | null;
           id?: string;
           last_checked_at?: string | null;
           next_check_at?: string;
           not_after?: string;
+          outcome?: Json | null;
           status?: Database["public"]["Enums"]["mandate_status"];
           trigger?: NonNullable<Json>;
           updated_at?: string;
@@ -1630,6 +1636,29 @@ export type Database = {
           title: string;
         }[];
       };
+      srv_arm_mandate: {
+        Args: { p_actor: string; p_version: string };
+        Returns: {
+          attempts: number;
+          contract_version_id: string;
+          created_at: string;
+          fired_at: string | null;
+          id: string;
+          last_checked_at: string | null;
+          next_check_at: string;
+          not_after: string;
+          outcome: Json | null;
+          status: Database["public"]["Enums"]["mandate_status"];
+          trigger: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "mandates";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       srv_begin_execution: {
         Args: {
           p_diff: string;
@@ -1638,6 +1667,20 @@ export type Database = {
           p_rail?: Database["public"]["Enums"]["payment_rail"];
           p_version: string;
         };
+        Returns: string;
+      };
+      srv_begin_signing: {
+        Args: {
+          p_challenge: string;
+          p_hash: string;
+          p_nonce: string;
+          p_user: string;
+          p_version: string;
+        };
+        Returns: string;
+      };
+      srv_begin_signing_registration: {
+        Args: { p_challenge: string; p_user: string };
         Returns: string;
       };
       srv_bind_approved_checkout: {
@@ -1649,6 +1692,29 @@ export type Database = {
           p_version: string;
         };
         Returns: string;
+      };
+      srv_cancel_mandate: {
+        Args: { p_actor: string; p_mandate: string };
+        Returns: {
+          attempts: number;
+          contract_version_id: string;
+          created_at: string;
+          fired_at: string | null;
+          id: string;
+          last_checked_at: string | null;
+          next_check_at: string;
+          not_after: string;
+          outcome: Json | null;
+          status: Database["public"]["Enums"]["mandate_status"];
+          trigger: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "mandates";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       srv_catalog_identity: { Args: { p_product: Json }; Returns: string };
       srv_complete_execution: {
@@ -1707,6 +1773,19 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      srv_consume_signing_challenge: {
+        Args: { p_nonce: string; p_user: string };
+        Returns: {
+          body_hash: string;
+          challenge: string;
+          contract_version_id: string;
+          expired: boolean;
+        }[];
+      };
+      srv_consume_signing_registration: {
+        Args: { p_challenge: string; p_user: string };
+        Returns: boolean;
       };
       srv_fork_kit: {
         Args: {
@@ -1774,9 +1853,52 @@ export type Database = {
         };
         Returns: string;
       };
+      srv_record_contract_signature: {
+        Args: {
+          p_authenticator_data: string;
+          p_challenge: string;
+          p_client_data_json: string;
+          p_counter: number;
+          p_credential: string;
+          p_hash: string;
+          p_signature: string;
+          p_user: string;
+          p_version: string;
+        };
+        Returns: string;
+      };
       srv_record_handoff: {
         Args: { p_diff: string; p_url: string; p_version: string };
         Returns: undefined;
+      };
+      srv_record_mandate: {
+        Args: {
+          p_kind: string;
+          p_mandate: string;
+          p_observation?: Json;
+          p_outcome?: Json;
+          p_status?: Database["public"]["Enums"]["mandate_status"];
+        };
+        Returns: {
+          attempts: number;
+          contract_version_id: string;
+          created_at: string;
+          fired_at: string | null;
+          id: string;
+          last_checked_at: string | null;
+          next_check_at: string;
+          not_after: string;
+          outcome: Json | null;
+          status: Database["public"]["Enums"]["mandate_status"];
+          trigger: NonNullable<Json>;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "mandates";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       srv_transition_contract: {
         Args: {

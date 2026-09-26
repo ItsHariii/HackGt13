@@ -1,12 +1,15 @@
 "use client";
 import { Clock, Fingerprint } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { ContractDiff, type DiffLine } from "@/components/cartel/contract-diff";
 import { HashPill } from "@/components/cartel/hash-pill";
 import { Figure } from "@/components/doodle/figure";
+import { useSequence } from "@/components/doodle/use-frames";
 import { Stamp } from "@/components/paper/stamp";
 import { StatusMark } from "@/components/paper/status-mark";
+import { SignContract } from "@/components/signing/sign-contract";
 import { Button } from "@/components/ui/button";
 import { type ContractView, signReady } from "@/lib/contract-view";
 import { cn } from "@/lib/utils";
@@ -44,7 +47,8 @@ const AUTONOMY_ROWS: { change: string; cells: [string, string, string] }[] = [
 
 export type ContractMode =
   | { kind: "signed"; status: string; statusHref?: string | undefined }
-  | { kind: "review" };
+  /** With `versionId`, a stored version that can really be signed (T12). */
+  | { kind: "review"; versionId?: string | undefined };
 
 /**
  * The purchase contract (TASKS T11.6; designs "Contract v2" and "Contract
@@ -73,17 +77,19 @@ export function ContractDocument({
   );
   const [preset, setPreset] = useState<Preset>(view.autonomy);
   const [mandateOn, setMandateOn] = useState(view.mandate !== null);
-  const [announce, setAnnounce] = useState("");
+  const router = useRouter();
+  const [signedHash, setSignedHash] = useState<string | null>(null);
+  const versionId = mode.kind === "review" ? mode.versionId : undefined;
+  // A stored body is what the passkey signs, so its terms can't be edited here.
+  const locked = review && versionId !== undefined;
+  const notaryPose = useSequence(["stamp1", "stamp2", "stamp3"], signedHash, {
+    ms: 180,
+    rest: "stamp3",
+  });
   const gate = signReady(view, ticked);
   const id = useId();
   const waivable = view.rules.filter((r) => r.waivable);
   const passing = view.rules.filter((r) => r.status === "pass").length;
-
-  const sign = () => {
-    setAnnounce(
-      "Passkey signing isn't connected in this build yet (TASKS T12). Nothing was signed.",
-    );
-  };
 
   return (
     <div className="grid gap-6 pb-32 lg:grid-cols-[180px_minmax(0,880px)_180px] lg:justify-center">
@@ -327,7 +333,7 @@ export function ContractDocument({
 
         <Clause id={`${id}-autonomy`} n={6} title="Autonomy">
           <p>6.1 What the Agent may accept without asking the Buyer.</p>
-          <fieldset className="font-sans" disabled={!review}>
+          <fieldset className="font-sans" disabled={!review || locked}>
             <legend className="sr-only">Autonomy preset</legend>
             <div className="flex flex-wrap gap-2 pb-3">
               {PRESETS.map((p) => (
@@ -353,6 +359,12 @@ export function ContractDocument({
               ))}
             </div>
           </fieldset>
+          {locked && (
+            <p className="font-sans text-muted text-small">
+              Set when this version was drafted. Your passkey signs exactly
+              these terms; changing them creates v{view.version + 1}.
+            </p>
+          )}
           <div
             // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
             tabIndex={0}
@@ -409,7 +421,7 @@ export function ContractDocument({
         </Clause>
 
         <Clause id={`${id}-mandate`} n={7} title="Standing mandate">
-          {review ? (
+          {review && !locked ? (
             <MandateBuilder
               view={view}
               on={mandateOn}
@@ -431,9 +443,13 @@ export function ContractDocument({
       </article>
 
       <aside aria-hidden="true" className="hidden lg:block">
-        {view.signedAt && (
+        {(view.signedAt || signedHash) && (
           <div className="sticky top-40 flex flex-col items-center gap-2 text-center">
-            <Figure who="notary" pose="stamp3" h={96} />
+            <Figure
+              who="notary"
+              pose={signedHash ? notaryPose : "stamp3"}
+              h={96}
+            />
             <p className="text-muted text-small">
               The Notary stamps only after your passkey.
             </p>
@@ -461,16 +477,28 @@ export function ContractDocument({
             </p>
           ) : (
             <>
-              <div className="flex flex-col items-center gap-1">
-                <Button type="button" onClick={sign} disabled={!gate.ready}>
-                  <Fingerprint size={18} aria-hidden="true" />
-                  Sign v{view.version} with passkey
-                </Button>
-                <p className="text-muted text-small">
-                  Touch ID signs this exact version. Any change creates v
-                  {view.version + 1}.
-                </p>
-              </div>
+              {versionId && gate.ready ? (
+                <SignContract
+                  contractVersionId={versionId}
+                  version={view.version}
+                  onSigned={({ bodyHash }) => {
+                    setSignedHash(bodyHash);
+                    router.refresh();
+                  }}
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-1">
+                  <Button type="button" disabled>
+                    <Fingerprint size={18} aria-hidden="true" />
+                    Sign v{view.version} with passkey
+                  </Button>
+                  <p className="text-muted text-small">
+                    {versionId
+                      ? `Touch ID signs this exact version. Any change creates v${view.version + 1}.`
+                      : "Demo contracts aren't stored, so they can't be signed. Signing works on your saved plans."}
+                  </p>
+                </div>
+              )}
               {!gate.ready && (
                 <div
                   role="note"
@@ -487,12 +515,6 @@ export function ContractDocument({
                   </ul>
                 </div>
               )}
-              <p
-                aria-live="assertive"
-                className="w-full text-center font-semibold text-small"
-              >
-                {announce}
-              </p>
             </>
           )}
         </div>

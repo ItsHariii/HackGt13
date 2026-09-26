@@ -14,6 +14,7 @@ const pages = [
   ["/this-page-does-not-exist", "light"],
   ["/", "light"],
   ["/trust", "light"],
+  ["/settings/signing", "light"],
   ["/plans/flagship", "light"],
   ["/plans/flagship", "dark"],
   ["/dev/states", "light"],

@@ -1,136 +1,277 @@
-import type { Metadata } from "next";
+import { ContractBody, MandateTrigger } from "@cartel/contracts";
 import Link from "next/link";
-import { StatusMark } from "@/components/paper/status-mark";
+import { MandateActionButton } from "@/components/mandates/mandate-action-button";
 import { DemoNote } from "@/components/plan/plan-header";
-import { StateCard } from "@/components/states/edge-states";
-import { flagshipMandates, type MandateView } from "@/lib/flagship";
-import { storedMandates } from "@/lib/orders";
+import { flagshipMandates } from "@/lib/flagship";
+import { createClient } from "@/lib/supabase/server";
+import { armMandateAction, cancelMandateAction } from "./actions";
 
-/** Reads the visitor's session and live data on every request. */
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Mandates" };
+const usd = (minor: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+    minor / 100,
+  );
+const when = (iso: string | null) =>
+  iso
+    ? `${new Intl.DateTimeFormat("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "UTC",
+      }).format(new Date(iso))} UTC`
+    : "—";
 
-const GROUPS: { title: string; statuses: MandateView["status"][] }[] = [
-  { title: "Active", statuses: ["armed"] },
-  { title: "Fired", statuses: ["fired_executed"] },
-  { title: "Blocked", statuses: ["fired_blocked"] },
-  { title: "Expired or cancelled", statuses: ["expired", "cancelled"] },
-];
+function describe(trigger: MandateTrigger) {
+  switch (trigger.type) {
+    case "price_lte":
+      return `Execute when ${trigger.sku} is ≤ ${usd(trigger.amountMinor)}`;
+    case "back_in_stock":
+      return `Execute when ${trigger.sku} is back in stock`;
+    case "recurring":
+      return `Execute once for the period ${trigger.every}`;
+  }
+}
 
-const STATUS_MARK = {
-  armed: { status: "info", label: "Armed" },
-  fired_executed: { status: "pass", label: "Fired · paid" },
-  fired_blocked: { status: "fail", label: "Fired · blocked" },
-  expired: { status: "unknown", label: "Expired" },
-  cancelled: { status: "unknown", label: "Cancelled" },
-} as const;
+const STATUS: Record<string, string> = {
+  armed: "Armed · watching",
+  fired_executed: "Fired · checkout ran",
+  fired_blocked: "Fired · no payment was made",
+  expired: "Expired",
+  cancelled: "Cancelled",
+};
 
-/** Standing mandates (TASKS T11.11): active, fired, blocked and expired. */
+function outcomeText(outcome: unknown): string | null {
+  const o = (outcome ?? {}) as { status?: string; code?: string };
+  switch (o.status) {
+    case "paid":
+      return "Paid within your signed limits.";
+    case "declined":
+      return "The card was declined. Retrying needs your click.";
+    case "paused":
+      return "The re-check found a change you didn't approve. Purchase paused.";
+    case "no_instrument":
+      return "No enrolled card, so nothing was charged.";
+    case "error":
+      return `Stopped before payment (${o.code}).`;
+    case "not_fired":
+      return "Last check: the trigger has not fired yet.";
+    default:
+      return o.status?.startsWith("contract_")
+        ? `The contract moved to ${o.status.slice(9)} first.`
+        : null;
+  }
+}
+
+type Row = {
+  id: string;
+  status: string;
+  trigger: unknown;
+  not_after: string;
+  next_check_at: string;
+  last_checked_at: string | null;
+  fired_at: string | null;
+  outcome: unknown;
+  contract_versions: { id: string; plan_id: string; version: number };
+};
+
 export default async function MandatesPage() {
-  const [demo, stored] = await Promise.all([
-    flagshipMandates(),
-    storedMandates(),
-  ]);
-  const all: (MandateView & { demo: boolean })[] = [
-    ...stored.map((m) => ({
-      ...m,
-      planTitle: "Saved plan",
-      detail: "",
-      href: `/ledger/${m.planId}`,
-      demo: false,
-    })),
-    ...demo.map((m) => ({ ...m, demo: true })),
-  ];
+  const demo = await flagshipMandates();
+  const client = await createClient();
+  const user = client ? (await client.auth.getUser()).data.user : null;
+  let mandates: Row[] = [];
+  let ready: { id: string; plan_id: string; version: number; body: unknown }[] =
+    [];
+  if (client && user) {
+    const [m, v] = await Promise.all([
+      client
+        .from("mandates")
+        .select(
+          "id,status,trigger,not_after,next_check_at,last_checked_at,fired_at,outcome,contract_versions!inner(id,plan_id,version)",
+        )
+        .order("created_at", { ascending: false })
+        .limit(50),
+      client
+        .from("contract_versions")
+        .select("id,plan_id,version,body")
+        .eq("status", "signed")
+        .not("body->mandate", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(20),
+    ]);
+    mandates = (m.data ?? []) as Row[];
+    const used = new Set(mandates.map((r) => r.contract_versions.id));
+    ready = (v.data ?? []).filter(
+      (r) =>
+        !used.has(r.id) &&
+        (r.body as { mandate?: unknown } | null)?.mandate != null,
+    );
+  }
+
   return (
-    <main className="dot-grid min-h-[70vh] text-graphite">
-      <div className="mx-auto flex max-w-[960px] flex-col gap-8 px-5 py-12 sm:px-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="font-semibold font-serif text-h2 tracking-heading">
-            Standing mandates
-          </h1>
-          <p className="max-w-[60ch] text-body text-graphite-2">
-            A mandate buys for you when its trigger fires, inside a contract you
-            signed. The guard still re-checks every rule before paying.
-          </p>
-        </div>
-        {GROUPS.map((g) => {
-          const rows = all.filter((m) => g.statuses.includes(m.status));
-          return (
-            <section
-              key={g.title}
-              aria-labelledby={`g-${g.title}`}
-              className="flex flex-col gap-3"
-            >
-              <h2
-                id={`g-${g.title}`}
-                className="border-graphite border-b pb-2 font-bold text-meta uppercase tracking-label"
-              >
-                {g.title}{" "}
-                <span className="num font-normal text-muted">
-                  {rows.length}
-                </span>
-              </h2>
-              {rows.length === 0 ? (
-                <p className="text-muted text-small">
-                  {g.title === "Active"
-                    ? "Nothing armed. Add a mandate in §7 of a contract before you sign it."
-                    : "None."}
-                </p>
-              ) : (
-                <ul className="flex flex-col gap-3">
-                  {rows.map((m) => {
-                    const mark = STATUS_MARK[m.status];
+    <main className="mx-auto max-w-[1100px] px-5 py-10 sm:px-10">
+      <h1 className="font-serif text-4xl">Standing mandates</h1>
+      <p className="mt-2 max-w-2xl text-muted">
+        A mandate is part of the contract you signed. When its trigger fires,
+        Cartel re-checks the live checkout against that contract before any
+        payment. A change you didn't approve pauses the purchase.
+      </p>
+
+      {!user ? (
+        <p className="mt-10 text-muted">
+          Start a plan to create a session, then sign a contract with a mandate.
+        </p>
+      ) : null}
+
+      {ready.length > 0 ? (
+        <section className="mt-10" aria-labelledby="ready-heading">
+          <h2 id="ready-heading" className="font-serif text-2xl">
+            Signed, not armed yet
+          </h2>
+          <ul className="mt-4 divide-y divide-border border-border border-y">
+            {ready.map((v) => {
+              const mandate = ContractBody.safeParse(v.body).data?.mandate;
+              return (
+                <li
+                  key={v.id}
+                  className="flex flex-wrap items-center justify-between gap-4 py-4"
+                >
+                  <div>
+                    <p className="font-semibold">
+                      {mandate ? describe(mandate.trigger) : "Mandate"}
+                    </p>
+                    <p className="text-muted text-small">
+                      Contract v{v.version} · before{" "}
+                      {when(mandate?.notAfter ?? null)}
+                    </p>
+                  </div>
+                  <MandateActionButton
+                    action={armMandateAction}
+                    name="versionId"
+                    value={v.id}
+                    label="Arm mandate"
+                    pending="Arming…"
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      {user ? (
+        <section className="mt-10" aria-labelledby="mandates-heading">
+          <h2 id="mandates-heading" className="font-serif text-2xl">
+            Your mandates
+          </h2>
+          {mandates.length === 0 ? (
+            <p className="mt-4 text-muted">
+              No mandates yet. Add one when you sign a contract.
+            </p>
+          ) : (
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full border-border border-y text-left text-small">
+                <caption className="sr-only">
+                  Standing mandates, newest first
+                </caption>
+                <thead>
+                  <tr>
+                    <th className="py-3 pr-4">Mandate</th>
+                    <th className="py-3 pr-4">Status</th>
+                    <th className="py-3 pr-4">Next check</th>
+                    <th className="py-3 pr-4">History</th>
+                    <th className="py-3">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mandates.map((m) => {
+                    const t = MandateTrigger.safeParse(m.trigger).data;
                     return (
-                      <li
-                        key={m.id}
-                        className="sheet flex flex-wrap items-start gap-x-6 gap-y-2 p-4"
-                      >
-                        <div className="flex min-w-0 flex-1 flex-col gap-1">
-                          <p className="flex flex-wrap items-center gap-2 font-semibold text-ui">
-                            {m.trigger}
-                            {m.demo && <DemoNote />}
-                          </p>
-                          <p className="text-muted text-small">
-                            {m.planTitle} · contract v{m.version} · not after{" "}
-                            {m.notAfter}
-                            {m.nextCheck ? ` · next check ${m.nextCheck}` : ""}
-                          </p>
-                          {m.detail && <p className="text-small">{m.detail}</p>}
-                        </div>
-                        <StatusMark status={mark.status} label={mark.label} />
-                        <div className="flex w-full flex-wrap gap-4 text-small sm:w-auto">
-                          <Link
-                            href={m.href}
-                            className="text-ink underline underline-offset-4"
-                          >
-                            Details
-                          </Link>
-                          {m.status === "armed" && (
-                            <button
-                              type="button"
-                              disabled
-                              title="Cancelling a mandate arrives with standing mandates (TASKS T14)."
-                              className="text-muted underline underline-offset-4 disabled:cursor-not-allowed"
+                      <tr key={m.id} className="border-border border-t">
+                        <th className="py-4 pr-4 font-normal">
+                          <span className="block font-semibold">
+                            {t ? describe(t) : "Mandate"}
+                          </span>
+                          <span className="text-muted">
+                            Contract v{m.contract_versions.version} · until{" "}
+                            {when(m.not_after)}
+                          </span>
+                        </th>
+                        <td className="py-4 pr-4">
+                          {STATUS[m.status] ?? m.status}
+                        </td>
+                        <td className="py-4 pr-4 font-mono">
+                          {m.status === "armed" ? when(m.next_check_at) : "—"}
+                        </td>
+                        <td className="py-4 pr-4">
+                          <span className="block">
+                            {outcomeText(m.outcome) ?? "Not checked yet."}
+                          </span>
+                          <span className="text-muted">
+                            {m.fired_at
+                              ? `Fired ${when(m.fired_at)}`
+                              : `Last checked ${when(m.last_checked_at)}`}
+                          </span>
+                        </td>
+                        <td className="py-4 text-right">
+                          {m.status === "armed" ? (
+                            <MandateActionButton
+                              action={cancelMandateAction}
+                              name="mandateId"
+                              value={m.id}
+                              label="Cancel mandate"
+                              pending="Cancelling…"
+                              tone="quiet"
+                            />
+                          ) : (
+                            <Link
+                              href={`/plans/${m.contract_versions.plan_id}/checkout`}
+                              className="underline underline-offset-4"
                             >
-                              Cancel mandate (not yet available)
-                            </button>
+                              Open checkout
+                            </Link>
                           )}
-                        </div>
-                      </li>
+                        </td>
+                      </tr>
                     );
                   })}
-                </ul>
-              )}
-            </section>
-          );
-        })}
-        {all.length === 0 && (
-          <StateCard title="No mandates yet." eyebrow="Mandates">
-            Sign a contract with a standing mandate and it shows here.
-          </StateCard>
-        )}
-      </div>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      ) : null}
+
+      <section className="mt-12" aria-labelledby="demo-heading">
+        <h2
+          id="demo-heading"
+          className="flex items-center gap-3 font-serif text-2xl"
+        >
+          Demo plan <DemoNote />
+        </h2>
+        <ul className="mt-4 divide-y divide-border border-border border-y">
+          {demo.map((m) => (
+            <li
+              key={m.id}
+              className="flex flex-wrap items-start justify-between gap-4 py-4"
+            >
+              <div>
+                <p className="font-semibold">Execute when {m.trigger}</p>
+                <p className="text-muted text-small">
+                  {m.planTitle} · contract v{m.version} · until {m.notAfter}
+                </p>
+                <p className="text-small">
+                  {STATUS[m.status] ?? m.status}. {m.detail}
+                </p>
+              </div>
+              <Link href={m.href} className="underline underline-offset-4">
+                See why it paused
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
     </main>
   );
 }

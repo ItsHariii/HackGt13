@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ContractDiff, type DiffLine } from "@/components/cartel/contract-diff";
 import { Figure } from "@/components/doodle/figure";
+import { PulledSheet } from "@/components/doodle/pulled-sheet";
 import { Mark } from "@/components/paper/mark";
 import { Stamp } from "@/components/paper/stamp";
 import { StatusMark } from "@/components/paper/status-mark";
@@ -263,7 +264,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section aria-labelledby="trap" className="bg-paper">
+      <section aria-labelledby="trap" className="overflow-hidden bg-paper">
         <div className="mx-auto flex max-w-[1320px] flex-col gap-10 px-5 py-20 sm:px-10">
           <SectionHeading
             id="trap"
@@ -273,51 +274,53 @@ export default function Home() {
             The monitor got $10 cheaper on the same listing, and its USB-C power
             quietly dropped from 90 W to 15 W.
           </SectionHeading>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="sheet-formal flex flex-col gap-3 p-6">
-              <p className="font-semibold text-muted text-meta uppercase tracking-label">
-                Approved · v7
-              </p>
-              <p className="font-mono text-small">SKU U2727</p>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-ui">
-                <dt>Price</dt>
-                <dd className="num">$329.00</dd>
-                <dt>USB-C power</dt>
-                <dd className="num">90 W</dd>
-                <dt>Your rule</dt>
-                <dd className="num">≥ 65 W</dd>
-              </dl>
-              <StatusMark status="pass" />
-            </div>
-            <div className="sheet-formal flex flex-col gap-3 border-red-pen p-6">
-              <p className="font-semibold text-muted text-meta uppercase tracking-label">
-                At checkout
-              </p>
-              <p className="font-mono text-small">SKU U2727 (same listing)</p>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-ui">
-                <dt>Price</dt>
-                <dd className="num">$319.00</dd>
-                <dt>USB-C power</dt>
-                <dd>
-                  <Mark type="circle">15 W</Mark>
-                </dd>
-                <dt>Your rule</dt>
-                <dd className="num">≥ 65 W</dd>
-              </dl>
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <StatusMark status="fail" />
-                  <p className="pt-1 font-semibold text-small">
-                    Purchase paused. No payment was made.
-                  </p>
-                  <p className="text-muted text-small">
-                    Would have charged $881.07
-                  </p>
+          <PulledSheet>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="sheet-formal flex flex-col gap-3 p-6">
+                <p className="font-semibold text-muted text-meta uppercase tracking-label">
+                  Approved · v7
+                </p>
+                <p className="font-mono text-small">SKU U2727</p>
+                <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-ui">
+                  <dt>Price</dt>
+                  <dd className="num">$329.00</dd>
+                  <dt>USB-C power</dt>
+                  <dd className="num">90 W</dd>
+                  <dt>Your rule</dt>
+                  <dd className="num">≥ 65 W</dd>
+                </dl>
+                <StatusMark status="pass" />
+              </div>
+              <div className="sheet-formal flex flex-col gap-3 border-red-pen p-6">
+                <p className="font-semibold text-muted text-meta uppercase tracking-label">
+                  At checkout
+                </p>
+                <p className="font-mono text-small">SKU U2727 (same listing)</p>
+                <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-ui">
+                  <dt>Price</dt>
+                  <dd className="num">$319.00</dd>
+                  <dt>USB-C power</dt>
+                  <dd>
+                    <Mark type="circle">15 W</Mark>
+                  </dd>
+                  <dt>Your rule</dt>
+                  <dd className="num">≥ 65 W</dd>
+                </dl>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <StatusMark status="fail" />
+                    <p className="pt-1 font-semibold text-small">
+                      Purchase paused. No payment was made.
+                    </p>
+                    <p className="text-muted text-small">
+                      Would have charged $881.07
+                    </p>
+                  </div>
+                  <Stamp tone="blocked">BLOCKED</Stamp>
                 </div>
-                <Stamp tone="blocked">BLOCKED</Stamp>
               </div>
             </div>
-          </div>
+          </PulledSheet>
           <div className="flex flex-wrap items-center gap-4">
             <Button asChild>
               <Link href="/new">Start a plan</Link>

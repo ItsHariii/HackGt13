@@ -440,10 +440,10 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 - [x] **T10B.5 Event hooks**: `useSearchStatus` (per-source state), `useProofStream` (proof_results broadcast), `useSignatureEvent`, `useDiffEvent`, `usePaymentEvent`, `useBenchProgress`. Figures animate only from these hooks, never from timers. Shared `plan:{id}` channel in `lib/plan-channel.ts`; plus `useAutoAcceptedEvent`. `useBenchProgress` takes the runner's stream once `/bench` exists.
 - [ ] **T10B.6 Placements** (each with its reduced-motion version and text equivalent, SDD §17.9):
   - Timings and announcements come from the Motion Storyboards (DESIGN.md): proof stamping ≈ 150 ms per row, announcing only the summary; signing stamp ≤ 600 ms after the server-verified assertion; Guard in ≤ 600 ms with Pay disabled in the same frame first; receipt prints in ≈ 1.1 s; eases out `cubic-bezier(.2,.7,.2,1)`, slam `cubic-bezier(.6,0,.9,.4)`; transform and opacity only.
-  - [ ] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking).
+  - [x] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking). `PulledSheet` on "The trap": reads scroll position (rAF-throttled, only while visible), moves by `transform`, pull1→pull3 by progress; no Motion dependency.
   - [x] Search loading: the Scout runs between source icons; ✓ + count per source. (Pose advances per source answer, not on a timer.)
-  - [x] Proof streaming: the Inspector stamps rows as they arrive. (Beside the proof headline; walking down the rows is still open.)
-  - [ ] Signing: the Notary stamps "SIGNED v{n}". (The Notary stands beside signed contracts; the stamp on the server-verified assertion needs T12.)
+  - [x] Proof streaming: the Inspector stamps rows as they arrive. It waits by the headline, then walks down the list gutter to each arriving row (`ProofWalker`) and ends with a thumbs-up when all pass.
+  - [x] Signing: the Notary stamps "SIGNED v{n}". (On saved contracts, the Notary stamps once `/api/signing/verify` accepts the assertion; demo contracts show the signed pose.)
   - [x] Auto-accepted change: the Inspector's thumbs-up in the ledger.
   - [x] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value. (Static on the paused page; the live step-in waits on a streamed checkout.)
   - [x] Paid: the receipt prints down; high-five.
@@ -453,7 +453,7 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 - [ ] **T10B.7 Accessibility and performance check**
   - ✅ All figures `aria-hidden`; every state has its text equivalent in an `aria-live` region. (`test:a11y` covers `/dev/figures` and the 404.)
   - ✅ `prefers-reduced-motion`: still poses, no scroll-linked motion.
-  - ✅ Doodle bundle ≤ 30 kB gzipped on first load (measured: figures + hooks 5.3 kB, rough-notation 3.9 kB); figures below the fold lazy-load; `transform`/`opacity` only; < 4 ms per frame in the Performance panel.
+  - ✅ Doodle bundle ≤ 30 kB gzipped on first load (measured: figures + hooks 5.3 kB, rough-notation 3.9 kB); figures below the fold lazy-load; `transform`/`opacity` only; < 4 ms per frame in the Performance panel. `test:perf` measures script + style + layout per frame: 0.6 ms scrolling the rope, 2.5 ms with the run loop, stamps and walker (headless Chromium, paint excluded).
   - ✅ No action waits on an animation (≤ 600 ms feedback).
 
 ---
@@ -482,7 +482,7 @@ Implementation notes: [PHASE11.md](PHASE11.md). The flagship plan (`/plans/flags
   - Design (Contract v2 is current for paper; Contract Blueprint for dark): a §1–§8 section rail (Intent, Approved items, Hard rules, Waivers, Economics, Autonomy, Standing mandate, Expires); a formal white sheet with a contract number (`CT-HO-…`) and hash pill; the waiver line "? Can't check — Chair comfort… I accept this"; a boxed MAXIMUM TOTAL; the Strict / Balanced / Flexible autonomy table (price drops, price rises within max, seller change, rule fails); the Notary in the right gutter once signed; bottom bar "Touch ID signs this exact version. Any change creates v8." → after signing "Armed: waiting for the monitor to reach $320." with Cancel mandate. The OS passkey prompt is a placeholder, not designed.
   - [x] **Not designed yet:** the blocked state (Sign disabled because a hard rule fails or an unknown isn't waived). Built as a red-pen note beside the disabled Sign button listing each reason; needs a design pass.
   - [x] Exact SKUs, merchant, seller, economics with max total, the autonomy preset selector (with the table from SDD §7.6 shown), waivers (the user must tick each `unknown` hard requirement), the mandate builder (trigger + not-after), `HashPill`.
-  - [ ] **Sign with passkey** (T12).
+  - [x] **Sign with passkey** (T12). Saved versions in `awaiting_signature` mount `SignContract`; the Notary stamps after the server verifies. Their terms are read-only on screen, since the passkey signs the stored body. Drafting new versions from a saved plan is still open.
   - ✅ The Sign button stays disabled until every hard requirement is `pass` or waived. (`signReady` in `lib/flagship.test.ts`)
 - [ ] **T11.7 Checkout guard** `/plans/[id]/checkout`: a `GuardStepper` (Refresh cart → Re-fetch specs → Re-prove → Diff → Guard → Pay → Order), each step streaming with timing
   - [x] Stepper on the demo plan's two guard runs and on the real checkout panel, from each run's outcome.
@@ -498,13 +498,12 @@ Implementation notes: [PHASE11.md](PHASE11.md). The flagship plan (`/plans/flags
 - [x] **T11.9 Orders** `/orders`, `/orders/[id]`
   - Design (Revised and Receipt): revised contract v8 with the git-style ContractDiff, bracket notes and "Sign v8 with passkey"; the paid receipt printing from a slot (header "CARTEL · RECEIPT"), Paid → Confirmed → Shipped stepper, Download Evidence Pack, Scan delivery, and the Scout + Inspector high-five.: purchase record, rail and transaction ID, contract hash, proof at purchase, return-policy snapshot, order timeline, **Download Evidence Pack**, **Scan delivery** (Scan delivery is disabled until T15; the demo Evidence Pack is JSON with ledger payload text verbatim.)
 - [x] **T11.10 Ledger** `/ledger/[planId]`: a timeline of events with actor badges (YOU, SYS, AI dashed, MER) and hash pills; a **Verify chain** button → "✓ Chain intact · n entries" or the broken seq; a blocked execution row is red with "✗ Blocked · no payment"
-- [x] **T11.11 Mandates** `/mandates`: active, fired, blocked and expired; next check; cancel (Cancel is shown but disabled until T14 adds the mutation.)
+- [x] **T11.11 Mandates** `/mandates`: active, fired, blocked and expired; next check; cancel (Phase 14's page with arm and cancel, plus the demo plan's blocked mandate.)
 - [ ] **T11.12 Bench** `/bench`: the latest CI run ("62 / 62 caught · 0 false blocks"), a Gremlin-vs-Guard strip of three attack cards, per-category rows (Identity … Security caught, Benign allowed), a scenario list with expected vs actual, **Run live**
   - [x] Gremlin-vs-Guard strip and **Run live**: five live attacks through the real consent diff, expected vs actual, counter from `useBenchProgress`.
   - [ ] Latest CI run and per-category rows: rendered from `bench_runs` when a run exists; the 62-scenario suite is Phase 16.
-- [ ] **T11.13 Settings**: `/settings/payment` (Microform card entry; shows brand, last 4 and expiry) and `/settings/signing` (register or remove the signing passkey)
-  - [x] `/settings/payment` (Phase 13) and `/settings/signing`: list and remove passkeys through RLS.
-  - [ ] Register a signing passkey (T12.1).
+- [x] **T11.13 Settings**: `/settings/payment` (Microform card entry; shows brand, last 4 and expiry) and `/settings/signing` (register or remove the signing passkey)
+  - [x] `/settings/payment` (Phase 13) and `/settings/signing`: Phase 12's register flow, plus Remove through RLS.
 - [x] **T11.14 States pass**
   - Design (Edge States): empty plan, 404, source error with Retry, no plan fits (the minimal conflict with two relax buttons, e.g. "Raise budget +$84" / "Arrive Wednesday"), sources disagree (side by side with a red bracket; the rule becomes ? Can't check), passkey cancelled ("Nothing was signed." + Try again / Use my phone), hand-off ("Re-checked at 10:42. After this, the store's checkout decides."), AI off.: every screen has loading, empty, error and degraded states per SDD §17.4; no bare spinners
   - Dashed skeleton `loading.tsx` on plan, catalog, order, ledger and mandate routes; all eight Edge States at `/dev/states` (covered by `test:a11y`).
@@ -525,11 +524,14 @@ Implementation notes: [PHASE11.md](PHASE11.md). The flagship plan (`/plans/flags
 
 ## Phase 12: Signing (P, F for the client)
 
-- [ ] **T12.1 Signing-key registration**: `generateRegistrationOptions` (`userVerification: 'required'`, residentKey preferred) → `verifyRegistrationResponse` → `signing_credentials`
-- [ ] **T12.2 Signing options**: load the version → `contractHash` → insert `signing_challenges` (nonce, 2 min TTL) → options with the custom challenge `ct1:{H}:{N}`
-- [ ] **T12.3 Signing verify**: `verifyAuthenticationResponse` (expected challenge via `isoBase64URL.fromUTF8String(...)`, origin, RP ID, credential, counter); in one transaction: insert the signature, delete the challenge, transition to `signed`, append to the ledger
-- [ ] **T12.4 Client ceremony**: `@simplewebauthn/browser` `startAuthentication`; handle `NotAllowedError` (cancelled) and unsupported devices (offer phone hybrid)
-- [ ] **T12.5 Security tests**
+Implementation and verification: [PHASE12.md](PHASE12.md). The contract review screen that mounts `SignContract` is T11 work.
+
+- [x] **T12.1 Signing-key registration**: `generateRegistrationOptions` (`userVerification: 'required'`, residentKey preferred) → `verifyRegistrationResponse` → `signing_credentials`
+- [x] **T12.2 Signing options**: load the version → `contractHash` → insert `signing_challenges` (nonce, 2 min TTL) → options with the custom challenge `ct1:{H}:{N}`
+- [x] **T12.3 Signing verify**: `verifyAuthenticationResponse` (expected challenge via `isoBase64URL.fromUTF8String(...)`, origin, RP ID, credential, counter); in one transaction: insert the signature, delete the challenge, transition to `signed`, append to the ledger
+  - The challenge is deleted in an earlier transaction, before verification, so a failed attempt is also spent (SDD §12.2 replay defense).
+- [x] **T12.4 Client ceremony**: `@simplewebauthn/browser` `startAuthentication`; handle `NotAllowedError` (cancelled) and unsupported devices (offer phone hybrid)
+- [x] **T12.5 Security tests** (`apps/web/lib/signing-service.test.ts`, `supabase/tests/signing.test.sql`)
   - ✅ A tampered body → the hash mismatches → verification fails.
   - ✅ A reused challenge → fails.
   - ✅ A wrong origin → fails.
@@ -569,12 +571,19 @@ Implementation and verification limits: [PHASE13.md](PHASE13.md). Local migratio
 
 ## Phase 14: Standing mandates (P)
 
-- [ ] **T14.1 Arm and cancel**: `armMandate` (status `signed → armed`), `cancelMandate`; the mandate is part of the signed body
-- [ ] **T14.2 Cron → queue → worker**: `mandates-tick` enqueues due mandates into `q_mandate_eval` and `pg_net` POSTs to `/api/internal/queue/mandate_eval` with the Vault HMAC
-- [ ] **T14.3 Worker**: HMAC check; `pgmq.read` with a 60 s visibility timeout; process; archive on success; after 5 attempts move to the DLQ; structured logs
-- [ ] **T14.4 Trigger evaluation**: refresh the offer → `price_lte` / `back_in_stock` → if it fired, reuse the T13.5 path (same code, actor `system:mandate`)
-- [ ] **T14.5 Notifications**: an in-app Realtime toast plus an entry on `/mandates`; optional email
-- [ ] **T14.6 Demo hook**: the Chaos Panel's "Run tick now" calls the worker directly (admin token)
+Migration `0015_mandates.sql`; worker in `apps/web/lib/mandate-service.ts` (pure, unit-tested) and `lib/mandates.ts`. Verified: pgTAP, DB integration (arm/cancel, owner-only `user:{id}` broadcast), unit tests for trigger evaluation and outcomes, and a live local tick (enqueue → drain → settle → ledger). The browser flagship still depends on Phase 12 signing and a running GreatHub, so it is not yet verified end to end.
+
+- [x] **T14.1 Arm and cancel**: `armMandate` (status `signed → armed`), `cancelMandate`; the mandate is part of the signed body
+  - Server Actions on `/mandates`. Arming copies trigger and deadline from `body.mandate`, never from the caller. Cancel returns the contract to `signed` (new `armed → signed` transition); a cancelled mandate cannot be re-armed.
+- [x] **T14.2 Cron → queue → worker**: `mandates-tick` enqueues due mandates into `q_mandate_eval` and `pg_net` POSTs to `/api/internal/queue/mandate_eval` with the Vault HMAC
+- [x] **T14.3 Worker**: HMAC check; `pgmq.read` with a 60 s visibility timeout; process; archive on success; after 5 attempts move to the DLQ; structured logs
+- [x] **T14.4 Trigger evaluation**: refresh the offer → `price_lte` / `back_in_stock` → if it fired, reuse the T13.5 path (same code, actor `system:mandate`)
+  - Idempotency key `mandate-{id}`: a redelivered message only reconciles. `reconcile_required` keeps the mandate armed; guard verdicts settle it, 5xx retries. `recurring` pays once per signed version.
+  - Also fixed `loadCheckout`: `contract_versions` has no FK to `plans`, so the owner check now goes through `contracts → plans` (it failed with PGRST200 before).
+- [x] **T14.5 Notifications**: an in-app Realtime toast plus an entry on `/mandates`; optional email
+  - Toast on the private `user:{id}` topic (any page). Email is not implemented.
+- [x] **T14.6 Demo hook**: the Chaos Panel's "Run tick now" calls the worker directly (admin token)
+  - `POST /api/internal/mandates/tick` (`Bearer ADMIN_TOKEN`, 16+ characters) runs `mandates_tick()` and drains the queue in-request.
   - ✅ The flagship: arm the mandate, run the deal-trap scenario, the tick fires, the purchase is blocked, and the paused screen appears within 2 s.
 
 ---
