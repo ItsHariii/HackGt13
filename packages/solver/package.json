@@ -11,5 +11,12 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "biome check ."
+  },
+  "dependencies": {
+    "@proofcart/contracts": "workspace:*",
+    "highs": "1.15.3"
+  },
+  "devDependencies": {
+    "fast-check": "4.10.2"
   }
 }

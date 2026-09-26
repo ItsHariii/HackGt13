@@ -36,5 +36,62 @@
     "parser": {
       "tailwindDirectives": true
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "packages/proof-engine/src/**",
+        "packages/rule-packs/src/**",
+        "packages/solver/src/**",
+        "!**/*.test.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "node:fs": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "node:fs/promises": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "fs": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "node:child_process": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "node:net": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "node:http": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "node:https": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "ai": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "openai": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@supabase/supabase-js": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@supabase/ssr": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@proofcart/platform": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@proofcart/ai": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@proofcart/evidence": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@proofcart/catalog": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@proofcart/payments": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access."
+                },
+                "patterns": [
+                  {
+                    "group": ["@supabase/*", "@ai-sdk/*"],
+                    "message": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access."
+                  }
+                ]
+              }
+            },
+            "noRestrictedGlobals": {
+              "level": "error",
+              "options": {
+                "deniedGlobals": {
+                  "fetch": "Pure code can't reach the network; pass fetched data in.",
+                  "XMLHttpRequest": "Pure code can't reach the network; pass fetched data in.",
+                  "WebSocket": "Pure code can't reach the network; pass fetched data in.",
+                  "process": "Pure code can't read the environment; pass configuration in.",
+                  "performance": "Pure code has no clock; pass `now` in."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

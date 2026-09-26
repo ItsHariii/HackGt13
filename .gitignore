@@ -6,6 +6,7 @@
 # deps / builds
 node_modules/
 .next/
+.next-*/
 .turbo/
 dist/
 coverage/
@@ -22,3 +23,6 @@ supabase/.temp/
 # Alternate local env filename and TypeScript cache
 env.local
 *.tsbuildinfo
+
+# graphify knowledge-graph cache (local tooling)
+graphify-out/
