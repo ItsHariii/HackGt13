@@ -22,7 +22,10 @@ export function Workspace({
   const plan = view.plans[0];
   const passCount = view.proof.ticks.filter((t) => t === "pass").length;
   return (
-    <div className="dot-grid flex min-h-dvh flex-col text-graphite xl:h-dvh">
+    <div
+      data-blueprint
+      className="dot-grid flex min-h-dvh flex-col text-graphite xl:h-dvh"
+    >
       <WorkspaceHeader title={view.title} path={view.path} current={3} />
       <main className="relative flex min-h-0 flex-1 flex-col gap-4 px-4 pt-5 sm:px-6">
         <WorkspaceTabs

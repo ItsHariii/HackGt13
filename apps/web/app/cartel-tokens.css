@@ -1,10 +1,32 @@
 /* Cartel design tokens (Tailwind CSS v4), ported from the Claude Design
    project's token file; see docs/DESIGN.md. Fonts are mapped in
-   globals.css to the next/font variables. Blueprint (dark) applies under
-   `.blueprint` or next-themes' `.dark`; per Style Tile v2 it is meant for
-   the workspace, contract and purchase-paused screens. */
+   globals.css to the next/font variables.
 
-@custom-variant blueprint (&:where(.blueprint, .blueprint *, .dark, .dark *));
+   Blueprint (dark) is scoped: per Style Tile v2 only the workspace,
+   contract and purchase-paused screens have it. Those screens put
+   `data-blueprint` on their root; next-themes' `.dark` on <html> turns it
+   on there and nowhere else. `.blueprint` forces it (previews).
+   `dark:` and `blueprint:` are the same variant.
+
+   Contrast of every text/background pairing is checked by
+   lib/tokens.test.ts. */
+
+@custom-variant blueprint (
+  &:where(
+    .blueprint,
+    .blueprint *,
+    .dark [data-blueprint],
+    .dark [data-blueprint] *
+  )
+);
+@custom-variant dark (
+  &:where(
+    .blueprint,
+    .blueprint *,
+    .dark [data-blueprint],
+    .dark [data-blueprint] *
+  )
+);
 
 @theme {
   /* Color · paper (light) */
@@ -57,20 +79,34 @@
   --radius-phone: 28px;
 
   /* Shadows */
+  --shadow-page: 0 30px 60px -30px rgb(43 42 40 / 0.35);
+  --shadow-drawer: -24px 0 48px -24px rgb(43 42 40 / 0.45);
+}
+
+/* Tokens that reference other tokens. `inline` makes utilities resolve them
+   on the element, so they follow Blueprint inside its scope. */
+@theme inline {
+  /* Status. Color never carries a status alone: pair each with its icon
+     and label from lib/status.ts. */
+  --color-pass: var(--color-green-check);
+  --color-fail: var(--color-red-pen);
+  --color-unknown: var(--color-graphite); /* ? Can't check */
+  --color-estimate: var(--color-graphite); /* ~ Estimate, dashed pencil */
+  --color-info: var(--color-ink);
+
   --shadow-stack:
     3px 3px 0 -1px var(--color-paper-sheet), 3px 3px 0 0 var(--color-rule),
     6px 6px 0 -1px var(--color-paper-sheet), 6px 6px 0 0 var(--color-rule);
   --shadow-stack-1:
     3px 3px 0 -1px var(--color-paper-sheet), 3px 3px 0 0 var(--color-rule);
   --shadow-offset: 3px 3px 0 0 var(--color-rule);
-  --shadow-page: 0 30px 60px -30px rgb(43 42 40 / 0.35);
   --shadow-primary: 3px 3px 0 0 var(--color-ink); /* primary button offset */
-  --shadow-drawer: -24px 0 48px -24px rgb(43 42 40 / 0.45);
 }
 
 /* Blueprint (dark) */
 .blueprint,
-.dark {
+.dark [data-blueprint] {
+  color-scheme: dark;
   --color-paper: #14233a;
   --color-paper-raised: #1b2d48;
   --color-paper-sheet: #1f3352;
@@ -101,7 +137,12 @@
     );
     background-size: 24px 24px;
   }
-  :where(.blueprint, .dark) .dot-grid {
+  .dot-grid:where(
+    .blueprint,
+    .blueprint *,
+    .dark [data-blueprint],
+    .dark [data-blueprint] *
+  ) {
     background-image: radial-gradient(
       rgb(233 238 245 / 0.08) 1px,
       transparent 1.3px
@@ -149,7 +190,7 @@
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
-  :where(.blueprint, .dark) .mark-highlight {
+  .mark-highlight:where(.blueprint *, .dark [data-blueprint] *) {
     background: linear-gradient(
       transparent 12%,
       rgb(255 228 92 / 0.24) 12%,

@@ -95,6 +95,7 @@ export function EvidenceDrawer({
   return (
     <div
       ref={dialog}
+      data-blueprint
       role="dialog"
       aria-modal={mode === "overlay"}
       aria-labelledby="evidence-title"
