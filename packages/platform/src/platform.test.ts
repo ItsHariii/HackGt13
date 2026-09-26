@@ -2,7 +2,7 @@ import { generateKeyPairSync } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import { isConfigured, supabaseConfigured } from "./env";
 import { healthReport } from "./health";
-import { publicJwks } from "./jwks";
+import { proofcartJwks, publicJwks } from "./jwks";
 import { requestId } from "./request-id";
 
 describe("configuration", () => {
@@ -42,6 +42,65 @@ describe("public signing keys", () => {
   it("fails closed for placeholders and malformed keys", () => {
     expect(publicJwks("{", "test-key")).toBeNull();
     expect(publicJwks('{"d":"xxx"}', "test-key")).toBeNull();
+  });
+  it("publishes the agent and grant keys under their own key IDs", () => {
+    const agent = generateKeyPairSync("ed25519").privateKey.export({
+      format: "jwk",
+    });
+    const grant = generateKeyPairSync("ed25519").privateKey.export({
+      format: "jwk",
+    });
+    const jwks = proofcartJwks({
+      agentJwk: JSON.stringify(agent),
+      agentKid: "pc-agent-test",
+      grantJwk: JSON.stringify({ ...grant, kid: "pc-grant-test" }),
+    });
+    expect(jwks?.keys.map((k) => k.kid)).toEqual([
+      "pc-agent-test",
+      "pc-grant-test",
+    ]);
+    expect(JSON.stringify(jwks)).not.toContain(grant.d);
+    expect(
+      proofcartJwks({
+        agentJwk: JSON.stringify(agent),
+        agentKid: "pc-agent-test",
+        grantJwk: "{",
+      })?.keys,
+    ).toHaveLength(1);
+    expect(
+      proofcartJwks({
+        agentJwk: undefined,
+        agentKid: "x",
+        grantJwk: JSON.stringify(grant),
+      }),
+    ).toBeNull();
+  });
+  it("keeps a previous agent kid published during rotation", () => {
+    const current = generateKeyPairSync("ed25519").privateKey.export({
+      format: "jwk",
+    });
+    const retired = generateKeyPairSync("ed25519").privateKey.export({
+      format: "jwk",
+    });
+    const grant = generateKeyPairSync("ed25519").privateKey.export({
+      format: "jwk",
+    });
+    const jwks = proofcartJwks({
+      agentJwk: JSON.stringify(current),
+      agentKid: "pc-agent-new",
+      grantJwk: JSON.stringify(grant),
+      grantKid: "pc-grant-test",
+      previous: [
+        { jwk: JSON.stringify(retired), kid: "pc-agent-old" },
+        { jwk: JSON.stringify(current), kid: "pc-agent-new" },
+      ],
+    });
+    expect(jwks?.keys.map((k) => k.kid)).toEqual([
+      "pc-agent-new",
+      "pc-grant-test",
+      "pc-agent-old",
+    ]);
+    expect(JSON.stringify(jwks)).not.toContain(retired.d);
   });
 });
 

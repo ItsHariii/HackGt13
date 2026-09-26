@@ -320,13 +320,15 @@ Implementation notes and deviations: [PHASE5.md](PHASE5.md).
 
 ## Phase 8: `packages/tap` + `packages/acp` (M, P reviews)
 
-- [ ] **T8.1 RFC 9421 signer and verifier**
-  - [ ] Signature base for `@method`, `@authority`, `@path` and `content-digest`; parameters `created`, `expires`, `keyid`, `alg="ed25519"`, `nonce`, `tag`.
-  - [ ] Ed25519 via Web Crypto (fallback `@noble/curves`).
-  - [ ] `Content-Digest: sha-256=:…:` (RFC 9530).
+Implementation notes: [PHASE8.md](PHASE8.md).
+
+- [x] **T8.1 RFC 9421 signer and verifier**
+  - [x] Signature base for `@method`, `@authority`, `@path` and `content-digest`; parameters `created`, `expires`, `keyid`, `alg="ed25519"`, `nonce`, `tag`.
+  - [x] Ed25519 via Web Crypto (fallback `@noble/curves`).
+  - [x] `Content-Digest: sha-256=:…:` (RFC 9530).
   - ✅ The RFC 9421 Appendix B Ed25519 test vector passes; a round-trip sign/verify property test passes.
-- [ ] **T8.2 JWKS**: `GET /.well-known/jwks.json` on ProofCart (agent key + grant key, `kty: OKP`, `crv: Ed25519`); cache headers; key rotation supported through `kid`
-- [ ] **T8.3 ACP types and client**: request/response types for API-Version `2025-09-12`, automatic `Idempotency-Key` and `Request-Id`, and error mapping to typed results
+- [x] **T8.2 JWKS**: `GET /.well-known/jwks.json` on ProofCart (agent key + grant key, `kty: OKP`, `crv: Ed25519`); cache headers; key rotation supported through `kid`
+- [x] **T8.3 ACP types and client**: request/response types for API-Version `2025-09-12`, automatic `Idempotency-Key` and `Request-Id`, and error mapping to typed results
 
 ---
 
@@ -466,8 +468,8 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 
 ## Phase 13: Checkout and payments (P)
 
-- [ ] **T13.1 Visa Acceptance client**
-  - [ ] REST HTTP-Signature auth (merchant ID, key ID, shared secret) against `apitest.cybersource.com`, using either `cybersource-rest-client` or a thin typed client.
+- [x] **T13.1 Visa Acceptance client**
+  - [x] REST HTTP-Signature auth (merchant ID, key ID, shared secret) against `apitest.cybersource.com`, using either `cybersource-rest-client` or a thin typed client.
   - ✅ A sandbox smoke test authorizes test card `4111 1111 1111 1111` for $1.00 and logs the transaction ID.
 - [ ] **T13.2 Card enrollment**
   - [ ] Capture context for Microform Integration v2 → mount the hosted fields in `/settings/payment` → transient token.

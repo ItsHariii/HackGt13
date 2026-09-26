@@ -139,5 +139,6 @@ describe("HiGHS agrees with the exhaustive engine (T5.4)", () => {
       }),
       { numRuns: 1000 },
     );
-  });
+    // 1000 HiGHS solves take ~2 s locally but can exceed the 5 s default on shared CI runners.
+  }, 60_000);
 });

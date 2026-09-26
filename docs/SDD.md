@@ -1419,6 +1419,8 @@ WEBAUTHN_ORIGIN=https://proofcart.<domain>
 AGENT_SIGNING_JWK=                         # Ed25519 private JWK (RFC 9421 agent key)
 AGENT_KEY_ID=pc-agent-2026-09
 GRANT_SIGNING_JWK=                         # Ed25519 private JWK (scoped payment grants)
+GRANT_KEY_ID=pc-grant-2026-09
+# AGENT_*_PREVIOUS / GRANT_*_PREVIOUS keep retired kids in JWKS during rotation
 INTERNAL_QUEUE_HMAC_SECRET=
 DEMOMART_BASE_URL=https://demomart.<domain>
 DEMOMART_WEBHOOK_SECRET=

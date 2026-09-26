@@ -11,5 +11,13 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "biome check ."
+  },
+  "dependencies": {
+    "@proofcart/tap": "workspace:*",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@proofcart/contracts": "workspace:*",
+    "@proofcart/payments": "workspace:*"
   }
 }

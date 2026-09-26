@@ -125,7 +125,21 @@ importers:
         specifier: ^4.0.0
         version: 4.3.3
 
-  packages/acp: {}
+  packages/acp:
+    dependencies:
+      '@proofcart/tap':
+        specifier: workspace:*
+        version: link:../tap
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
+    devDependencies:
+      '@proofcart/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@proofcart/payments':
+        specifier: workspace:*
+        version: link:../payments
 
   packages/ai: {}
 
@@ -157,7 +171,17 @@ importers:
 
   packages/evidence: {}
 
-  packages/payments: {}
+  packages/payments:
+    dependencies:
+      '@proofcart/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@proofcart/tap':
+        specifier: workspace:*
+        version: link:../tap
+      zod:
+        specifier: ^4.6.5
+        version: 4.6.5
 
   packages/platform:
     dependencies:
@@ -201,7 +225,15 @@ importers:
         specifier: 4.10.2
         version: 4.10.2
 
-  packages/tap: {}
+  packages/tap:
+    dependencies:
+      '@noble/curves':
+        specifier: 1.9.7
+        version: 1.9.7
+    devDependencies:
+      fast-check:
+        specifier: 4.10.2
+        version: 4.10.2
 
 packages:
 
