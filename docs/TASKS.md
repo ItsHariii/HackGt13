@@ -400,13 +400,13 @@ Implementation notes: [PHASE9.md](PHASE9.md).
 
 ## Phase 10: Web shell and paper design system (F + D)
 
-- [ ] **T10.1 Design tokens** (D) — from the T0.5 mockups; source of truth is the design's token file, ported as `apps/web/app/cartel-tokens.css` (Style Tile v2)
-  - [ ] The paper and blueprint palettes from SDD §17.7 as CSS variables and Tailwind theme tokens; `pass`, `fail`, `unknown`, `estimate`, `info`, each paired with an icon and text label.
-  - [ ] Type scale (Source Serif 4 headings, Geist Sans UI, Geist Mono numbers), spacing, radii, stacked-sheet shadows, focus ring (visible on paper and blueprint).
-  - [ ] Tokens beyond SDD §17.7: `paper-sheet` #FFFFFF (contract, receipt, tables), `rule` #DDD5C4, `rule-soft` #EEE9DF, `graphite-2` #3A3935, `muted` #5E5B56 (small meta text; `pencil` is too light under 20 px), `red-pen-wash` #FBEDEB, `tape` #E8DDB5, `desk` #E9E3D6; type scale 12/13/15/17/22/28/44/56/72; radii sheet 4 / card 8 / pill 999; `shadow-stack`, `shadow-primary` (3 px ink offset on the primary button).
-  - [ ] Focus ring 2.5 px with a 3 px offset (Style Tile v2; the token file's 2 px / 2 px is superseded).
-  - [ ] **Blueprint (dark) only on Workspace, Contract and Purchase Paused**, per Style Tile v2. Other screens stay paper.
-  - ✅ Every text/background pairing checked for ≥ 4.5:1 (≥ 3:1 for large text); `--pencil` never carries meaning alone.
+- [x] **T10.1 Design tokens** (D) — from the T0.5 mockups; source of truth is the design's token file, ported as `apps/web/app/cartel-tokens.css` (Style Tile v2)
+  - [x] The paper and blueprint palettes from SDD §17.7 as CSS variables and Tailwind theme tokens; `pass`, `fail`, `unknown`, `estimate`, `info`, each paired with an icon and text label (`apps/web/lib/status.ts`).
+  - [x] Type scale (Source Serif 4 headings, Geist Sans UI, Geist Mono numbers), spacing, radii, stacked-sheet shadows, focus ring (visible on paper and blueprint).
+  - [x] Tokens beyond SDD §17.7: `paper-sheet` #FFFFFF (contract, receipt, tables), `rule` #DDD5C4, `rule-soft` #EEE9DF, `graphite-2` #3A3935, `muted` #5E5B56 (small meta text; `pencil` is too light under 20 px), `red-pen-wash` #FBEDEB, `tape` #E8DDB5, `desk` #E9E3D6; type scale 12/13/15/17/22/28/44/56/72; radii sheet 4 / card 8 / pill 999; `shadow-stack`, `shadow-primary` (3 px ink offset on the primary button).
+  - [x] Focus ring 2.5 px with a 3 px offset (Style Tile v2; the token file's 2 px / 2 px is superseded).
+  - [x] **Blueprint (dark) only on Workspace, Contract and Purchase Paused**, per Style Tile v2. Other screens stay paper. Those screens opt in with `data-blueprint` on their root; the theme toggle lives in the workspace header.
+  - ✅ Every text/background pairing checked (`apps/web/lib/tokens.test.ts`, both themes) for ≥ 4.5:1 (≥ 3:1 for large text); `--pencil` never carries meaning alone.
 - [ ] **T10.2 Paper materials** (D)
   - [ ] Paper background: 24 px dot grid on app pages (flow screens, workspace, search); **no** dot grid on the formal contract sheet (Contract v2). Blueprint variant for dark mode.
   - [ ] The `#stamp` SVG turbulence filter, defined once, for the stamped cart-seal logo and every stamp.

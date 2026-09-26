@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "./cartel-tokens.css";
-@custom-variant dark (&:where(.dark, .dark *));
 :root {
   --paper: #fbf7ee;
   --paper-raised: #fffdf7;
@@ -14,7 +13,9 @@
   --muted: #f0ece2;
   --muted-text: #666059;
 }
-.dark {
+/* Site-page aliases; Blueprint only inside its scope (cartel-tokens.css). */
+.blueprint,
+.dark [data-blueprint] {
   --paper: #14233a;
   --paper-raised: #1b2d48;
   --graphite: #e9eef5;
