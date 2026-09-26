@@ -15,9 +15,13 @@ const mono = Geist_Mono({
   display: "swap",
 });
 export const metadata: Metadata = {
-  title: "DemoMart — Test merchant",
+  title: {
+    default: "DemoMart — Test merchant",
+    template: "%s · DemoMart (test merchant)",
+  },
   description:
     "A fictional storefront for testing ProofCart. No real purchases.",
+  robots: { index: false, follow: false },
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <div className="test-banner">
+        <div className="test-banner" role="note">
           TEST MERCHANT <span>Fictional products. No real purchases.</span>
         </div>
         <header className="merchant-header">
@@ -34,11 +38,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Store size={26} aria-hidden="true" />
             demo<span>mart</span>
           </Link>
-          <a href="#collection">The collection ↗</a>
+          <nav aria-label="Merchant" className="merchant-nav">
+            <Link href="/">Shop</Link>
+            <Link href="/agents">Agent log</Link>
+            <Link href="/orders">Orders</Link>
+            <Link href="/chaos">Chaos Panel</Link>
+          </nav>
         </header>
         <div id="main">{children}</div>
         <footer>
-          DemoMart / A ProofCart test merchant{" "}
+          <span>
+            DemoMart / A ProofCart test merchant ·{" "}
+            <Link href="/policies">Policies</Link>
+          </span>
           <span>All product names and prices are fictional.</span>
         </footer>
       </body>

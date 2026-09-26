@@ -429,3 +429,13 @@ from (values
 join public.products p on p.source = 'demomart' and p.external_id = k.sku;
 
 drop table seed_catalog;
+
+-- Offers carry the listed pack size, so the Chaos Panel's pack_size_shrink has something to shrink.
+update demomart.offers o
+set pack_size = substring(e.value ->> 'value' from '^\d+')::integer
+from demomart.listings l, jsonb_array_elements(l.spec) e
+where o.listing_id = l.id and lower(e.value ->> 'name') = 'pack size'
+  and substring(e.value ->> 'value' from '^\d+') is not null;
+
+-- The state the Chaos Panel's Reset restores (demomart.reset_catalog).
+select demomart.capture_baseline();

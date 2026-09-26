@@ -246,36 +246,38 @@ Implementation notes and deviations: [PHASE5.md](PHASE5.md).
 
 ## Phase 6: DemoMart (M)
 
-- [ ] **T6.1 Storefront**: catalog grid, product pages at `/p/[slug]` with visible specs and `<script type="application/ld+json">` (schema.org `Product` + `Offer` + `additionalProperty`), the "Test merchant" banner
-- [ ] **T6.2 Product JSON API**: `GET /api/products/[id]` (requires an agent signature once T6.5 lands)
-- [ ] **T6.3 ACP endpoints** — depends on T8.3
-  - [ ] `POST /acp/checkout_sessions`, `POST /acp/checkout_sessions/{id}`, `GET /acp/checkout_sessions/{id}`, `POST …/complete`, `POST …/cancel`.
-  - [ ] Headers: honor `Idempotency-Key`, echo `Request-Id`, require `API-Version: 2025-09-12`.
-  - [ ] Totals computed server-side (`items_base_amount`, `subtotal`, `fulfillment`, `tax`, `fee`, `total`); statuses; `messages[]` for errors (`out_of_stock`, `invalid`, `payment_declined`).
+Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the Gremlin figure (needs T10B).
+
+- [x] **T6.1 Storefront**: catalog grid, product pages at `/p/[slug]` with visible specs and `<script type="application/ld+json">` (schema.org `Product` + `Offer` + `additionalProperty`), the "Test merchant" banner
+- [x] **T6.2 Product JSON API**: `GET /api/products/[id]` (requires an agent signature once T6.5 lands)
+- [x] **T6.3 ACP endpoints** — depends on T8.3
+  - [x] `POST /acp/checkout_sessions`, `POST /acp/checkout_sessions/{id}`, `GET /acp/checkout_sessions/{id}`, `POST …/complete`, `POST …/cancel`.
+  - [x] Headers: honor `Idempotency-Key`, echo `Request-Id`, require `API-Version: 2025-09-12`.
+  - [x] Totals computed server-side (`items_base_amount`, `subtotal`, `fulfillment`, `tax`, `fee`, `total`); statuses; `messages[]` for errors (`out_of_stock`, `invalid`, `payment_declined`).
   - ✅ Contract tests in `packages/acp` pass against DemoMart.
-- [ ] **T6.4 `x_proofcart` extension** on line items: seller ID, GTIN, `final_sale`, return policy, spec URL
-- [ ] **T6.5 TAP verifier middleware** — depends on T8.1
-  - [ ] Parse `Signature-Input` / `Signature`; enforce the window (≤ 8 min, `created` in the past, `expires` in the future); nonce replay check in `tap_nonces`; fetch JWKS with a 5 min cache; verify Ed25519; verify `Content-Digest` for bodies.
-  - [ ] Every request is logged to `agent_log` (key ID, tag, verdict, reason).
+- [x] **T6.4 `x_proofcart` extension** on line items: seller ID, GTIN, `final_sale`, return policy, spec URL
+- [x] **T6.5 TAP verifier middleware** — depends on T8.1
+  - [x] Parse `Signature-Input` / `Signature`; enforce the window (≤ 8 min, `created` in the past, `expires` in the future); nonce replay check in `tap_nonces`; fetch JWKS with a 5 min cache; verify Ed25519; verify `Content-Digest` for bodies.
+  - [x] Every request is logged to `agent_log` (key ID, tag, verdict, reason).
   - ✅ An unsigned request gets 401; a replayed nonce gets 401; a valid one passes.
-- [ ] **T6.6 Agent Log page** `/agents`: a live table (Realtime or 1 s poll) with ✓/✗, key ID, tag and path
-- [ ] **T6.7 Grant and contract verification on `/complete`**
-  - [ ] Verify the `ScopedPaymentGrant` JWS against the ProofCart JWKS (merchant origin, amount ≤ max, not expired, contract hash present).
-  - [ ] Verify the included WebAuthn assertion against the included public key (expected origin and RP ID are ProofCart's).
-  - [ ] Show "✓ Customer-signed contract v{n} · {hash}" on the merchant order.
-- [ ] **T6.8 Charging** — depends on T13.1
-  - [ ] Call `POST /pts/v2/payments` (Visa Acceptance sandbox) with the instrument, `capture: true`, `clientReferenceInformation.code = contractId@v`, and `merchantDefinedInformation` = [contract ID, body hash, grant ID].
-  - [ ] Map decline and error codes to ACP `messages[]`.
-- [ ] **T6.9 Order webhooks out**: `order_created` / `order_updated` → ProofCart, HMAC `X-Signature` + timestamp; outbox with retries (1s, 5s, 30s)
+- [x] **T6.6 Agent Log page** `/agents`: a live table (Realtime or 1 s poll) with ✓/✗, key ID, tag and path
+- [x] **T6.7 Grant and contract verification on `/complete`**
+  - [x] Verify the `ScopedPaymentGrant` JWS against the ProofCart JWKS (merchant origin, amount ≤ max, not expired, contract hash present).
+  - [x] Verify the included WebAuthn assertion against the included public key (expected origin and RP ID are ProofCart's).
+  - [x] Show "✓ Customer-signed contract v{n} · {hash}" on the merchant order.
+- [x] **T6.8 Charging** — depends on T13.1
+  - [x] Call `POST /pts/v2/payments` (Visa Acceptance sandbox) with the instrument, `capture: true`, `clientReferenceInformation.code = contractId@v`, and `merchantDefinedInformation` = [contract ID, body hash, grant ID].
+  - [x] Map decline and error codes to ACP `messages[]`.
+- [x] **T6.9 Order webhooks out**: `order_created` / `order_updated` → ProofCart, HMAC `X-Signature` + timestamp; outbox with retries (1s, 5s, 30s)
 - [ ] **T6.10 Chaos Panel** `/chaos` (admin token)
-  - [ ] One button per mutation from SDD §16, each with a parameter form (for example, the new PD watts).
-  - [ ] **Scenario scripts**: "Flagship deal trap" (Vireo `U2727`: price $329 → $319 **and** USB-C power 90 → 15 W on the same SKU), "Webcam −$4", "Final-sale trap", "Seller rotation", "Injection listing".
+  - [x] One button per mutation from SDD §16, each with a parameter form (for example, the new PD watts).
+  - [x] **Scenario scripts**: "Flagship deal trap" (Vireo `U2727`: price $329 → $319 **and** USB-C power 90 → 15 W on the same SKU), "Webcam −$4", "Final-sale trap", "Seller rotation", "Injection listing".
   - [ ] The Gremlin figure appears next to each mutation in the log (after T10B lands).
-  - [ ] **Reset** restores the seed state; **Run mandate tick now** calls ProofCart's worker.
-  - [ ] Mutation log shown live.
+  - [x] **Reset** restores the seed state; **Run mandate tick now** calls ProofCart's worker.
+  - [x] Mutation log shown live.
   - ✅ Each mutation is visible on the product page and through the ACP GET within 1 s.
-- [ ] **T6.11 Mock recall endpoint** (demo mode only, labeled "Mock CPSC (demo)") for the `recall_posted` mutation
-- [ ] **T6.12 Merchant orders page**: amount, Visa transaction ID, verification badges (agent ✓, grant ✓, contract signature ✓)
+- [x] **T6.11 Mock recall endpoint** (demo mode only, labeled "Mock CPSC (demo)") for the `recall_posted` mutation
+- [x] **T6.12 Merchant orders page**: amount, Visa transaction ID, verification badges (agent ✓, grant ✓, contract signature ✓)
 
 ---
 
