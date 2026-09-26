@@ -260,9 +260,10 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
   schema: "proofcart.contract/1",
   contractId: "c_flagship",
   version: 8,
-  // v7's body is not modeled here; the proof-engine fixtures pin it in Phase 4.
+  // v7 is modeled by flagshipV7() in @proofcart/rule-packs/fixtures, whose
+  // tests recompute this hash.
   parentHash:
-    "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "sha256:2c0ab399589eee3511b0b53ab5fe3284a3759280436a667c7830f0b943da9ecc",
   planId: "p_flagship",
   subject: "user:5f0c7a52-3b8e-4d61-9a2f-1c6e8b4d7a90",
   intent: {
@@ -277,7 +278,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
       merchant: "demomart",
       sellerId: "dm_seller_1",
       sku: "BL-CD-465",
-      gtin: "00812345000109",
+      gtin: "00812345000108",
       title: 'Birchline Compact Desk 46.5"',
       qty: 1,
       unitPriceMinor: 22_900,
@@ -290,7 +291,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
       merchant: "demomart",
       sellerId: "dm_seller_1",
       sku: "KS-MESH-TASK",
-      gtin: "00812345000208",
+      gtin: "00812345000207",
       title: "Kestrel Mesh Task Chair",
       qty: 1,
       unitPriceMinor: 18_900,
@@ -303,7 +304,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
       merchant: "demomart",
       sellerId: "dm_seller_1",
       sku: "M27Q-USBC",
-      gtin: "00812345000017",
+      gtin: "00812345000016",
       title: 'Halden M27Q-USBC 27" 4K USB-C Monitor',
       qty: 1,
       unitPriceMinor: 30_900,
@@ -316,7 +317,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
       merchant: "demomart",
       sellerId: "dm_seller_1",
       sku: "LOOP-C100-2M",
-      gtin: "00812345000406",
+      gtin: "00812345000405",
       title: "Loop USB-C Cable 100 W, 2 m",
       qty: 1,
       unitPriceMinor: 1_900,
@@ -329,7 +330,7 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
       merchant: "demomart",
       sellerId: "dm_seller_1",
       sku: "PICA-1080",
-      gtin: "00812345000505",
+      gtin: "00812345000504",
       title: "Pica 1080p Webcam",
       qty: 1,
       unitPriceMinor: 4_500,
@@ -356,14 +357,15 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
   ],
   mandate: null,
   proof: {
-    // Pinned once the Phase 4 engine produces the v8 report.
+    // The proof-engine report for flagshipV8() in @proofcart/rule-packs/fixtures.
     reportHash:
-      "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256:4106fdcae4ee25cba45493b4f61049c146c6e4a1975b8e0fb55c63f3d0846bde",
     engineVersion: "1.0.0",
     packs: { "home-office": "1.0.0" },
   },
-  issuedAt: "2026-09-26T14:03:00Z",
-  expiresAt: "2026-09-26T14:18:00Z",
+  // Signed after the deal trap (14:10) blocked v7.
+  issuedAt: "2026-09-26T14:12:30Z",
+  expiresAt: "2026-09-26T14:27:30Z",
 };
 
 /**
@@ -372,11 +374,11 @@ export const FLAGSHIP_CONTRACT_V8: ContractBody = {
  */
 export const FLAGSHIP_V8_SIGNATURE: ContractSignature = {
   bodyHash:
-    "sha256:f13d13cac528530d376fdb9021aa860b4d9683ee202f7cb9cbbb02ba5eff705e",
+    "sha256:3826b2bc790fdcc1bb09442808dca5f2af4211ba23282167519489de52458474",
   credentialId: "Zml4dHVyZS1jcmVkZW50aWFs",
   authenticatorData: "Zml4dHVyZS1hdXRoZW50aWNhdG9yLWRhdGE",
   clientDataJSON: "Zml4dHVyZS1jbGllbnQtZGF0YQ",
   signature: "Zml4dHVyZS1zaWduYXR1cmU",
   publicKeyJwk: { kty: "EC", crv: "P-256", x: "fixture", y: "fixture" },
-  signedAt: "2026-09-26T14:03:20Z",
+  signedAt: "2026-09-26T14:12:50Z",
 };

@@ -195,48 +195,52 @@ Implementation notes and deviations: [PHASE3.md](PHASE3.md).
 
 ## Phase 4: `packages/proof-engine` + `packages/rule-packs` (E)
 
-- [ ] **T4.1 Units and parser** — depends on T3.1
-  - [ ] Base units (mm, g, W, Wh, mAh, ml), decimal math, per-field tolerance.
-  - [ ] A grammar for `65W`, `65 watts`, `up to 90 W`, `46.5"`, `46.5 in`, `118 cm`, `20,000mAh`, `3.4 oz`, `100ml`, and ranges.
-  - [ ] Qualifiers (`up_to`, `approx`, `max`, `min`) are preserved.
+- [x] **T4.1 Units and parser** — depends on T3.1
+  - [x] Base units (mm, g, W, Wh, mAh, ml), decimal math, per-field tolerance.
+  - [x] A grammar for `65W`, `65 watts`, `up to 90 W`, `46.5"`, `46.5 in`, `118 cm`, `20,000mAh`, `3.4 oz`, `100ml`, and ranges.
+  - [x] Qualifiers (`up_to`, `approx`, `max`, `min`) are preserved.
   - ✅ ≥ 40 table-driven test cases, including bad input returning `null` rather than throwing.
-- [ ] **T4.2 Money**: integer minor units, safe add and compare, tax-rate application with explicit rounding (banker's rounding documented)
-- [ ] **T4.3 Evidence lattice**: ordering, `min()`, derived-state rules (assumption caps at `estimated`), conflict handling via authority precedence, and freshness (`now` is injected)
-- [ ] **T4.4 Verdict function**: operators (`eq neq gte lte between in not_in contains excludes before compatible_with exists`) and the **weak-fail / strong-pass** rule from SDD §7.4
+- [x] **T4.2 Money**: integer minor units, safe add and compare, tax-rate application with explicit rounding (banker's rounding documented)
+- [x] **T4.3 Evidence lattice**: ordering, `min()`, derived-state rules (assumption caps at `estimated`), conflict handling via authority precedence, and freshness (`now` is injected)
+- [x] **T4.4 Verdict function**: operators (`eq neq gte lte between in not_in contains excludes before compatible_with exists`) and the **weak-fail / strong-pass** rule from SDD §7.4
   - ✅ Unit tests for every operator × verdict path.
-- [ ] **T4.5 Scope evaluation**: item, pair, basket (totals computed from lines and compared with the merchant total), merchant, order
-- [ ] **T4.6 Report builder**: deterministic ordering, summary counts, `hash`, `engineVersion`, pack versions
-- [ ] **T4.7 Pack API**: `definePack` with `fields`, `jsonLd` map, `roles` (including `requiredWhen`), `pairs`, `derive`, `defaults`; pack validation at load time
-- [ ] **T4.8 `home-office` pack v1**: fields, JSON-LD map, roles (desk, chair, monitor, dock?, cable?, webcam?), pair rule (dock↔monitor video), cable PD rule, defaults (budget, deadline)
+- [x] **T4.5 Scope evaluation**: item, pair, basket (totals computed from lines and compared with the merchant total), merchant, order
+- [x] **T4.6 Report builder**: deterministic ordering, summary counts, `hash`, `engineVersion`, pack versions
+- [x] **T4.7 Pack API**: `definePack` with `fields`, `jsonLd` map, `roles` (including `requiredWhen`), `pairs`, `derive`, `defaults`; pack validation at load time
+- [x] **T4.8 `home-office` pack v1**: fields, JSON-LD map, roles (desk, chair, monitor, dock?, cable?, webcam?), pair rule (dock↔monitor video), cable PD rule, defaults (budget, deadline)
   - ✅ The flagship fixtures produce the expected report: U2727 passes, U2727E fails on PD, comfort is `unknown (subjective)`.
-- [ ] **T4.9 `apparel` pack v1**
-  - [ ] Garment-measurement fit vs a reference garment (± tolerance); body chart → `estimated`.
-  - [ ] Fiber constraints; `final_sale == false`; return fee ≤ X.
-  - [ ] **Exchange buffer**: `delivery_latest + return_transit + reship ≤ event_date`.
-  - [ ] Color is `source_stated`; fit and looks are `unknown (subjective)`.
+- [x] **T4.9 `apparel` pack v1**
+  - [x] Garment-measurement fit vs a reference garment (± tolerance); body chart → `estimated`.
+  - [x] Fiber constraints; `final_sale == false`; return fee ≤ X.
+  - [x] **Exchange buffer**: `delivery_latest + return_transit + reship ≤ event_date`.
+  - [x] Color is `source_stated`; fit and looks are `unknown (subjective)`.
   - ✅ The final-sale flip scenario fails `returnable`.
-- [ ] **T4.10 `travel` pack v1**
-  - [ ] Bag dimensions checked orientation-aware (sort both triples, compare axis by axis).
-  - [ ] Derived `Wh = mAh × V / 1000`, with an assumed 3.7 V capping the state at `estimated`; ≤ 100 Wh.
-  - [ ] Plug type, voltage range, liquids ≤ 100 ml.
+- [x] **T4.10 `travel` pack v1**
+  - [x] Bag dimensions checked orientation-aware (sort both triples, compare axis by axis).
+  - [x] Derived `Wh = mAh × V / 1000`, with an assumed 3.7 V capping the state at `estimated`; ≤ 100 Wh.
+  - [x] Plug type, voltage range, liquids ≤ 100 ml.
   - ✅ 20k mAh → 74 Wh (estimate) passes; 30k mAh → 111 Wh fails; the 10.8" "international carry-on" fails a 9" limit.
-- [ ] **T4.11 Consent Diff**: `consentDiff()` and `classify()` with the Strict/Balanced/Flexible presets and the **policy floor** (SDD §7.6 and §7.7)
+- [x] **T4.11 Consent Diff**: `consentDiff()` and `classify()` with the Strict/Balanced/Flexible presets and the **policy floor** (SDD §7.6 and §7.7)
   - ✅ Same-SKU spec edit → `block`; webcam −$4 → `auto` (Balanced); seller rotation → `reapprove`; final-sale flip → `block`. Totals match SDD §16.1 ($891.77 after the webcam change; $881.07 in the blocked state).
-- [ ] **T4.12 Property tests** (fast-check): invariants 1–9 from SDD §22.1
-- [ ] **T4.13 Explanation templates**: reason code → sentence, with values interpolated from the result
-- [ ] **T4.14 Purity guard**: Biome `noRestrictedImports` in `proof-engine`, `rule-packs` and `solver` (no `fetch`, supabase, `ai`, `node:fs`, `Date.now`)
+- [x] **T4.12 Property tests** (fast-check): invariants 1–9 from SDD §22.1
+- [x] **T4.13 Explanation templates**: reason code → sentence, with values interpolated from the result
+- [x] **T4.14 Purity guard**: Biome `noRestrictedImports` in `proof-engine`, `rule-packs` and `solver` (no `fetch`, supabase, `ai`, `node:fs`, `Date.now`)
+
+Implementation notes and deviations: [PHASE4.md](PHASE4.md).
 
 ---
 
 ## Phase 5: `packages/solver` (E)
 
-- [ ] **T5.1 HiGHS integration**: load the `highs` WASM in Node (and optionally the browser); solve a toy MILP in a test
-- [ ] **T5.2 Model builder**: variables, constraints and objective per SDD §9.1 (roles, quantities, budget with shipping per merchant, a linearized tax rate, pair incompatibility, merchant usage, a maximum merchant count)
-- [ ] **T5.3 Top-3 diverse plans**: no-good cuts; each plan labeled with its main tradeoff (computed from which preferences differ)
-- [ ] **T5.4 Exhaustive fallback**, plus a property test that the solver optimum equals the exhaustive optimum on random small instances
-- [ ] **T5.5 Minimal conflict set**: a deletion filter over the hard basket-level requirements, then bisection for the smallest relaxation per member
+- [x] **T5.1 HiGHS integration**: load the `highs` WASM in Node (and optionally the browser); solve a toy MILP in a test
+- [x] **T5.2 Model builder**: variables, constraints and objective per SDD §9.1 (roles, quantities, budget with shipping per merchant, a linearized tax rate, pair incompatibility, merchant usage, a maximum merchant count)
+- [x] **T5.3 Top-3 diverse plans**: no-good cuts; each plan labeled with its main tradeoff (computed from which preferences differ)
+- [x] **T5.4 Exhaustive fallback**, plus a property test that the solver optimum equals the exhaustive optimum on random small instances
+- [x] **T5.5 Minimal conflict set**: a deletion filter over the hard basket-level requirements, then bisection for the smallest relaxation per member
   - ✅ The fixture "budget $900 + Monday" returns the conflict `{budget, delivery}` with the deltas `+$84` and `Wednesday`.
-- [ ] **T5.6 Performance test**: 8 roles × 15 candidates, top 3 in < 300 ms p50 in CI
+- [x] **T5.6 Performance test**: 8 roles × 15 candidates, top 3 in < 300 ms p50 in CI
+
+Implementation notes and deviations: [PHASE5.md](PHASE5.md).
 
 ---
 

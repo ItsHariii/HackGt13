@@ -4,7 +4,7 @@ exports[`toAp2 > matches the snapshot for contract v8 1`] = `
 {
   "cartMandate": {
     "contents": {
-      "cart_expiry": "2026-09-26T14:18:00Z",
+      "cart_expiry": "2026-09-26T14:27:30Z",
       "id": "c_flagship@8",
       "merchant_name": "demomart",
       "payment_request": {
@@ -94,7 +94,7 @@ exports[`toAp2 > matches the snapshot for contract v8 1`] = `
     "merchant_authorization": null,
   },
   "intentMandate": {
-    "intent_expiry": "2026-09-26T14:18:00Z",
+    "intent_expiry": "2026-09-26T14:27:30Z",
     "merchants": [
       "demomart",
     ],
@@ -109,6 +109,6 @@ exports[`toAp2 > matches the snapshot for contract v8 1`] = `
     ],
     "user_cart_confirmation_required": true,
   },
-  "user_authorization": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiYm9keUhhc2giOiJzaGEyNTY6ZjEzZDEzY2FjNTI4NTMwZDM3NmZkYjkwMjFhYTg2MGI0ZDk2ODNlZTIwMmY3Y2I5Y2JiYjAyYmE1ZWZmNzA1ZSIsImNyZWRlbnRpYWxJZCI6IlptbDRkSFZ5WlMxamNtVmtaVzUwYVdGcyIsImF1dGhlbnRpY2F0b3JEYXRhIjoiWm1sNGRIVnlaUzFoZFhSb1pXNTBhV05oZEc5eUxXUmhkR0UiLCJjbGllbnREYXRhSlNPTiI6IlptbDRkSFZ5WlMxamJHbGxiblF0WkdGMFlRIiwic2lnbmF0dXJlIjoiWm1sNGRIVnlaUzF6YVdkdVlYUjFjbVUifQ",
+  "user_authorization": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiYm9keUhhc2giOiJzaGEyNTY6MzgyNmIyYmM3OTBmZGNjMWJiMDk0NDI4MDhkY2E1ZjJhZjQyMTFiYTIzMjgyMTY3NTE5NDg5ZGU1MjQ1ODQ3NCIsImNyZWRlbnRpYWxJZCI6IlptbDRkSFZ5WlMxamNtVmtaVzUwYVdGcyIsImF1dGhlbnRpY2F0b3JEYXRhIjoiWm1sNGRIVnlaUzFoZFhSb1pXNTBhV05oZEc5eUxXUmhkR0UiLCJjbGllbnREYXRhSlNPTiI6IlptbDRkSFZ5WlMxamJHbGxiblF0WkdGMFlRIiwic2lnbmF0dXJlIjoiWm1sNGRIVnlaUzF6YVdkdVlYUjFjbVUifQ",
 }
 `;
