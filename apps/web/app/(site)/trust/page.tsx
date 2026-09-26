@@ -4,6 +4,7 @@ import {
   type CheckoutTier,
   TIER,
 } from "@/components/cartel/checkout-tier-badge";
+import { Figure } from "@/components/doodle/figure";
 import { Certainty } from "@/components/site/certainty";
 import { SectionHeading } from "@/components/site/section-heading";
 
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 
 const DOMAINS = [
   {
+    who: "scout",
     name: "Scout",
     tag: "AI · proposes",
     tone: "text-ink",
@@ -22,6 +24,7 @@ const DOMAINS = [
     cant: ["Pay", "Change signed contracts", "Mark a rule as passed"],
   },
   {
+    who: "inspector",
     name: "Inspector",
     tag: "Engine · proves",
     tone: "text-green-check",
@@ -33,6 +36,7 @@ const DOMAINS = [
     cant: ["Guess", "Treat listing text as instructions"],
   },
   {
+    who: "notary",
     name: "Notary",
     tag: "You · sign",
     tone: "text-red-pen",
@@ -44,6 +48,7 @@ const DOMAINS = [
     cant: ["Be skipped", "Carry a signature over to a changed contract"],
   },
   {
+    who: "guard",
     name: "Guard",
     tag: "Checks again, then pays",
     tone: "text-graphite",
@@ -115,6 +120,7 @@ export default function TrustPage() {
                   aria-labelledby={`d-${d.name}`}
                   className="sheet flex flex-1 flex-col gap-4 p-5"
                 >
+                  <Figure who={d.who} h={120} className="self-center" />
                   <header>
                     <h3
                       id={`d-${d.name}`}

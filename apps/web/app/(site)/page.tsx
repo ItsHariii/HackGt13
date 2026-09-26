@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContractDiff, type DiffLine } from "@/components/cartel/contract-diff";
+import { Figure } from "@/components/doodle/figure";
 import { Mark } from "@/components/paper/mark";
 import { Stamp } from "@/components/paper/stamp";
 import { StatusMark } from "@/components/paper/status-mark";
@@ -22,24 +23,28 @@ const CLAUSES = [
 /** One line each; the figures themselves arrive with the cast (T10B). */
 const CAST = [
   {
+    who: "scout",
     name: "Scout",
     role: "AI shopper",
     tone: "text-ink",
     line: "finds. Never holds the wallet.",
   },
   {
+    who: "inspector",
     name: "Inspector",
     role: "Proof engine",
     tone: "text-green-check",
     line: "checks every rule against evidence.",
   },
   {
+    who: "notary",
     name: "Notary",
     role: "Your signature",
     tone: "text-red-pen",
     line: "stamps only after your Touch ID.",
   },
   {
+    who: "guard",
     name: "Guard",
     role: "Payment guard",
     tone: "text-graphite",
@@ -192,6 +197,7 @@ export default function Home() {
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {CAST.map((c) => (
               <li key={c.name} className="sheet flex flex-col gap-2 p-5">
+                <Figure who={c.who} h={88} className="mb-1" />
                 <p className="font-semibold text-graphite-2 text-meta uppercase tracking-label">
                   {c.role}
                 </p>

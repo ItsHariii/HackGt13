@@ -10,6 +10,8 @@ const base = process.env.A11Y_BASE_URL ?? "http://localhost:3000";
 const pages = [
   ["/dev/components", "light"],
   ["/dev/layouts", "light"],
+  ["/dev/figures", "light"],
+  ["/this-page-does-not-exist", "light"],
   ["/", "light"],
   ["/trust", "light"],
   ["/plans/flagship", "light"],

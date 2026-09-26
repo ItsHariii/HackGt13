@@ -432,28 +432,28 @@ Implementation notes: [PHASE9.md](PHASE9.md).
 
 Everything lives in `apps/web/components/doodle/`. Nothing here may block the spine.
 
-- [ ] **T10B.1 Figure engine** (API from `Figure.dc.html`: `who` ∈ scout / inspector / notary / guard / gremlin / pair, `pose`, `h` 24–400 px, default 96, `dark`; stroke 2 px at ≥ 90 px, 1.75 at ≥ 60, else 1.5): an SVG skeleton (head, torso, upper and lower arms and legs) driven by joint-angle pose data; Motion interpolates between poses; clean even strokes (no line boil); props attach to the hand joint
-  - ✅ A `/dev/figures` page shows every pose in both themes.
-- [ ] **T10B.2 Poses** (design keys): scout `idle q run1–4 pull1–3 sit map tangled`; inspector `idle q stamp1–3 thumbs`; notary `idle q stamp1–3`; guard `idle q block`; gremlin `idle q swap edit`; pair `highfive`
-- [ ] **T10B.3 Props**: magnifier, clipboard, stamp, stop sign, rope, basket, map, price tag, satchel, binoculars, cap, bow tie
-- [ ] **T10B.4 The cast**: `Scout` (ink), `Inspector` (green-check), `Notary` (red-pen), `Guard` (highlighter; the sign bar stays graphite, including in Blueprint), `Gremlin` (tape) per SDD §17.8 and the Character Sheet (48–96 px in the app). The Notary sits beside the contract, never inside it; the Guard stands next to Pay, never on it. The Gremlin belongs to GreatHub; `/bench` is its one Cartel appearance. GreatHub's own cast (Captain Inkwell, the Gull) is T6B.8.
-- [ ] **T10B.5 Event hooks**: `useSearchStatus` (per-source state), `useProofStream` (proof_results broadcast), `useSignatureEvent`, `useDiffEvent`, `usePaymentEvent`, `useBenchProgress`. Figures animate only from these hooks, never from timers.
+- [x] **T10B.1 Figure engine** (API from `Figure.dc.html`: `who` ∈ scout / inspector / notary / guard / gremlin / pair, `pose`, `h` 24–400 px, default 96, `dark`; stroke 2 px at ≥ 90 px, 1.75 at ≥ 60, else 1.5): an SVG skeleton (head, torso, upper and lower arms and legs) driven by joint-angle pose data; Motion interpolates between poses; clean even strokes (no line boil); props attach to the hand joint
+  - ✅ A `/dev/figures` page shows every pose in both themes. Pose changes animate with CSS transitions on each joint's `transform` (no animation library; reduced motion gets still poses).
+- [x] **T10B.2 Poses** (design keys): scout `idle q run1–4 pull1–3 sit map tangled`; inspector `idle q stamp1–3 thumbs`; notary `idle q stamp1–3`; guard `idle q block`; gremlin `idle q swap edit`; pair `highfive`
+- [x] **T10B.3 Props**: magnifier, clipboard, stamp, stop sign, rope, basket, map, price tag, satchel, binoculars, cap, bow tie
+- [x] **T10B.4 The cast**: `Scout` (ink), `Inspector` (green-check), `Notary` (red-pen), `Guard` (highlighter; the sign bar stays graphite, including in Blueprint), `Gremlin` (tape) per SDD §17.8 and the Character Sheet (48–96 px in the app). The Notary sits beside the contract, never inside it; the Guard stands next to Pay, never on it. The Gremlin belongs to GreatHub; `/bench` is its one Cartel appearance. GreatHub's own cast (Captain Inkwell, the Gull) is T6B.8.
+- [x] **T10B.5 Event hooks**: `useSearchStatus` (per-source state), `useProofStream` (proof_results broadcast), `useSignatureEvent`, `useDiffEvent`, `usePaymentEvent`, `useBenchProgress`. Figures animate only from these hooks, never from timers. Shared `plan:{id}` channel in `lib/plan-channel.ts`; plus `useAutoAcceptedEvent`. `useBenchProgress` takes the runner's stream once `/bench` exists.
 - [ ] **T10B.6 Placements** (each with its reduced-motion version and text equivalent, SDD §17.9):
   - Timings and announcements come from the Motion Storyboards (DESIGN.md): proof stamping ≈ 150 ms per row, announcing only the summary; signing stamp ≤ 600 ms after the server-verified assertion; Guard in ≤ 600 ms with Pay disabled in the same frame first; receipt prints in ≈ 1.1 s; eases out `cubic-bezier(.2,.7,.2,1)`, slam `cubic-bezier(.6,0,.9,.4)`; transform and opacity only.
   - [ ] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking).
   - [ ] Search loading: the Scout runs between source icons; ✓ + count per source.
-  - [ ] Proof streaming: the Inspector stamps rows as they arrive.
+  - [x] Proof streaming: the Inspector stamps rows as they arrive. (Beside the proof headline; walking down the rows is still open.)
   - [ ] Signing: the Notary stamps "SIGNED v{n}".
   - [ ] Auto-accepted change: the Inspector's thumbs-up in the ledger.
   - [ ] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value.
   - [ ] Paid: the receipt prints down; high-five.
   - [ ] Bench: Gremlin vs. Guard with the counter.
-  - [ ] Empty plan (Scout on basket), 404 (map upside down, "This page wandered off."), source error (tangled).
+  - [ ] Empty plan (Scout on basket), 404 (map upside down, "This page wandered off."), source error (tangled). 404 and the error page are done; empty plan and source error wait for their screens (T11).
   - [ ] Mobile pull-to-refresh on the plan page (stretch; drawn in Mobile Workspace with Scout `pull3` and "Refreshing prices…").
 - [ ] **T10B.7 Accessibility and performance check**
-  - ✅ All figures `aria-hidden`; every state has its text equivalent in an `aria-live` region.
+  - ✅ All figures `aria-hidden`; every state has its text equivalent in an `aria-live` region. (`test:a11y` covers `/dev/figures` and the 404.)
   - ✅ `prefers-reduced-motion`: still poses, no scroll-linked motion.
-  - ✅ Doodle bundle ≤ 30 kB gzipped on first load; figures below the fold lazy-load; `transform`/`opacity` only; < 4 ms per frame in the Performance panel.
+  - ✅ Doodle bundle ≤ 30 kB gzipped on first load (measured: figures + hooks 5.3 kB, rough-notation 3.9 kB); figures below the fold lazy-load; `transform`/`opacity` only; < 4 ms per frame in the Performance panel.
   - ✅ No action waits on an animation (≤ 600 ms feedback).
 
 ---
