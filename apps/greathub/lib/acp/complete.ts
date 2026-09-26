@@ -299,8 +299,22 @@ export async function completeSession(
         "This grant has already paid for an order.",
       );
 
+    const { data: reserved, error: reserveError } = await db().rpc(
+      "reserve_payment_grant",
+      { p_jti: grant.jti, p_session: row.id },
+    );
+    if (reserveError) throw new Error("grant reservation failed");
+    if (!reserved)
+      throw rejected(
+        409,
+        "grant_already_used",
+        "This grant has already been used for a payment attempt.",
+      );
+
     // 5. Charge. Contract linkage travels as reference + merchant-defined data.
     const rail = merchantRail();
+    // Dispatch can have an unknown outcome. Keep the claim until reconciliation.
+    finalized = true;
     const outcome = await rail.charge({
       reference: `${contract.contractId}@${contract.version}`.slice(0, 50),
       amountMinor: amount,
@@ -334,7 +348,6 @@ export async function completeSession(
       return { status: 200, body: { ...view.session, messages } };
     }
     if (outcome.status === "error") {
-      await release(row.id, null);
       throw new AcpHttpError(502, {
         type: "processing_error",
         code:

@@ -96,6 +96,9 @@ importers:
       '@cartel/evidence':
         specifier: workspace:*
         version: link:../../packages/evidence
+      '@cartel/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@cartel/platform':
         specifier: workspace:*
         version: link:../../packages/platform

@@ -424,6 +424,32 @@ export type Database = {
           },
         ];
       };
+      payment_grant_uses: {
+        Row: {
+          jti: string;
+          reserved_at: string;
+          session_id: string;
+        };
+        Insert: {
+          jti: string;
+          reserved_at?: string;
+          session_id: string;
+        };
+        Update: {
+          jti?: string;
+          reserved_at?: string;
+          session_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payment_grant_uses_session_id_fkey";
+            columns: ["session_id"];
+            isOneToOne: false;
+            referencedRelation: "checkout_sessions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       policies: {
         Row: {
           created_at: string;
@@ -760,6 +786,10 @@ export type Database = {
       requeue_failed_webhooks: {
         Args: Record<PropertyKey, never>;
         Returns: number;
+      };
+      reserve_payment_grant: {
+        Args: { p_jti: string; p_session: string };
+        Returns: boolean;
       };
       reset_catalog: {
         Args: { p_actor?: string };

@@ -1640,6 +1640,16 @@ export type Database = {
         };
         Returns: string;
       };
+      srv_bind_approved_checkout: {
+        Args: {
+          p_hash: string;
+          p_merchant: string;
+          p_session: string;
+          p_state: Json;
+          p_version: string;
+        };
+        Returns: string;
+      };
       srv_catalog_identity: { Args: { p_product: Json }; Returns: string };
       srv_complete_execution: {
         Args: {
@@ -1750,6 +1760,23 @@ export type Database = {
       srv_queue_send: {
         Args: { p_delay?: number; p_message: Json; p_queue: string };
         Returns: number;
+      };
+      srv_receive_greathub_event: { Args: { p_event: Json }; Returns: string };
+      srv_record_checkout_proof: {
+        Args: {
+          p_diff: Json;
+          p_hash: string;
+          p_merchant: string;
+          p_report: Json;
+          p_session: string;
+          p_state: Json;
+          p_version: string;
+        };
+        Returns: string;
+      };
+      srv_record_handoff: {
+        Args: { p_diff: string; p_url: string; p_version: string };
+        Returns: undefined;
       };
       srv_transition_contract: {
         Args: {

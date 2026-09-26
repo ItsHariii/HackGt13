@@ -498,6 +498,8 @@ export function ucpAgentProfile(opts: { keys?: readonly object[] } = {}) {
         ],
       },
       capabilities: {
+        "dev.ucp.shopping.cart": [{ version: UCP_VERSION }],
+        "dev.ucp.shopping.checkout": [{ version: UCP_VERSION }],
         "dev.ucp.shopping.catalog.search": cap("catalog_search", "search"),
         "dev.ucp.shopping.catalog.lookup": cap("catalog_lookup", "lookup"),
       },

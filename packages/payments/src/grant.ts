@@ -50,6 +50,7 @@ export type GrantFailure =
   | "wrong_merchant"
   | "currency_mismatch"
   | "amount_exceeds_grant"
+  | "quote_changed"
   | "contract_mismatch";
 
 export type GrantCheck =
@@ -115,6 +116,12 @@ export async function verifyGrant(
       reason: "amount_exceeds_grant",
       detail: `${expect.amountMinor} > ${grant.maxTotalMinor}`,
     };
+  }
+  if (
+    grant.quotedTotalMinor !== undefined &&
+    expect.amountMinor !== grant.quotedTotalMinor
+  ) {
+    return { ok: false, reason: "quote_changed" };
   }
   if (
     expect.contractHash !== undefined &&

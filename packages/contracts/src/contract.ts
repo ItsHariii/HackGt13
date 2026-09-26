@@ -271,6 +271,8 @@ export const ScopedPaymentGrant = z
     contractHash: Hash,
     executionId: z.uuid(),
     maxTotalMinor: NonNegativeMinor,
+    /** Exact re-proved total for a guarded execution; prevents stale accounting. */
+    quotedTotalMinor: NonNegativeMinor.optional(),
     currency: Currency,
     instrumentRef: z.string().min(1),
   })
