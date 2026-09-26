@@ -48,6 +48,11 @@
   --color-tape: #e8ddb5;
   --color-tag: #efe9db; /* Default chip */
   --color-desk: #e9e3d6; /* canvas behind pages */
+  --color-kraft: #dccfb4; /* landing desk (Landing v2) */
+  --color-diff-del: #fbe7e4;
+  --color-diff-del-text: #8e231e;
+  --color-diff-add: #e4f0e4;
+  --color-diff-add-text: #1e5a22;
 
   /* Type scale (size / line-height) */
   --text-meta: 0.75rem;
@@ -123,6 +128,11 @@
   --color-green-check: #8fd694;
   --color-tag: #223556;
   --color-desk: #0e1a2c;
+  --color-kraft: #0e1a2c;
+  --color-diff-del: #3a2a3a;
+  --color-diff-del-text: #ffb4ab;
+  --color-diff-add: #1c3a35;
+  --color-diff-add-text: #b5e6b8;
   --shadow-page: 0 30px 60px -30px rgb(0 0 0 / 0.55);
   --shadow-drawer: -24px 0 48px -24px rgb(0 0 0 / 0.6);
 }
@@ -147,6 +157,31 @@
       rgb(233 238 245 / 0.08) 1px,
       transparent 1.3px
     );
+  }
+
+  /* Surfaces: crisp 1 px borders, no tilt, tape or sketchy edges. */
+  .sheet {
+    background-color: var(--color-paper-raised);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-card);
+    box-shadow:
+      3px 3px 0 -1px var(--color-paper-sheet),
+      3px 3px 0 0 var(--color-rule);
+  }
+  /* The formal document (contract, receipt): white, straight, no dot grid. */
+  .sheet-formal {
+    background-color: var(--color-paper-sheet);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sheet);
+  }
+
+  .diff-del {
+    background-color: var(--color-diff-del);
+    color: var(--color-diff-del-text);
+  }
+  .diff-add {
+    background-color: var(--color-diff-add);
+    color: var(--color-diff-add-text);
   }
 
   .num {

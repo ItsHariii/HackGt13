@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RequirementChip } from "@/components/cartel/requirement-chip";
 import { cn } from "@/lib/utils";
 import type { RequirementKind, RequirementView } from "@/lib/workspace";
 
@@ -12,46 +13,23 @@ const TEXT_TONE: Record<RequirementKind, string> = {
 };
 
 function Provenance({ kind }: { kind: RequirementKind }) {
-  const chip =
-    "inline-flex h-5 items-center gap-1 rounded-[3px] px-1.5 font-semibold";
-  switch (kind) {
-    case "said":
-      return (
-        <span className={cn(chip, "bg-ink text-paper-raised")}>You said</span>
-      );
-    case "chose":
-      return (
-        <span className={cn(chip, "bg-ink text-paper-raised")}>You chose</span>
-      );
-    case "confirmed":
-      return (
-        <span className={cn(chip, "border border-ink text-ink")}>
-          I assumed → confirmed
+  if (kind === "assumed")
+    return (
+      <>
+        <RequirementChip kind="assumed" />
+        <span className="font-semibold text-ink">
+          Not checked until confirmed
         </span>
-      );
-    case "default":
-      return <span className={cn(chip, "bg-tag")}>Default</span>;
-    case "assumed":
-      return (
-        <>
-          <span className={cn(chip, "border border-pencil border-dashed")}>
-            I assumed
-          </span>
-          <span className="font-semibold text-ink">
-            Not checked until confirmed
-          </span>
-        </>
-      );
-    case "cant":
-      return (
-        <>
-          <span className={cn(chip, "border border-graphite text-graphite")}>
-            ? Can't check
-          </span>
-          <span>Waived by you</span>
-        </>
-      );
-  }
+      </>
+    );
+  if (kind === "cant")
+    return (
+      <>
+        <RequirementChip kind="cant" />
+        <span>Waived by you</span>
+      </>
+    );
+  return <RequirementChip kind={kind} />;
 }
 
 export function RequirementsRail({
@@ -80,7 +58,12 @@ export function RequirementsRail({
           Edit
         </Link>
       </div>
-      <ul className="flex min-h-0 flex-col gap-2.5 overflow-y-auto pb-2">
+      <ul
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling pane must be reachable by keyboard (WCAG 2.1.1)
+        tabIndex={0}
+        aria-label="Requirements list"
+        className="flex min-h-0 flex-col gap-2.5 overflow-y-auto pb-2"
+      >
         {requirements.map((r) => (
           <li
             key={r.id}

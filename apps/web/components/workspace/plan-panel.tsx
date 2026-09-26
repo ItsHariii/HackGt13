@@ -92,7 +92,12 @@ export function PlanPanel({
             {plan.tierLabel}
           </span>
         </div>
-        <ul className="flex min-h-0 flex-col overflow-y-auto px-6">
+        <ul
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling pane must be reachable by keyboard (WCAG 2.1.1)
+          tabIndex={0}
+          aria-label="Plan items"
+          className="flex min-h-0 flex-col overflow-y-auto px-6"
+        >
           {plan.items.map((it) => (
             <li
               key={`${it.role}-${it.title}`}

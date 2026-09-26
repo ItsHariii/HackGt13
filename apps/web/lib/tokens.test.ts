@@ -55,6 +55,9 @@ const pairings: [string, string, number][] = [
   ["graphite", "tag", 4.5], // Default chip
   ["muted", "rule-soft", 4.5], // disabled button
   ["graphite", "desk", 4.5],
+  ["graphite", "kraft", 4.5], // landing headings on the desk
+  ["diff-del-text", "diff-del", 4.5],
+  ["diff-add-text", "diff-add", 4.5],
 ];
 
 describe.each([
