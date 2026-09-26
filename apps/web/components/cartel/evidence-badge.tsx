@@ -4,6 +4,7 @@ export type EvidenceLevel =
   | "confirmed"
   | "manufacturer"
   | "seller"
+  | "catalog"
   | "suggests"
   | "estimate"
   | "cant"
@@ -17,6 +18,7 @@ const LEVEL: Record<EvidenceLevel, { label: string; tone: string }> = {
   },
   manufacturer: { label: "Manufacturer says", tone: "border-ink text-ink" },
   seller: { label: "Seller says", tone: "border-ink text-ink" },
+  catalog: { label: "Catalog says", tone: "border-ink text-ink" },
   suggests: {
     label: "Evidence suggests",
     tone: "border-pencil border-dashed text-muted",

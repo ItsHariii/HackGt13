@@ -56,7 +56,7 @@ export function SpecReceiptRow({
 }: {
   receipt: SpecReceipt;
   /** Shown as "+ Make this a rule". */
-  onMakeRule?: () => void;
+  onMakeRule?: (() => void) | undefined;
 }) {
   return (
     <tr className="group border-rule-soft border-b text-graphite last:border-0">

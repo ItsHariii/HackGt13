@@ -1,0 +1,202 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { Figure } from "@/components/doodle/figure";
+import { cn } from "@/lib/utils";
+
+/*
+ * The Edge States design (TASKS T11.14, SDD §17.4): every screen's empty,
+ * error and degraded states say what happened and what to do next. Figures
+ * are decoration; the text carries the meaning.
+ */
+
+export function StateCard({
+  figure,
+  eyebrow,
+  title,
+  children,
+  actions,
+  tone = "plain",
+  className,
+  headingLevel: H = "h2",
+}: {
+  figure?: ReactNode;
+  eyebrow?: string | undefined;
+  title: string;
+  children?: ReactNode;
+  actions?: ReactNode;
+  tone?: "plain" | "fail" | "dashed";
+  className?: string | undefined;
+  headingLevel?: "h1" | "h2" | "h3" | undefined;
+}) {
+  return (
+    <section
+      className={cn(
+        "sheet flex flex-col items-start gap-3 p-5 text-graphite sm:flex-row sm:items-center sm:gap-5",
+        tone === "fail" && "border-red-pen",
+        tone === "dashed" && "border-pencil border-dashed",
+        className,
+      )}
+    >
+      {figure && (
+        <div aria-hidden="true" className="shrink-0">
+          {figure}
+        </div>
+      )}
+      <div className="flex flex-col gap-2">
+        {eyebrow && (
+          <p className="font-semibold text-meta text-muted uppercase tracking-label">
+            {eyebrow}
+          </p>
+        )}
+        <H className="font-semibold font-serif text-h4 tracking-heading">
+          {title}
+        </H>
+        {children && <div className="text-graphite-2 text-ui">{children}</div>}
+        {actions && <div className="flex flex-wrap gap-2 pt-1">{actions}</div>}
+      </div>
+    </section>
+  );
+}
+
+const action =
+  "inline-flex min-h-11 items-center rounded-card border border-graphite bg-paper-raised px-4 font-semibold text-ui text-graphite hover:bg-paper";
+const primary =
+  "inline-flex min-h-11 items-center rounded-card bg-graphite px-4 font-semibold text-paper-raised text-ui shadow-primary";
+
+/** 1 · Empty plan: the Scout sits on the basket. */
+export function EmptyPlan({
+  headingLevel,
+}: {
+  headingLevel?: "h1" | "h2" | "h3" | undefined;
+}) {
+  return (
+    <StateCard
+      figure={<Figure who="scout" pose="sit" h={88} />}
+      eyebrow="Empty plan"
+      title="No items yet."
+      headingLevel={headingLevel}
+      actions={
+        <>
+          <Link href="/search" className={primary}>
+            Search
+          </Link>
+          <Link href="/explore#kits" className={action}>
+            Start from a kit
+          </Link>
+        </>
+      }
+    >
+      Search, or start from a kit.
+    </StateCard>
+  );
+}
+
+/** 3 · Source error: one source didn't answer; the rest are fine. */
+export function SourceError({
+  source,
+  onRetry,
+}: {
+  source: string;
+  onRetry?: (() => void) | undefined;
+}) {
+  return (
+    <StateCard
+      tone="fail"
+      figure={<Figure who="scout" pose="tangled" h={72} />}
+      eyebrow="Source error"
+      title={`${source} · no response`}
+      headingLevel="h3"
+      actions={
+        onRetry && (
+          <button type="button" onClick={onRetry} className={action}>
+            Retry
+          </button>
+        )
+      }
+    >
+      {source} didn't answer. Other sources are fine.
+    </StateCard>
+  );
+}
+
+/** 8 · AI off: the manual path still works end to end. */
+export function AiOff({ href }: { href: string }) {
+  return (
+    <StateCard
+      tone="dashed"
+      eyebrow="AI unavailable"
+      title="AI is unavailable. You can still add rules by hand."
+      headingLevel="h2"
+      actions={
+        <a href={href} className={action}>
+          Add a rule by hand
+        </a>
+      }
+    >
+      Proof, signing and payment work the same.
+    </StateCard>
+  );
+}
+
+/** 6 · Passkey cancelled: nothing was signed. */
+export function PasskeyCancelled({
+  version,
+  onRetry,
+}: {
+  version: number;
+  onRetry: () => void;
+}) {
+  return (
+    <StateCard
+      tone="fail"
+      eyebrow="Signing cancelled"
+      title="Nothing was signed."
+      headingLevel="h3"
+      actions={
+        <button type="button" onClick={onRetry} className={action}>
+          Try again
+        </button>
+      }
+    >
+      Contract v{version} is unchanged and still unsigned.
+    </StateCard>
+  );
+}
+
+/** A stored plan with rules but no solved basket yet. */
+export function NotSolvedYet({
+  planId,
+  title,
+  ruleCount,
+}: {
+  planId: string;
+  title: string;
+  ruleCount: number;
+}) {
+  return (
+    <StateCard
+      figure={<Figure who="inspector" pose="idle" h={88} />}
+      eyebrow={title}
+      title={
+        ruleCount === 0
+          ? "No rules yet."
+          : `${ruleCount} rules saved. No plans yet.`
+      }
+      headingLevel="h1"
+      actions={
+        <>
+          <Link href={`/plans/${planId}/requirements`} className={primary}>
+            {ruleCount === 0 ? "Add rules" : "Edit rules"}
+          </Link>
+          <Link href="/search" className={action}>
+            Search products
+          </Link>
+        </>
+      }
+    >
+      {ruleCount === 0
+        ? "Add the rules this plan must meet, by hand or from your brief."
+        : "Your rules are saved. Solving saved plans into baskets isn't connected in this build yet; the Home office demo plan shows the full flow."}
+    </StateCard>
+  );
+}

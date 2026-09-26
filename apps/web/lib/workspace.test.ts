@@ -120,3 +120,17 @@ describe("ruleText", () => {
     });
   });
 });
+
+describe("ruleText wording", async () => {
+  const { WEDDING_REQUIREMENTS } = await import("@cartel/rule-packs/fixtures");
+  const { apparel } = await import("@cartel/rule-packs");
+  const { ruleText } = await import("./workspace");
+  it("says what list operators mean and capitalizes roles", () => {
+    const texts = WEDDING_REQUIREMENTS.map((r) => ruleText(r, [apparel]));
+    expect(texts).toContain("Dress fibers without wool");
+    expect(texts).toContain("Dress color navy");
+    expect(texts.some((t) => /between 35\.5 in and 36\.5 in$/.test(t))).toBe(
+      true,
+    );
+  });
+});

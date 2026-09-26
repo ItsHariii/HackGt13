@@ -1,4 +1,4 @@
-// axe-core accessibility check for the Phase 10 pages (TASKS T10.3: every
+// axe-core accessibility check for the Phase 10 and Phase 11 pages (TASKS T10.3: every
 // component axe-clean in both themes). Run against a running app:
 //   pnpm --filter @cartel/web build && pnpm --filter @cartel/web start
 //   A11Y_BASE_URL=http://localhost:3000 pnpm --filter @cartel/web test:a11y
@@ -16,6 +16,28 @@ const pages = [
   ["/trust", "light"],
   ["/plans/flagship", "light"],
   ["/plans/flagship", "dark"],
+  ["/dev/states", "light"],
+  ["/new", "light"],
+  ["/plans/flagship/requirements", "light"],
+  ["/plans/flagship/compare", "light"],
+  ["/plans/flagship/compare?budget=800", "light"],
+  ["/plans/flagship/contract", "light"],
+  ["/plans/flagship/contract?review=1", "light"],
+  ["/plans/flagship/contract", "dark"],
+  ["/plans/flagship/checkout", "light"],
+  ["/plans/flagship/diff/deal-trap", "light"],
+  ["/plans/flagship/diff/deal-trap", "dark"],
+  ["/orders", "light"],
+  ["/orders/CT-0926-0001", "light"],
+  ["/ledger/flagship", "light"],
+  ["/mandates", "light"],
+  ["/bench", "light"],
+  ["/settings/signing", "light"],
+  ["/explore", "light"],
+  ["/search?q=monitor", "light"],
+  ["/p/dm_halden_m27q", "light"],
+  ["/compare?ids=dm_halden_m27q,dm_vireo_u2727e", "light"],
+  ["/kits/starter-home-office", "light"],
 ];
 const viewports = [
   { width: 1440, height: 900 },
