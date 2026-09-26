@@ -440,9 +440,9 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 - [x] **T10B.5 Event hooks**: `useSearchStatus` (per-source state), `useProofStream` (proof_results broadcast), `useSignatureEvent`, `useDiffEvent`, `usePaymentEvent`, `useBenchProgress`. Figures animate only from these hooks, never from timers. Shared `plan:{id}` channel in `lib/plan-channel.ts`; plus `useAutoAcceptedEvent`. `useBenchProgress` takes the runner's stream once `/bench` exists.
 - [ ] **T10B.6 Placements** (each with its reduced-motion version and text equivalent, SDD §17.9):
   - Timings and announcements come from the Motion Storyboards (DESIGN.md): proof stamping ≈ 150 ms per row, announcing only the summary; signing stamp ≤ 600 ms after the server-verified assertion; Guard in ≤ 600 ms with Pay disabled in the same frame first; receipt prints in ≈ 1.1 s; eases out `cubic-bezier(.2,.7,.2,1)`, slam `cubic-bezier(.6,0,.9,.4)`; transform and opacity only.
-  - [ ] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking).
+  - [x] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking). `PulledSheet` on "The trap": reads scroll position (rAF-throttled, only while visible), moves by `transform`, pull1→pull3 by progress; no Motion dependency.
   - [ ] Search loading: the Scout runs between source icons; ✓ + count per source.
-  - [x] Proof streaming: the Inspector stamps rows as they arrive. (Beside the proof headline; walking down the rows is still open.)
+  - [x] Proof streaming: the Inspector stamps rows as they arrive. It waits by the headline, then walks down the list gutter to each arriving row (`ProofWalker`) and ends with a thumbs-up when all pass.
   - [ ] Signing: the Notary stamps "SIGNED v{n}".
   - [ ] Auto-accepted change: the Inspector's thumbs-up in the ledger.
   - [ ] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value.
@@ -453,7 +453,7 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 - [ ] **T10B.7 Accessibility and performance check**
   - ✅ All figures `aria-hidden`; every state has its text equivalent in an `aria-live` region. (`test:a11y` covers `/dev/figures` and the 404.)
   - ✅ `prefers-reduced-motion`: still poses, no scroll-linked motion.
-  - ✅ Doodle bundle ≤ 30 kB gzipped on first load (measured: figures + hooks 5.3 kB, rough-notation 3.9 kB); figures below the fold lazy-load; `transform`/`opacity` only; < 4 ms per frame in the Performance panel.
+  - ✅ Doodle bundle ≤ 30 kB gzipped on first load (measured: figures + hooks 5.3 kB, rough-notation 3.9 kB); figures below the fold lazy-load; `transform`/`opacity` only; < 4 ms per frame in the Performance panel. `test:perf` measures script + style + layout per frame: 0.6 ms scrolling the rope, 2.5 ms with the run loop, stamps and walker (headless Chromium, paint excluded).
   - ✅ No action waits on an animation (≤ 600 ms feedback).
 
 ---

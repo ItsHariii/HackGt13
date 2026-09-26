@@ -10,7 +10,8 @@
     "test": "vitest run --passWithNoTests",
     "lint": "biome check .",
     "test:realtime": "node scripts/realtime-smoke.mjs",
-    "test:a11y": "node scripts/a11y.mjs"
+    "test:a11y": "node scripts/a11y.mjs",
+    "test:perf": "node scripts/perf-figures.mjs"
   },
   "dependencies": {
     "@cartel/acp": "workspace:*",
