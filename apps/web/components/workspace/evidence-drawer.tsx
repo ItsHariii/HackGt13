@@ -140,7 +140,12 @@ export function EvidenceDrawer({
           </Link>
         )}
       </div>
-      <div className="flex flex-col gap-[18px] overflow-y-auto px-[22px] py-[18px]">
+      <section
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling pane must be reachable by keyboard (WCAG 2.1.1)
+        tabIndex={0}
+        aria-label="Evidence details"
+        className="flex flex-col gap-[18px] overflow-y-auto px-[22px] py-[18px]"
+      >
         <div
           className={cn(
             "flex items-center gap-2.5 rounded-card border px-3.5 py-3",
@@ -244,7 +249,7 @@ export function EvidenceDrawer({
             </span>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
