@@ -26,6 +26,7 @@ import { CompareTray, PlanTray } from "@/components/cartel/trays";
 import { Mark } from "@/components/paper/mark";
 import { Stamp } from "@/components/paper/stamp";
 import { StatusMark } from "@/components/paper/status-mark";
+import { SignContract } from "@/components/signing/sign-contract";
 import { Button } from "@/components/ui/button";
 import * as F from "@/lib/dev-fixtures";
 
@@ -212,6 +213,10 @@ export function Gallery({ theme }: { theme: "paper" | "blueprint" }) {
           from="v7 sha256:7c1e…a94f"
           to="v8 sha256:b04d…19e2"
           lines={F.diff}
+        />
+        <SignContract
+          contractVersionId="00000000-0000-4000-8000-000000000007"
+          version={7}
         />
         <MerchantStatusTable rows={F.merchants} />
         <GuardStepper steps={F.orderSteps} label="Order progress" />

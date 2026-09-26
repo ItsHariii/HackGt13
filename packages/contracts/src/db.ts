@@ -1640,6 +1640,20 @@ export type Database = {
         };
         Returns: string;
       };
+      srv_begin_signing: {
+        Args: {
+          p_challenge: string;
+          p_hash: string;
+          p_nonce: string;
+          p_user: string;
+          p_version: string;
+        };
+        Returns: string;
+      };
+      srv_begin_signing_registration: {
+        Args: { p_challenge: string; p_user: string };
+        Returns: string;
+      };
       srv_bind_approved_checkout: {
         Args: {
           p_hash: string;
@@ -1708,6 +1722,19 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      srv_consume_signing_challenge: {
+        Args: { p_nonce: string; p_user: string };
+        Returns: {
+          body_hash: string;
+          challenge: string;
+          contract_version_id: string;
+          expired: boolean;
+        }[];
+      };
+      srv_consume_signing_registration: {
+        Args: { p_challenge: string; p_user: string };
+        Returns: boolean;
+      };
       srv_fork_kit: {
         Args: {
           p_hash: string;
@@ -1770,6 +1797,20 @@ export type Database = {
           p_report: Json;
           p_session: string;
           p_state: Json;
+          p_version: string;
+        };
+        Returns: string;
+      };
+      srv_record_contract_signature: {
+        Args: {
+          p_authenticator_data: string;
+          p_challenge: string;
+          p_client_data_json: string;
+          p_counter: number;
+          p_credential: string;
+          p_hash: string;
+          p_signature: string;
+          p_user: string;
           p_version: string;
         };
         Returns: string;

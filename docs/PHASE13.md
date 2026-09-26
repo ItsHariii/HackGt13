@@ -32,8 +32,8 @@ or skips the guard when Phase 12 signing has not yet produced a signed contract.
 ## Signing integration
 
 The existing checkout guard requires a **real verified signature** in
-`contract_signatures`. Phase 12's registration/signing routes are still absent
-in this checkout. The fixture workspace is not a signed purchase.
+`contract_signatures`. Phase 12 ([PHASE12.md](PHASE12.md)) writes that signature
+through `/api/signing/*`. The fixture workspace is not a signed purchase.
 
 The contract-drafting flow must call `bindApprovedCheckout(versionId, sessionId,
 approvedState)` from `apps/web/lib/checkout-approval.ts` before signing. It verifies
