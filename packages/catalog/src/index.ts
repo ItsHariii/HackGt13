@@ -1,2 +1,6 @@
-// catalog: implementation belongs to its later phase in docs/TASKS.md.
-export {};
+// Phase 7B: evidence-backed discovery. Persistence is available through ./supabase.
+
+export * from "./facets";
+export * from "./normalize";
+export * from "./product";
+export * from "./search";

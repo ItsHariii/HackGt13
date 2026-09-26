@@ -4,12 +4,25 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./supabase": "./src/supabase.ts",
+    "./fixtures/*": "./src/__fixtures__/*"
   },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "biome check ."
+  },
+  "dependencies": {
+    "@proofcart/acp": "workspace:*",
+    "@proofcart/contracts": "workspace:*",
+    "@proofcart/proof-engine": "workspace:*",
+    "@proofcart/tap": "workspace:*",
+    "@supabase/supabase-js": "2.117.2"
+  },
+  "devDependencies": {
+    "@proofcart/rule-packs": "workspace:*",
+    "fast-check": "^4.10.2"
   }
 }

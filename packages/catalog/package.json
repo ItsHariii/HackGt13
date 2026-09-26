@@ -4,12 +4,22 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./supabase": "./src/supabase.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "biome check ."
+  },
+  "dependencies": {
+    "@proofcart/contracts": "workspace:*",
+    "@proofcart/evidence": "workspace:*",
+    "@proofcart/proof-engine": "workspace:*",
+    "@supabase/supabase-js": "2.117.2"
+  },
+  "devDependencies": {
+    "@proofcart/rule-packs": "workspace:*"
   }
 }

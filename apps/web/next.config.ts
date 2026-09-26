@@ -2,7 +2,16 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@proofcart/platform"],
+  transpilePackages: [
+    "@proofcart/catalog",
+    "@proofcart/acp",
+    "@proofcart/contracts",
+    "@proofcart/evidence",
+    "@proofcart/platform",
+    "@proofcart/proof-engine",
+    "@proofcart/rule-packs",
+    "@proofcart/tap",
+  ],
   poweredByHeader: false,
 };
 export default withSentryConfig(nextConfig, {

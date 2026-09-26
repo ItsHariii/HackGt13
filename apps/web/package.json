@@ -12,6 +12,8 @@
     "test:realtime": "node scripts/realtime-smoke.mjs"
   },
   "dependencies": {
+    "@proofcart/catalog": "workspace:*",
+    "@proofcart/contracts": "workspace:*",
     "@proofcart/platform": "workspace:*",
     "@sentry/nextjs": "11.0.0",
     "@supabase/supabase-js": "2.117.2",
@@ -25,7 +27,11 @@
     "@radix-ui/react-slot": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.0.0"
+    "tailwind-merge": "^3.0.0",
+    "@proofcart/acp": "workspace:*",
+    "@proofcart/evidence": "workspace:*",
+    "@proofcart/rule-packs": "workspace:*",
+    "@proofcart/tap": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",

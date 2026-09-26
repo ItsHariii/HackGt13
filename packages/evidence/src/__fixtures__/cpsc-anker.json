@@ -1,0 +1,380 @@
+[
+  {
+    "RecallID": 10631,
+    "RecallNumber": "26288",
+    "RecallDate": "2026-02-26T00:00:00",
+    "Description": "This recall involves Trankerloop-branded baby bath seats sold in blue, gray, pink and yellow. The bath seats have two detachable arms that serve as a restraint, four suction cups on the bottom, and come with a cup and a sponge. \"PLASTIC STOOL\" and \"Model: YD-1958\" are printed on a tracking label located on the back of the bath seat.",
+    "URL": "https://www.cpsc.gov/Recalls/2026/Trankerloop-Baby-Bath-Seats-Recalled-Due-to-Risk-of-Serious-Injury-or-Death-to-Children-from-Drowning-Violates-Mandatory-Standard-for-Infant-Bath-Seats",
+    "Title": "Trankerloop Baby Bath Seats Recalled Due to Risk of Serious Injury or Death to Children from Drowning; Violates Mandatory Standard for Infant Bath Seats",
+    "ConsumerContact": "Trankerloop at 405-204-8540 from 9 a.m. to 3:30 p.m. CT Monday through Friday or by email at hkkll147@outlook.com.",
+    "LastPublishDate": "2026-02-27T00:00:00",
+    "Products": [
+      {
+        "Name": "Trankerloop Baby Bath Seats",
+        "Description": "",
+        "Model": "",
+        "Type": "",
+        "CategoryID": "",
+        "NumberOfUnits": "About 2,380"
+      }
+    ],
+    "Inconjunctions": [],
+    "Images": [
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/trankerloop-1.png",
+        "Caption": "Recalled Trankerloop Baby Bath Seat \u2013 gray"
+      },
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/trankerloop-2.png",
+        "Caption": "\"PLASTIC STOOL\" and \"Model: YD-1958\" on tracking label on the back of the seat"
+      }
+    ],
+    "Injuries": [
+      {
+        "Name": "None reported"
+      }
+    ],
+    "Manufacturers": [],
+    "Retailers": [
+      {
+        "Name": "Online at Amazon.com from August 2025 to October 2025 for about $36.",
+        "CompanyID": ""
+      }
+    ],
+    "Importers": [],
+    "Distributors": [
+      {
+        "Name": "Shenzhenshirongmanshangmaoyouxiangongsi (Shenzhen Shi Ronmang Trading Co., Ltd.) dba Trankerloop, of China",
+        "CompanyID": ""
+      }
+    ],
+    "SoldAtLabel": null,
+    "ManufacturerCountries": [
+      {
+        "Country": "China"
+      }
+    ],
+    "ProductUPCs": [],
+    "Hazards": [
+      {
+        "Name": "The recalled bath seats violate the mandatory standard for infant bath seats because they are unstable and can tip over while in use, posing a risk of serious injury or death due to drowning.",
+        "HazardType": "",
+        "HazardTypeID": ""
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Consumers should immediately stop using the recalled bath seats and contact Trankerloop for a full refund. Consumers will be asked to write \"Recalled\" on the front of the bath seat in permanent marker, disassemble the bath seat by removing the back rest and arm restraints, cut the four suction cups on the bottom and email a photo of the disassembled recalled bath seat showing the marked front of the seat to hkkll147@outlook.com."
+      }
+    ],
+    "RemedyOptions": [
+      {
+        "Option": "Refund"
+      }
+    ]
+  },
+  {
+    "RecallID": 10311,
+    "RecallNumber": "25338",
+    "RecallDate": "2025-06-12T00:00:00",
+    "Description": "This recall involves Anker PowerCore 10000 power banks with model number A1263. The brand name \"Anker\" is engraved on the front of the product. The model number \"A1263\" and serial number \"SN\" are printed on the bottom. Only model number A1263 power banks sold in the U.S. with qualifying serial numbers are included in the recall. Consumers should check their serial number at https://www.anker.com/product-recalls to determine whether their power bank is included in the recall. Note: Do not throw this recalled lithium-ion battery or device in the trash, in the general recycling stream (e.g., street-level or curbside recycling bins), or in used battery recycling boxes found at various retail and home improvement stores. Recalled lithium-ion batteries must be disposed of differently than other batteries, because they present a greater risk of fire. Your municipal household hazardous waste (HHW) collection center may accept this recalled lithium-ion battery or device for disposal. Before taking your battery or device to a HHW collection center, contact it ahead of time and ask whether it accepts recalled lithium-ion batteries. If it does not, contact your municipality for further guidance.",
+    "URL": "https://www.cpsc.gov/Recalls/2025/More-than-One-Million-Anker-Power-Banks-Recalled-Due-to-Fire-and-Burn-Hazards-Manufactured-by-Anker-Innovations",
+    "Title": "More than One Million Anker Power Banks Recalled Due to Fire and Burn Hazards; Manufactured by Anker Innovations",
+    "ConsumerContact": "Anker toll-free at 800-988-7973 from 6 a.m. to 5 p.m. PT Monday through Friday, email at support@anker.com, or online at https://support.anker.com/s/emailcontactus. A Live Chat function is also available at https://support.anker.com/s/contact-us, or go to https://www.anker.com/product-recalls or www.anker.com and click on \"Product Recalls\" at the top of the page for more information.",
+    "LastPublishDate": "2025-06-12T00:00:00",
+    "Products": [
+      {
+        "Name": "Anker PowerCore 10000 power banks (model A1263 only)",
+        "Description": "",
+        "Model": "",
+        "Type": "",
+        "CategoryID": "",
+        "NumberOfUnits": "About 1,158,000"
+      }
+    ],
+    "Inconjunctions": [],
+    "Images": [
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/A1263-1.jpg",
+        "Caption": "Recalled Anker A1263 power bank"
+      }
+    ],
+    "Injuries": [
+      {
+        "Name": "Anker has received 19 reports of fires and explosions. This includes two reports of minor burn injuries not requiring medical attention and 11 reports of property damage totaling over $60,700."
+      }
+    ],
+    "Manufacturers": [
+      {
+        "Name": "Anker Innovations Limited, of China",
+        "CompanyID": ""
+      }
+    ],
+    "Retailers": [
+      {
+        "Name": "Online at Anker, Amazon, Newegg and Ebay from June 2016 through December 2022 for about $27.",
+        "CompanyID": ""
+      }
+    ],
+    "Importers": [],
+    "Distributors": [],
+    "SoldAtLabel": null,
+    "ManufacturerCountries": [
+      {
+        "Country": "China"
+      }
+    ],
+    "ProductUPCs": [],
+    "Hazards": [
+      {
+        "Name": "The lithium-ion battery in the power bank can overheat, posing fire and burn hazards to consumers.",
+        "HazardType": "",
+        "HazardTypeID": ""
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Consumers should immediately stop using the recalled power banks and contact Anker Innovations for instructions on receiving a free replacement power bank. Visit https://www.anker.com/product-recalls to register for the recall. To receive a replacement, consumers will be required to submit a photo of their recalled power bank showing the model number, serial number, their name, the date of the photograph, and the word \"recalled\" written on the power bank in permanent marker. A purchase receipt will be requested but will not be required to participate in the recall. Consumers will also be required to confirm disposal of the power bank in accordance with applicable laws and regulations before receiving a replacement."
+      }
+    ],
+    "RemedyOptions": [
+      {
+        "Option": "Replace"
+      }
+    ]
+  },
+  {
+    "RecallID": 10099,
+    "RecallNumber": "25056",
+    "RecallDate": "2024-12-05T00:00:00",
+    "Description": "This recall involves the lithium-ion battery packs in Anker Soundcore Bluetooth Speakers sold exclusively on Amazon in 2023. Only lithium-ion battery packs in Anker Soundcore Bluetooth Speakers with models A3102016, A3302011 and A3302031 are included in this recall. The recalled speakers can be identified by the unit's \"SN Code\" which is visible on the underside of the Bluetooth Speakers. Consumers can type in the \"SN Code\" on Anker's website https://www.anker.com/product-recalls to see if their product is recalled. Anker and Amazon have contacted all known purchasers.",
+    "URL": "https://www.cpsc.gov/Recalls/2025/Anker-Soundcore-Lithium-Ion-Battery-Powered-Bluetooth-Speakers-Recalled-Due-to-Fire-Hazard-Sold-Exclusively-on-Amazon-com-by-Anker-Innovations",
+    "Title": "Anker Soundcore Lithium-Ion Battery Powered Bluetooth Speakers Recalled Due to Fire Hazard; Sold Exclusively on Amazon.com by Anker Innovations",
+    "ConsumerContact": "Anker at 800-988-7973 from 9 a.m. to 5 p.m. PT Monday through Friday, email at support@anker.com, or online at https://support.anker.com/s/emailcontactus. A Live Chat function is also available at https://support.anker.com/s/contact-us, or go to https://www.anker.com/product-recalls or at www.anker.com and click on \"Product Recalls\" at the bottom of the page for more information.",
+    "LastPublishDate": "2024-12-05T00:00:00",
+    "Products": [
+      {
+        "Name": "Anker Soundcore (A3102) and PowerConf Bluetooth (A3302) Speakers",
+        "Description": "",
+        "Model": "",
+        "Type": "",
+        "CategoryID": "",
+        "NumberOfUnits": "About 69,000 (In addition, about 9,764 were sold in Canada)"
+      }
+    ],
+    "Inconjunctions": [
+      {
+        "URL": "https://recalls-rappels.canada.ca/en/alert-recall/soundcore-a3102-speaker-black-and-ankerwork-a3302-powerconf-s3-speakerphone-recalled"
+      }
+    ],
+    "Images": [
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/anker-1_0.png",
+        "Caption": "Recalled Anker Soundcore Bluetooth Speaker Model A3102016"
+      },
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/anker-2_0.png",
+        "Caption": "Recalled Anker Soundcore Bluetooth Speaker Model A3302011r"
+      },
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/anker-3_0.png",
+        "Caption": "Recalled Anker Soundcore Bluetooth Speaker Model A3302031"
+      }
+    ],
+    "Injuries": [
+      {
+        "Name": "The firm has received 33 reports of incidents involving the lithium-ion batteries in the speakers overheating, some of those involve incidents of smoking and small fires, including one minor burn injury in connection with an overheating unit."
+      }
+    ],
+    "Manufacturers": [],
+    "Retailers": [
+      {
+        "Name": "Exclusively online at Amazon.com from March 2023 through October 2023 for between $28 and $130.",
+        "CompanyID": ""
+      }
+    ],
+    "Importers": [
+      {
+        "Name": "Anker Innovations Limited, of Hong Kong",
+        "CompanyID": ""
+      }
+    ],
+    "Distributors": [],
+    "SoldAtLabel": null,
+    "ManufacturerCountries": [
+      {
+        "Country": "China"
+      }
+    ],
+    "ProductUPCs": [],
+    "Hazards": [
+      {
+        "Name": "The lithium-ion batteries in the recalled A3102 Anker Soundcore (black) and A3302 PowerConf S3 Bluetooth Speakers can overheat, posing a fire hazard.",
+        "HazardType": "",
+        "HazardTypeID": ""
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Consumers should immediately stop using the recalled speakers, and ensure they are powered off and are not connected to any external power source or charger. Visit Anker at https://support.anker.com/s/emailcontactus to verify the speaker's SN code and to fill out product recall information. Anker Innovations Limited will provide further instructions on how to obtain a replacement speaker free of charge. Because of the lithium-ion batteries, consumers should dispose of the speaker in accordance with local and state regulations and not in the trash."
+      }
+    ],
+    "RemedyOptions": [
+      {
+        "Option": "Replace"
+      }
+    ]
+  },
+  {
+    "RecallID": 10067,
+    "RecallNumber": "25011",
+    "RecallDate": "2024-10-17T00:00:00",
+    "Description": "This recall involves Anker Power Banks with model numbers A1642, A1647 and A1652. The power bank can be used as a portable electronic charging device for smartphones, tablets, and laptops with a 12W (A1642), 15W(A1647), 20W(A1652) maximum output. Anker is engraved on the front, and the model numbers A1642, A1647 and A1652 are located on the back of the power bank.",
+    "URL": "https://www.cpsc.gov/Recalls/2025/Anker-Power-Banks-Recalled-Due-to-Fire-and-Burn-Hazards-Manufactured-by-Anker-Innovations",
+    "Title": "Anker Power Banks Recalled Due to Fire and Burn Hazards; Manufactured by Anker Innovations",
+    "ConsumerContact": "Anker at 800-988-7973 from 9 a.m. to 5 p.m. PT Monday through Friday, email at support@anker.com, or online at https://support.anker.com/s/emailcontactus. A LiveChat function is also available at https://support.anker.com/s/contact-us, or go to https://www.anker.com/product-recalls or at www.anker.com and click on \"Product Recalls\" at the bottom of the page for more information.",
+    "LastPublishDate": "2024-10-17T00:00:00",
+    "Products": [
+      {
+        "Name": "Anker Power Banks",
+        "Description": "",
+        "Model": "",
+        "Type": "",
+        "CategoryID": "",
+        "NumberOfUnits": "About 2,100"
+      }
+    ],
+    "Inconjunctions": [],
+    "Images": [
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/anker-1.png",
+        "Caption": "Recalled Anker Power Bank A1642"
+      },
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/anker-2.png",
+        "Caption": "Recalled Anker Power Bank A1647"
+      },
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/anker-3.png",
+        "Caption": "Recalled Anker Power Bank A1652"
+      }
+    ],
+    "Injuries": [
+      {
+        "Name": "The firm has received 28 reports of incidents of the batteries overheating, exploding, and the power bank catching on fire. Two injuries which included first and second degree burns to the consumer's hands have been reported."
+      }
+    ],
+    "Manufacturers": [
+      {
+        "Name": "Anker Innovations Limited, of Hong Kong, China",
+        "CompanyID": ""
+      }
+    ],
+    "Retailers": [
+      {
+        "Name": "Best Buy, Target, NEXT TRADING SAS, C2 Wireless and K Spider Inc. stores nationwide, and online at Amazon.com, ebay.com, AAliExpress.com, and Walmart.com, from January 2024 through July 2024 for between $40 and $60.",
+        "CompanyID": ""
+      }
+    ],
+    "Importers": [],
+    "Distributors": [],
+    "SoldAtLabel": null,
+    "ManufacturerCountries": [
+      {
+        "Country": "China"
+      }
+    ],
+    "ProductUPCs": [],
+    "Hazards": [
+      {
+        "Name": "The lithium-ion battery in the power banks can overheat, posing fire and burn hazards.",
+        "HazardType": "",
+        "HazardTypeID": ""
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Consumers should immediately stop using the recalled power banks and contact Anker Innovations for instructions on receiving a free replacement power bank. Visit https://www.anker.com/product-recalls to register for the recall. Consumers should dispose of the lithium-ion batteries in accordance with local and state regulations."
+      }
+    ],
+    "RemedyOptions": [
+      {
+        "Option": "Replace"
+      }
+    ]
+  },
+  {
+    "RecallID": 9557,
+    "RecallNumber": "23147",
+    "RecallDate": "2023-03-09T00:00:00",
+    "Description": "This recall involves Anker 535 Mobile Power Banks (PowerCore 20k) with model number A1366. The power bank can be used to charge multiple devices from laptops, tablets or phones with a 30W maximum output. The mobile power bank comes with two USB cables and in a variety of colors. The power bank measures about 3 inches wide, 6 inches long and 1 inch deep. Anker is engraved on the front and the model number A1366 is on the back of the power bank.",
+    "URL": "https://www.cpsc.gov/Recalls/2023/Fantasia-Trading-Recalls-Anker-Power-Banks-Due-to-Fire-Hazard",
+    "Title": "Fantasia Trading Recalls Anker Power Banks Due to Fire Hazard",
+    "ConsumerContact": "Fantasia Trading at 800-988-7973 from 7 a.m. to 5 p.m. PT Monday through Friday, email at support@anker.com or online at online at www.anker.com and click on \"Voluntary Recall Information\" located at the top of the page or go to www.anker.com/a1366-recall for more information.",
+    "LastPublishDate": "2023-03-09T00:00:00",
+    "Products": [
+      {
+        "Name": "Anker 535 Power Banks (PowerCore 20k)",
+        "Description": "",
+        "Model": "",
+        "Type": "",
+        "CategoryID": "",
+        "NumberOfUnits": "About 42,000 (In addition, about 620 were sold in Canada)"
+      }
+    ],
+    "Inconjunctions": [
+      {
+        "URL": "https://recalls-rappels.canada.ca/en/alert-recall/anker-535-power-bank-powercore-20k-a1366-recalled-due-fire-hazard"
+      }
+    ],
+    "Images": [
+      {
+        "URL": "https://www.cpsc.gov/s3fs-public/RecalledAnker535PowerBankPowerCore20kA1366.png",
+        "Caption": "Recalled Anker 535 Power Bank (PowerCore 20k) A1366"
+      }
+    ],
+    "Injuries": [
+      {
+        "Name": "The firm has received 10 reports of incidents involving overheating, including one report of minor injuries."
+      }
+    ],
+    "Manufacturers": [],
+    "Retailers": [
+      {
+        "Name": "Target stores nationwide and online at Anker.com, Amazon.com and eBay.com from October 2022 through January 2023 for about $70.",
+        "CompanyID": ""
+      }
+    ],
+    "Importers": [
+      {
+        "Name": "Fantasia Trading LLC, of Ontario, California",
+        "CompanyID": ""
+      }
+    ],
+    "Distributors": [],
+    "SoldAtLabel": null,
+    "ManufacturerCountries": [
+      {
+        "Country": "China"
+      }
+    ],
+    "ProductUPCs": [],
+    "Hazards": [
+      {
+        "Name": "The lithium-ion batteries in the recalled power banks can overheat, posing a fire hazard.",
+        "HazardType": "",
+        "HazardTypeID": ""
+      }
+    ],
+    "Remedies": [
+      {
+        "Name": "Consumers should immediately stop using the recalled power banks and contact Fantasia Trading to receive a full refund as well as instructions for properly disposing of lithium-ion batteries according to local and state regulations. Fantasia Trading and its retailers are notifying all known purchasers directly."
+      }
+    ],
+    "RemedyOptions": [
+      {
+        "Option": "Refund"
+      }
+    ]
+  }
+]

@@ -1,0 +1,1815 @@
+{
+  "msg": "OK",
+  "data": {
+    "GeneralInfo": {
+      "IcecatId": 80632546,
+      "Title": "Viewsonic VP Series VP2785-4K computer monitor 68.6 cm (27\") 3840 x 2160 pixels 4K Ultra HD LED Black",
+      "Brand": "Viewsonic",
+      "BrandPartCode": "VP2785-4K",
+      "GTIN": ["0766907902112", "766907902112"],
+      "ProductName": "VP2785-4K",
+      "Category": {
+        "CategoryID": "222",
+        "Name": {
+          "Value": "Computer Monitors",
+          "Language": "EN"
+        }
+      }
+    },
+    "FeaturesGroups": [
+      {
+        "ID": 100,
+        "SortNo": "50",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Display"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "944",
+              "Name": {
+                "Value": "Display diagonal"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "\""
+                }
+              }
+            },
+            "RawValue": "27",
+            "PresentationValue": "68.6 cm (27\")"
+          },
+          {
+            "Feature": {
+              "ID": "1585",
+              "Name": {
+                "Value": "Display resolution"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "pixels"
+                }
+              }
+            },
+            "RawValue": "3840 x 2160",
+            "PresentationValue": "3840 x 2160 pixels"
+          },
+          {
+            "Feature": {
+              "ID": "11424",
+              "Name": {
+                "Value": "HD type"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "4K Ultra HD",
+            "PresentationValue": "4K Ultra HD"
+          },
+          {
+            "Feature": {
+              "ID": "11417",
+              "Name": {
+                "Value": "Native aspect ratio"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "16:9",
+            "PresentationValue": "16:9"
+          },
+          {
+            "Feature": {
+              "ID": "9713",
+              "Name": {
+                "Value": "Display technology"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "LED",
+            "PresentationValue": "LED"
+          },
+          {
+            "Feature": {
+              "ID": "15285",
+              "Name": {
+                "Value": "Panel type"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "AH-IPS",
+            "PresentationValue": "AH-IPS"
+          },
+          {
+            "Feature": {
+              "ID": "7369",
+              "Name": {
+                "Value": "Backlight type"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "W-LED",
+            "PresentationValue": "W-LED"
+          },
+          {
+            "Feature": {
+              "ID": "4963",
+              "Name": {
+                "Value": "Touchscreen"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "N",
+            "PresentationValue": "No"
+          },
+          {
+            "Feature": {
+              "ID": "36441",
+              "Name": {
+                "Value": "Display brightness (typical)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "cd/m\u00b2"
+                }
+              }
+            },
+            "RawValue": "350",
+            "PresentationValue": "350 cd/m\u00b2"
+          },
+          {
+            "Feature": {
+              "ID": "1516",
+              "Name": {
+                "Value": "Response time"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "ms"
+                }
+              }
+            },
+            "RawValue": "5",
+            "PresentationValue": "5 ms"
+          },
+          {
+            "Feature": {
+              "ID": "10443",
+              "Name": {
+                "Value": "Anti-glare screen"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "17554",
+              "Name": {
+                "Value": "Screen shape"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Flat screen",
+            "PresentationValue": "Flat"
+          },
+          {
+            "Feature": {
+              "ID": "34",
+              "Name": {
+                "Value": "Contrast ratio (typical)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1000:1",
+            "PresentationValue": "1000:1"
+          },
+          {
+            "Feature": {
+              "ID": "6087",
+              "Name": {
+                "Value": "Contrast ratio (dynamic)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "20000000:1",
+            "PresentationValue": "20000000:1"
+          },
+          {
+            "Feature": {
+              "ID": "7450",
+              "Name": {
+                "Value": "Maximum refresh rate"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "Hz"
+                }
+              }
+            },
+            "RawValue": "60",
+            "PresentationValue": "60 Hz"
+          },
+          {
+            "Feature": {
+              "ID": "37",
+              "Name": {
+                "Value": "Viewing angle, horizontal"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "\u00b0"
+                }
+              }
+            },
+            "RawValue": "178",
+            "PresentationValue": "178\u00b0"
+          },
+          {
+            "Feature": {
+              "ID": "38",
+              "Name": {
+                "Value": "Viewing angle, vertical"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "\u00b0"
+                }
+              }
+            },
+            "RawValue": "178",
+            "PresentationValue": "178\u00b0"
+          },
+          {
+            "Feature": {
+              "ID": "24847",
+              "Name": {
+                "Value": "Display number of colours"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1.073 billion colours",
+            "PresentationValue": "1.073 billion colours"
+          },
+          {
+            "Feature": {
+              "ID": "32",
+              "Name": {
+                "Value": "Pixel pitch"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "0.1554 x 0.1554",
+            "PresentationValue": "0.1554 x 0.1554 mm"
+          },
+          {
+            "Feature": {
+              "ID": "35",
+              "Name": {
+                "Value": "Horizontal scan range"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "kHz"
+                }
+              }
+            },
+            "RawValue": "15 - 130",
+            "PresentationValue": "15 - 130 kHz"
+          },
+          {
+            "Feature": {
+              "ID": "90",
+              "Name": {
+                "Value": "Vertical scan range"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "Hz"
+                }
+              }
+            },
+            "RawValue": "24 - 120",
+            "PresentationValue": "24 - 120 Hz"
+          },
+          {
+            "Feature": {
+              "ID": "91",
+              "Name": {
+                "Value": "Viewable size, horizontal"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "597",
+            "PresentationValue": "59.7 cm"
+          },
+          {
+            "Feature": {
+              "ID": "92",
+              "Name": {
+                "Value": "Viewable size, vertical"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "336",
+            "PresentationValue": "33.6 cm"
+          },
+          {
+            "Feature": {
+              "ID": "4174",
+              "Name": {
+                "Value": "Display diagonal (metric)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "cm"
+                }
+              }
+            },
+            "RawValue": "68.85",
+            "PresentationValue": "68.85 cm"
+          },
+          {
+            "Feature": {
+              "ID": "1550",
+              "Name": {
+                "Value": "Colour depth"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "bit"
+                }
+              }
+            },
+            "RawValue": "10",
+            "PresentationValue": "10 bit"
+          },
+          {
+            "Feature": {
+              "ID": "28703",
+              "Name": {
+                "Value": "sRGB coverage (typical)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "%"
+                }
+              }
+            },
+            "RawValue": "100",
+            "PresentationValue": "100%"
+          },
+          {
+            "Feature": {
+              "ID": "33817",
+              "Name": {
+                "Value": "NTSC coverage (typical)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "%"
+                }
+              }
+            },
+            "RawValue": "97.08",
+            "PresentationValue": "97.08%"
+          },
+          {
+            "Feature": {
+              "ID": "28709",
+              "Name": {
+                "Value": "Adobe RGB coverage"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "%"
+                }
+              }
+            },
+            "RawValue": "99",
+            "PresentationValue": "99%"
+          }
+        ]
+      },
+      {
+        "ID": 10681,
+        "SortNo": "45",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Performance"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "20783",
+              "Name": {
+                "Value": "NVIDIA G-SYNC"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "N",
+            "PresentationValue": "No"
+          },
+          {
+            "Feature": {
+              "ID": "29607",
+              "Name": {
+                "Value": "AMD FreeSync"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "N",
+            "PresentationValue": "No"
+          },
+          {
+            "Feature": {
+              "ID": "36840",
+              "Name": {
+                "Value": "Flicker-free technology"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "36843",
+              "Name": {
+                "Value": "Low Blue Light technology"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          }
+        ]
+      },
+      {
+        "ID": 10887,
+        "SortNo": "40",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Multimedia"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "2433",
+              "Name": {
+                "Value": "Built-in speaker(s)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "N",
+            "PresentationValue": "No"
+          },
+          {
+            "Feature": {
+              "ID": "8074",
+              "Name": {
+                "Value": "Built-in camera"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "N",
+            "PresentationValue": "No"
+          }
+        ]
+      },
+      {
+        "ID": 10677,
+        "SortNo": "35",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Design"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "9021",
+              "Name": {
+                "Value": "Market positioning"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Business",
+            "PresentationValue": "Business"
+          },
+          {
+            "Feature": {
+              "ID": "1766",
+              "Name": {
+                "Value": "Product colour"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Black",
+            "PresentationValue": "Black"
+          },
+          {
+            "Feature": {
+              "ID": "36846",
+              "Name": {
+                "Value": "Frameless design"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "12006",
+              "Name": {
+                "Value": "Front bezel colour"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Black",
+            "PresentationValue": "Black"
+          },
+          {
+            "Feature": {
+              "ID": "9305",
+              "Name": {
+                "Value": "Detachable stand"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "10232",
+              "Name": {
+                "Value": "Feet colour"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Black",
+            "PresentationValue": "Black"
+          }
+        ]
+      },
+      {
+        "ID": 1742,
+        "SortNo": "30",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Ports & interfaces"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "22838",
+              "Name": {
+                "Value": "Built-in USB hub"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "22839",
+              "Name": {
+                "Value": "USB hub version"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "3.2 Gen 1 (3.1 Gen 1)",
+            "PresentationValue": "3.2 Gen 1 (3.1 Gen 1)"
+          },
+          {
+            "Feature": {
+              "ID": "22840",
+              "Name": {
+                "Value": "USB upstream port type"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "USB Type-B,USB Type-C",
+            "PresentationValue": "USB Type-B, USB Type-C"
+          },
+          {
+            "Feature": {
+              "ID": "42595",
+              "Name": {
+                "Value": "Number of USB Type-B upstream ports quantity"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1",
+            "PresentationValue": "1"
+          },
+          {
+            "Feature": {
+              "ID": "22842",
+              "Name": {
+                "Value": "USB Type-A downstream ports quantity"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "3",
+            "PresentationValue": "3"
+          },
+          {
+            "Feature": {
+              "ID": "22843",
+              "Name": {
+                "Value": "USB Type-C downstream ports quantity"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1",
+            "PresentationValue": "1"
+          },
+          {
+            "Feature": {
+              "ID": "2319",
+              "Name": {
+                "Value": "DVI port"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "N",
+            "PresentationValue": "No"
+          },
+          {
+            "Feature": {
+              "ID": "5620",
+              "Name": {
+                "Value": "HDMI"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "3566",
+              "Name": {
+                "Value": "HDMI ports quantity"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "2",
+            "PresentationValue": "2"
+          },
+          {
+            "Feature": {
+              "ID": "5452",
+              "Name": {
+                "Value": "HDMI version"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "2.0",
+            "PresentationValue": "2.0"
+          },
+          {
+            "Feature": {
+              "ID": "6611",
+              "Name": {
+                "Value": "DisplayPorts quantity"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1",
+            "PresentationValue": "1"
+          },
+          {
+            "Feature": {
+              "ID": "11111",
+              "Name": {
+                "Value": "DisplayPort version"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1.2a",
+            "PresentationValue": "1.2a"
+          },
+          {
+            "Feature": {
+              "ID": "7274",
+              "Name": {
+                "Value": "Mini DisplayPorts quantity"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1",
+            "PresentationValue": "1"
+          },
+          {
+            "Feature": {
+              "ID": "1785",
+              "Name": {
+                "Value": "Audio input"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "N",
+            "PresentationValue": "No"
+          },
+          {
+            "Feature": {
+              "ID": "12195",
+              "Name": {
+                "Value": "Headphone out"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "2313",
+              "Name": {
+                "Value": "Headphone outputs"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "1",
+            "PresentationValue": "1"
+          },
+          {
+            "Feature": {
+              "ID": "4163",
+              "Name": {
+                "Value": "Headphone connectivity"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "3.5 mm",
+            "PresentationValue": "3.5 mm"
+          },
+          {
+            "Feature": {
+              "ID": "5636",
+              "Name": {
+                "Value": "HDCP"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "2316",
+              "Name": {
+                "Value": "DC-in jack"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          }
+        ]
+      },
+      {
+        "ID": 3070,
+        "SortNo": "25",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Ergonomics"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "16767",
+              "Name": {
+                "Value": "VESA mounting"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "4037",
+              "Name": {
+                "Value": "Panel mounting interface"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "100 x 100",
+            "PresentationValue": "100 x 100 mm"
+          },
+          {
+            "Feature": {
+              "ID": "1352",
+              "Name": {
+                "Value": "Cable lock slot"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "14097",
+              "Name": {
+                "Value": "Cable lock slot type"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Kensington",
+            "PresentationValue": "Kensington"
+          },
+          {
+            "Feature": {
+              "ID": "1954",
+              "Name": {
+                "Value": "Height adjustment"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "25138",
+              "Name": {
+                "Value": "Adjustable height (max)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "130",
+            "PresentationValue": "13 cm"
+          },
+          {
+            "Feature": {
+              "ID": "2764",
+              "Name": {
+                "Value": "Pivot"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "8037",
+              "Name": {
+                "Value": "Pivot angle"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "\u00b0"
+                }
+              }
+            },
+            "RawValue": "0 - 180",
+            "PresentationValue": "0 - 180\u00b0"
+          },
+          {
+            "Feature": {
+              "ID": "7263",
+              "Name": {
+                "Value": "Swivelling"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "1956",
+              "Name": {
+                "Value": "Swivel angle range"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "\u00b0"
+                }
+              }
+            },
+            "RawValue": "0 - 120",
+            "PresentationValue": "0 - 120\u00b0"
+          },
+          {
+            "Feature": {
+              "ID": "8302",
+              "Name": {
+                "Value": "Tilt adjustment"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "2077",
+              "Name": {
+                "Value": "Tilt angle range"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "\u00b0"
+                }
+              }
+            },
+            "RawValue": "-5 - 21",
+            "PresentationValue": "-5 - 21\u00b0"
+          },
+          {
+            "Feature": {
+              "ID": "3064",
+              "Name": {
+                "Value": "On Screen Display (OSD)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "7598",
+              "Name": {
+                "Value": "Number of OSD languages"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "14",
+            "PresentationValue": "14"
+          },
+          {
+            "Feature": {
+              "ID": "775",
+              "Name": {
+                "Value": "Plug and Play"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          }
+        ]
+      },
+      {
+        "ID": 99,
+        "SortNo": "24",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Power"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "42856",
+              "Name": {
+                "Value": "Energy efficiency class (SDR)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "G",
+            "PresentationValue": "G"
+          },
+          {
+            "Feature": {
+              "ID": "42857",
+              "Name": {
+                "Value": "Energy efficiency class (HDR)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "G",
+            "PresentationValue": "G"
+          },
+          {
+            "Feature": {
+              "ID": "42858",
+              "Name": {
+                "Value": "Energy consumption (SDR) per 1000 hours"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "kWh"
+                }
+              }
+            },
+            "RawValue": "29",
+            "PresentationValue": "29 kWh"
+          },
+          {
+            "Feature": {
+              "ID": "42859",
+              "Name": {
+                "Value": "Energy consumption (HDR) per 1000 hours"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "kWh"
+                }
+              }
+            },
+            "RawValue": "61",
+            "PresentationValue": "61 kWh"
+          },
+          {
+            "Feature": {
+              "ID": "445",
+              "Name": {
+                "Value": "Power consumption (typical)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "W"
+                }
+              }
+            },
+            "RawValue": "67",
+            "PresentationValue": "67 W"
+          },
+          {
+            "Feature": {
+              "ID": "2036",
+              "Name": {
+                "Value": "Power consumption (standby)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "W"
+                }
+              }
+            },
+            "RawValue": "0.3",
+            "PresentationValue": "0.3 W"
+          },
+          {
+            "Feature": {
+              "ID": "2034",
+              "Name": {
+                "Value": "Power consumption (off)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "W"
+                }
+              }
+            },
+            "RawValue": "0.3",
+            "PresentationValue": "0.3 W"
+          },
+          {
+            "Feature": {
+              "ID": "2035",
+              "Name": {
+                "Value": "Power consumption (PowerSave)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "W"
+                }
+              }
+            },
+            "RawValue": "45",
+            "PresentationValue": "45 W"
+          },
+          {
+            "Feature": {
+              "ID": "8491",
+              "Name": {
+                "Value": "AC input voltage"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "V"
+                }
+              }
+            },
+            "RawValue": "100 - 240",
+            "PresentationValue": "100 - 240 V"
+          },
+          {
+            "Feature": {
+              "ID": "8484",
+              "Name": {
+                "Value": "AC input frequency"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "Hz"
+                }
+              }
+            },
+            "RawValue": "50 - 60",
+            "PresentationValue": "50 - 60 Hz"
+          }
+        ]
+      },
+      {
+        "ID": 1205,
+        "SortNo": "23",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Operational conditions"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "1112",
+              "Name": {
+                "Value": "Operating temperature (T-T)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "\u00b0C"
+                }
+              }
+            },
+            "RawValue": "0 - 40",
+            "PresentationValue": "0 - 40 \u00b0C"
+          },
+          {
+            "Feature": {
+              "ID": "703",
+              "Name": {
+                "Value": "Operating relative humidity (H-H)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "%"
+                }
+              }
+            },
+            "RawValue": "20 - 90",
+            "PresentationValue": "20 - 90%"
+          }
+        ]
+      },
+      {
+        "ID": 98,
+        "SortNo": "21",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Weight & dimensions"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "4156",
+              "Name": {
+                "Value": "Width (with stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "612",
+            "PresentationValue": "612 mm"
+          },
+          {
+            "Feature": {
+              "ID": "4179",
+              "Name": {
+                "Value": "Depth (with stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "215",
+            "PresentationValue": "215 mm"
+          },
+          {
+            "Feature": {
+              "ID": "4178",
+              "Name": {
+                "Value": "Height (with stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "546",
+            "PresentationValue": "546 mm"
+          },
+          {
+            "Feature": {
+              "ID": "19017",
+              "Name": {
+                "Value": "Weight (with stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "g"
+                }
+              }
+            },
+            "RawValue": "6400",
+            "PresentationValue": "6.4 kg"
+          },
+          {
+            "Feature": {
+              "ID": "12576",
+              "Name": {
+                "Value": "Width (without stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "612",
+            "PresentationValue": "612 mm"
+          },
+          {
+            "Feature": {
+              "ID": "12577",
+              "Name": {
+                "Value": "Depth (without stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "57",
+            "PresentationValue": "57 mm"
+          },
+          {
+            "Feature": {
+              "ID": "12574",
+              "Name": {
+                "Value": "Height (without stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "363",
+            "PresentationValue": "363 mm"
+          },
+          {
+            "Feature": {
+              "ID": "12573",
+              "Name": {
+                "Value": "Weight (without stand)"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "g"
+                }
+              }
+            },
+            "RawValue": "3920",
+            "PresentationValue": "3.92 kg"
+          }
+        ]
+      },
+      {
+        "ID": 23760,
+        "SortNo": "20",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Packaging data"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "3808",
+              "Name": {
+                "Value": "Package width"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "720",
+            "PresentationValue": "720 mm"
+          },
+          {
+            "Feature": {
+              "ID": "3806",
+              "Name": {
+                "Value": "Package depth"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "268",
+            "PresentationValue": "268 mm"
+          },
+          {
+            "Feature": {
+              "ID": "3807",
+              "Name": {
+                "Value": "Package height"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "460",
+            "PresentationValue": "460 mm"
+          },
+          {
+            "Feature": {
+              "ID": "762",
+              "Name": {
+                "Value": "Package weight"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "g"
+                }
+              }
+            },
+            "RawValue": "9600",
+            "PresentationValue": "9.6 kg"
+          },
+          {
+            "Feature": {
+              "ID": "4463",
+              "Name": {
+                "Value": "Package type"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Box",
+            "PresentationValue": "Box"
+          }
+        ]
+      },
+      {
+        "ID": 49260,
+        "SortNo": "19",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Packaging content"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "10505",
+              "Name": {
+                "Value": "Stand included"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          },
+          {
+            "Feature": {
+              "ID": "1830",
+              "Name": {
+                "Value": "Cables included"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "AC,Mini DisplayPort,USB",
+            "PresentationValue": "AC, Mini DisplayPort, USB"
+          },
+          {
+            "Feature": {
+              "ID": "3981",
+              "Name": {
+                "Value": "Quick start guide"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "Y",
+            "PresentationValue": "Yes"
+          }
+        ]
+      },
+      {
+        "ID": 8454,
+        "SortNo": "-2",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Other features"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "3294",
+              "Name": {
+                "Value": "Country of origin"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "China",
+            "PresentationValue": "China"
+          },
+          {
+            "Feature": {
+              "ID": "94",
+              "Name": {
+                "Value": "Weight"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "g"
+                }
+              }
+            },
+            "RawValue": "6300",
+            "PresentationValue": "6.3 kg"
+          },
+          {
+            "Feature": {
+              "ID": "249",
+              "Name": {
+                "Value": "Certification"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "UL, cUL, FCC-B, Mexico CoC, CB , CE, WEEE, RoHS, ErP, REACH",
+            "PresentationValue": "UL, cUL, FCC-B, Mexico CoC, CB , CE, WEEE, RoHS, ErP, REACH"
+          }
+        ]
+      },
+      {
+        "ID": 27535,
+        "SortNo": "-40",
+        "FeatureGroup": {
+          "Name": {
+            "Value": "Logistics data"
+          }
+        },
+        "Features": [
+          {
+            "Feature": {
+              "ID": "22659",
+              "Name": {
+                "Value": "Products per master (outer) case"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "pc(s)"
+                }
+              }
+            },
+            "RawValue": "1",
+            "PresentationValue": "1 pc(s)"
+          },
+          {
+            "Feature": {
+              "ID": "22041",
+              "Name": {
+                "Value": "Pallet gross width"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "1200",
+            "PresentationValue": "120 cm"
+          },
+          {
+            "Feature": {
+              "ID": "22042",
+              "Name": {
+                "Value": "Pallet gross length"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "1000",
+            "PresentationValue": "100 cm"
+          },
+          {
+            "Feature": {
+              "ID": "22043",
+              "Name": {
+                "Value": "Pallet gross height"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": "mm"
+                }
+              }
+            },
+            "RawValue": "1969",
+            "PresentationValue": "196.9 cm"
+          },
+          {
+            "Feature": {
+              "ID": "23731",
+              "Name": {
+                "Value": "Harmonized System (HS) code"
+              },
+              "Measure": {
+                "Signs": {
+                  "_": ""
+                }
+              }
+            },
+            "RawValue": "8528521000",
+            "PresentationValue": "8528521000"
+          }
+        ]
+      }
+    ]
+  }
+}
