@@ -99,6 +99,9 @@ importers:
       '@cartel/platform':
         specifier: workspace:*
         version: link:../../packages/platform
+      '@cartel/proof-engine':
+        specifier: workspace:*
+        version: link:../../packages/proof-engine
       '@cartel/rule-packs':
         specifier: workspace:*
         version: link:../../packages/rule-packs

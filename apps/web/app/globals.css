@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./cartel-tokens.css";
 @custom-variant dark (&:where(.dark, .dark *));
 :root {
   --paper: #fbf7ee;
@@ -33,7 +34,6 @@
   --color-primary: var(--ink);
   --color-primary-foreground: var(--paper);
   --color-border: var(--border);
-  --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-source-serif);
   --font-mono: var(--font-geist-mono);
@@ -73,8 +73,8 @@ button {
   cursor: pointer;
 }
 :focus-visible {
-  outline: 3px solid var(--ink);
-  outline-offset: 5px;
+  outline: 2.5px solid var(--ink);
+  outline-offset: 3px;
 }
 ::selection {
   background: var(--highlighter);
