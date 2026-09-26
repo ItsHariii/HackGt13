@@ -26,6 +26,7 @@
     "db:types:check": "node scripts/db-types.mjs --check",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "test:realtime": "pnpm --filter @proofcart/web test:realtime",
+    "test:catalog": "node scripts/catalog-smoke.mjs",
     "test:acp-contract": "node scripts/demomart-contract.mjs"
   },
   "devDependencies": {

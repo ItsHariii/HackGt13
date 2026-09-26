@@ -1603,6 +1603,18 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      catalog_search_products: {
+        Args: {
+          p_ids?: string[];
+          p_limit?: number;
+          p_query: string;
+          p_source: string;
+        };
+        Returns: {
+          product_id: string;
+          rank: number;
+        }[];
+      };
       foundation_health: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_valid_gtin: { Args: { p_gtin: string }; Returns: boolean };
       search_products: {
@@ -1628,6 +1640,7 @@ export type Database = {
         };
         Returns: string;
       };
+      srv_catalog_identity: { Args: { p_product: Json }; Returns: string };
       srv_complete_execution: {
         Args: {
           p_error?: Json;
@@ -1684,6 +1697,15 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      srv_fork_kit: {
+        Args: {
+          p_hash: string;
+          p_slug: string;
+          p_specs: Json;
+          p_user_id: string;
+        };
+        Returns: Json;
       };
       srv_ledger_append: {
         Args: {
@@ -1762,6 +1784,7 @@ export type Database = {
         };
       };
       srv_verify_ledger: { Args: { p_plan_id: string }; Returns: number };
+      srv_write_facts: { Args: { p_groups: Json }; Returns: string[] };
     };
     Enums: {
       ai_task: "A1" | "A2" | "A3" | "A4" | "A5";

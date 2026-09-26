@@ -283,40 +283,44 @@ Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the Gremlin f
 
 ## Phase 7: `packages/evidence` (M)
 
-- [ ] **T7.1 Snapshotter**: `snapshot(url | response)` → sha256 → Storage `sources/{hash}` → `sources` row; content-type aware
-- [ ] **T7.2 JSON-LD extractor**: parse `application/ld+json`; map fields using the pack's `jsonLd` paths; unit-parse; produce `Fact`s with state set by authority (merchant JSON-LD → `source_stated`; checkout API price → `verified`)
-- [ ] **T7.3 DemoMart adapter**: a TAP-signed client (`packages/tap`) + ACP client (`packages/acp`); `refreshOffer`, `refreshSpecs`, `getCheckout`
-- [ ] **T7.4 CPSC adapter**: `GET https://www.saferproducts.gov/RestWebServices/Recall?format=json&ProductName=…`, matched by brand and model; fact `recall.active` with state `verified`; label "No recall found as of {t}"
+- [x] **T7.1 Snapshotter**: `snapshot(url | response)` → sha256 → Storage `sources/{hash}` → `sources` row; content-type aware
+- [x] **T7.2 JSON-LD extractor**: parse `application/ld+json`; map fields using the pack's `jsonLd` paths; unit-parse; produce `Fact`s with state set by authority (merchant JSON-LD → `source_stated`; checkout API price → `verified`)
+- [x] **T7.3 DemoMart adapter**: a TAP-signed client (`packages/tap`) + ACP client (`packages/acp`); `refreshOffer`, `refreshSpecs`, `getCheckout`
+- [x] **T7.4 CPSC adapter**: `GET https://www.saferproducts.gov/RestWebServices/Recall?format=json&ProductName=…`, matched by brand and model; fact `recall.active` with state `verified`; label "No recall found as of {t}"
 - [ ] **T7.5 Shopify adapter (UCP)** — depends on T0.6 going "go"
-  - [ ] MCP client for `catalog.shopify.com/api/ucp/mcp`: `search_catalog`, `lookup_catalog`, `get_product`; requests reference ProofCart's agent profile.
-  - [ ] Map products (UPID, title, images, shop), variants (options, availability, price) and attributes onto `products`, `offers`, `facts` (state `source_stated`, source "Shopify Catalog").
-  - [ ] Back off on rate limits; results cached through `search_queries`.
+  - [x] MCP client for `catalog.shopify.com/api/ucp/mcp`: `search_catalog`, `lookup_catalog`, `get_product`; requests reference ProofCart's agent profile.
+  - [x] Map products (UPID, title, images, shop), variants (options, availability, price) and attributes onto `products`, `offers`, `facts` (state `source_stated`, source "Shopify Catalog").
+  - [x] Back off on rate limits; results cached through `search_queries`. *(Responses are cached as `sources` snapshots; the `search_queries` row is written by T7B.3.)*
   - ✅ "navy linen shirt" returns ≥ 10 real products with price, variants and at least one fiber fact where the listing provides it.
-- [ ] **T7.6 Quote-grounded extraction (A3)** — depends on T9.1
-  - [ ] Normalize the source text (whitespace/Unicode only); verify the quote exists at an index; the parsed value must equal the claimed value; store `quote` and `span`; cap at `source_stated`.
+- [x] **T7.6 Quote-grounded extraction (A3)** — depends on T9.1
+  - [x] Normalize the source text (whitespace/Unicode only); verify the quote exists at an index; the parsed value must equal the claimed value; store `quote` and `span`; cap at `source_stated`.
   - ✅ Tests: an invented quote is rejected; a misread number is rejected; a valid quote is stored with the correct span.
-- [ ] **T7.7 Fact store writer**: supersede old facts; detect conflicts (same field, different value, both fresh) → set the `conflict` flag; apply authority precedence
-- [ ] **T7.8 Refresh worker**: a `q_fact_refresh` consumer; offers for active contracts refreshed by cron
-- [ ] **T7.9 UPCitemdb adapter** (replaces Best Buy): `prod/trial/search?s=` and `prod/trial/lookup?upc=` (switch to `prod/v1` + `user_key` header when `UPCITEMDB_USER_KEY` is set); map GTIN, brand, model, category, images; each retailer offer becomes a reference offer with `merchant`, `price`, `availability` and `observed_at` from `updated_t`; read `X-RateLimit-Remaining` and stop at 5; cache every response in Supabase
+- [x] **T7.7 Fact store writer**: supersede old facts; detect conflicts (same field, different value, both fresh) → set the `conflict` flag; apply authority precedence
+- [x] **T7.8 Refresh worker**: a `q_fact_refresh` consumer; offers for active contracts refreshed by cron
+- [x] **T7.9 UPCitemdb adapter** (replaces Best Buy): `prod/trial/search?s=` and `prod/trial/lookup?upc=` (switch to `prod/v1` + `user_key` header when `UPCITEMDB_USER_KEY` is set); map GTIN, brand, model, category, images; each retailer offer becomes a reference offer with `merchant`, `price`, `availability` and `observed_at` from `updated_t`; read `X-RateLimit-Remaining` and stop at 5; cache every response in Supabase
   - ✅ "27 inch 4K USB-C monitor" returns real monitors with GTIN, brand and model; offers render as "Seen at {merchant} · last seen {date}" and never feed price rules.
-- [ ] **T7.10 Icecat enrichment**: on product upsert with a GTIN, fetch the manufacturer spec sheet from `live.icecat.biz/api`; write facts with source type `manufacturer`; conflicts with seller specs set the `conflict` flag
+- [x] **T7.10 Icecat enrichment**: on product upsert with a GTIN, fetch the manufacturer spec sheet from `live.icecat.biz/api`; write facts with source type `manufacturer`; conflicts with seller specs set the `conflict` flag
   - ✅ At least one UPCitemdb monitor (matched by GTIN) shows a manufacturer-sourced spec row, and a seeded conflict renders as **Sources disagree**.
 - [ ] **T7.11 Open Food Facts adapter** *(stretch, grocery pack)*: `api/v2/product/{barcode}.json` with a descriptive User-Agent; allergens and ingredients as facts
 - [ ] **T7.12 eBay adapter** *(optional)*: only if partner access is granted; otherwise skip entirely
+
+Implementation notes, verification and open items: [PHASE7.md](PHASE7.md). T7.5 stays open until the live "navy linen shirt" check runs against a deployed agent profile.
 
 ---
 
 ## Phase 7B: `packages/catalog` — search, product pages, kits (M + E)
 
-- [ ] **T7B.1 Normalization**: one mapper per source onto `products` / `offers` / `facts` using the pack ontology and the unit parser; unmapped attributes are stored untyped and never feed rules
-- [ ] **T7B.2 Identity resolution**: merge on GTIN, then Shopify UPID, then brand + MPN; `product_external_refs` for every source record
+Implementation and source-policy exceptions: [PHASE7B.md](PHASE7B.md). UI rendering remains Phase 11.
+
+- [x] **T7B.1 Normalization**: one mapper per source onto `products` / `offers` / `facts` using the pack ontology and the unit parser; unmapped attributes are stored untyped and never feed rules
+- [x] **T7B.2 Identity resolution**: merge on GTIN, then Shopify UPID, then brand + MPN; `product_external_refs` for every persisted source record (Shopify content remains transient under its usage rules)
   - ✅ The same monitor from UPCitemdb and Icecat resolves to one product with two sources (merge on GTIN).
-- [ ] **T7B.3 Federated search** `GET /api/search`: parallel fan-out to `SOURCES_ENABLED` with a 2.5 s timeout per source; NDJSON streaming (`{source, status, products[]}` per source); cache in `search_queries` for 10 min; ranking = full-text rank + trigram similarity + boost for passing the active plan's hard rules
-  - ✅ The first source's results render in < 1.5 s p95; a source timeout shows as "UPCitemdb · timed out" without breaking the page.
-- [ ] **T7B.4 Facets**: derived from the pack ontology for the detected category; counts per facet value; each facet exposes `promoteToRule(field, op, value, via: 'facet')`
-- [ ] **T7B.5 Product API** `GET /api/products/[id]`: product, offers per source, spec rows with evidence state, source, age and conflict flag; item-scope proof against the active plan
-- [ ] **T7B.6 Kits**: `forkKit(slug)` copies kit requirements (as `pack_default`) and starter items into a new plan
-- [ ] **T7B.7 Checkout tier resolver**: per offer → `full` (DemoMart), `handoff` (Shopify), `proof_only` (UPCitemdb offers and others); exposed on product and plan APIs
+- [x] **T7B.3 Federated search** `GET /api/search`: parallel fan-out to enabled catalog sources with a 2.5 s timeout per source; NDJSON streaming (`{source, status, products[]}` per source); cache persisted sources in `search_queries` for 10 min (Shopify uncached); ranking = full-text rank + trigram similarity + boost for passing the active plan's hard rules
+  - API timeout isolation tested; local first-source latency checked by `pnpm test:catalog`. Deployed p95 and UI timeout rendering remain Phase 11 verification.
+- [x] **T7B.4 Facets**: derived from the pack ontology for the detected category; counts per facet value; exposes `promoteToRule(field, op, value, 'facet', { role, packs })`
+- [x] **T7B.5 Product API** `GET /api/products/[id]`: product, offers per source, spec rows with evidence state, source, age and conflict flag; item-scope proof against the active plan
+- [x] **T7B.6 Kits**: `forkKit(slug)` copies kit requirements (as `pack_default`) and starter items into a new plan
+- [x] **T7B.7 Checkout tier resolver**: per offer → `full` (DemoMart), `handoff` (Shopify), `proof_only` (UPCitemdb offers and others); exposed on product and plan APIs
 
 ---
 

@@ -9,7 +9,10 @@
     "test:db": "vitest run --config vitest.db.config.ts"
   },
   "dependencies": {
+    "@proofcart/catalog": "workspace:*",
     "@proofcart/contracts": "workspace:*",
+    "@proofcart/evidence": "workspace:*",
+    "@proofcart/rule-packs": "workspace:*",
     "@supabase/supabase-js": "2.117.2"
   }
 }

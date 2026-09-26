@@ -84,9 +84,27 @@ importers:
 
   apps/web:
     dependencies:
+      '@proofcart/acp':
+        specifier: workspace:*
+        version: link:../../packages/acp
+      '@proofcart/catalog':
+        specifier: workspace:*
+        version: link:../../packages/catalog
+      '@proofcart/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@proofcart/evidence':
+        specifier: workspace:*
+        version: link:../../packages/evidence
       '@proofcart/platform':
         specifier: workspace:*
         version: link:../../packages/platform
+      '@proofcart/rule-packs':
+        specifier: workspace:*
+        version: link:../../packages/rule-packs
+      '@proofcart/tap':
+        specifier: workspace:*
+        version: link:../../packages/tap
       '@radix-ui/react-slot':
         specifier: ^1.2.0
         version: 1.3.3(@types/react@19.3.0)(react@19.3.0)
@@ -160,7 +178,24 @@ importers:
 
   packages/bench: {}
 
-  packages/catalog: {}
+  packages/catalog:
+    dependencies:
+      '@proofcart/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@proofcart/evidence':
+        specifier: workspace:*
+        version: link:../evidence
+      '@proofcart/proof-engine':
+        specifier: workspace:*
+        version: link:../proof-engine
+      '@supabase/supabase-js':
+        specifier: 2.117.2
+        version: 2.117.2(@opentelemetry/api@1.9.1)
+    devDependencies:
+      '@proofcart/rule-packs':
+        specifier: workspace:*
+        version: link:../rule-packs
 
   packages/contracts:
     dependencies:
@@ -177,14 +212,46 @@ importers:
 
   packages/db-tests:
     dependencies:
+      '@proofcart/catalog':
+        specifier: workspace:*
+        version: link:../catalog
       '@proofcart/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@proofcart/evidence':
+        specifier: workspace:*
+        version: link:../evidence
+      '@proofcart/rule-packs':
+        specifier: workspace:*
+        version: link:../rule-packs
       '@supabase/supabase-js':
         specifier: 2.117.2
         version: 2.117.2(@opentelemetry/api@1.9.1)
 
-  packages/evidence: {}
+  packages/evidence:
+    dependencies:
+      '@proofcart/acp':
+        specifier: workspace:*
+        version: link:../acp
+      '@proofcart/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@proofcart/proof-engine':
+        specifier: workspace:*
+        version: link:../proof-engine
+      '@proofcart/tap':
+        specifier: workspace:*
+        version: link:../tap
+      '@supabase/supabase-js':
+        specifier: 2.117.2
+        version: 2.117.2(@opentelemetry/api@1.9.1)
+    devDependencies:
+      '@proofcart/rule-packs':
+        specifier: workspace:*
+        version: link:../rule-packs
+      fast-check:
+        specifier: ^4.10.2
+        version: 4.10.2
 
   packages/payments:
     dependencies:
