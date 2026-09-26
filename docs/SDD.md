@@ -185,7 +185,7 @@ Versions were verified on 2026-09-25. Pin exact versions in the lockfile at scaf
 | Testing | **Vitest**, **fast-check** (property tests), **Playwright** + `@axe-core/playwright` (E2E + accessibility), RFC 9421 test vectors | "Proof" demands proof | Jest |
 | Lint / format | **Biome** | Fast and single-tool (Next 16 removed `next lint`) | ESLint + Prettier |
 | Observability | **Sentry** (Next.js SDK), **pino** structured logs, request IDs linked into the ledger | One ID reconstructs recommendation → proof → payment | Full OTel collector (overkill for now) |
-| Hosting | **Vercel** (two projects: `cartel-web`, `greathub`) + **Supabase Cloud** | Separate origins make TAP and ACP realistic | Single app (would blur trust domains) |
+| Hosting | **Vercel** (two projects: `cartel-web`, `greathub`) + **Supabase Cloud** (one project, `HackGt13`) | Separate origins make TAP and ACP realistic | Single app (would blur trust domains) |
 | CI | **GitHub Actions**: typecheck, Biome, unit + property tests, ProofBench, `supabase db lint`, migration dry-run | Regression safety for a "proof" product | — |
 
 ---
@@ -1004,7 +1004,7 @@ The visual system is specified in §17.7–17.9. These principles govern how it 
 - **A notebook for serious decisions, not a toy.** Playful at the edges (landing, empty states, loading, success). Formal where money moves (contract, checkout, receipt). Characters never appear inside the contract text, the card form or the Pay button.
 - **Everything is typeset.** No handwriting fonts anywhere. Tables, crisp 1 px rules and alignment carry the information. The only hand-made elements are the cast and three annotation marks (red-pen circle, highlighter, bracket), plus stamps.
 - **Numbers are precise.** Money, quantities and hashes use Geist Mono with tabular numerals.
-- **Status is never color alone.** `pass`, `fail`, `unknown` and `estimate` each pair an icon with a text label. Light (paper) and dark (blueprint) themes.
+- **Status is never color alone.** `pass`, `fail`, `unknown` and `estimate` each pair an icon with a text label. Light (paper) everywhere; dark (blueprint) only on the Workspace, Contract and Purchase Paused screens (Style Tile v2).
 - **Components:** `RequirementChip`, `EvidenceBadge`, `ProofRow`, `ProofSummary`, `PlanCard`, `ProductCard`, `SpecReceiptRow`, `FacetChip` (with Add as rule), `CheckoutTierBadge`, `SourcePill`, `LayersTable`, `ContractDiff` (git-diff style), `HashPill` (copyable, abbreviated), `LedgerTimeline`, `MerchantStatusTable`, `GuardStepper`, `CommandBar`, `PlanTray`, `CompareTray`, `Figure`, `Stamp`, `Mark` (circle / highlight / bracket).
 - **Mobile:** tabs for Plan · Requirements · Proof with a sticky summary bar (`$896.05 · 12/12 pass · Ready to sign`). Explore uses a two-column product grid and a bottom-sheet filter panel.
 
@@ -1099,7 +1099,7 @@ Each figure maps to a trust domain from §6.2, so the characters explain the arc
 | **Inspector** | Proof engine | Magnifying glass, clipboard | Checks every row; stamps ✓ ✗ ? |
 | **Notary** | Consent | Big rubber stamp, bow tie | Stamps only after your Touch ID |
 | **Guard** | Execution guard | Stop sign, rope barrier | Steps in front of Pay when the purchase no longer matches |
-| **Gremlin** | GreatHub Chaos Panel only | Small, mischievous, carries price tags | Swaps tags and edits specs so the others can catch it |
+| **Gremlin** | ProofBench (`/bench`) only; on GreatHub itself the Gull plays this part (TASKS T6B.8) | Small, mischievous, carries price tags | Swaps tags and edits specs so the others can catch it |
 
 Figures are line drawings in `--graphite` with one accent each: Scout in ink blue, Inspector in green, Notary in red stamp ink, Guard with a highlighter-yellow sign. They are 48–96 px tall in the app and larger only on the landing page.
 
@@ -1482,7 +1482,7 @@ A push to a branch triggers CI (typecheck, Biome, unit + property tests, ProofBe
 | 0:35 | The solver produces Plans A–C; the Inspector stamps proof rows as they stream in. Click USB-C: "Manufacturer says up to 90 W", quote highlighted. Click comfort: "Can't check: subjective." | Solver, Realtime, evidence honesty |
 | 0:55 | Contract: exact SKUs, max $910, Balanced autonomy, mandate "execute when the monitor is ≤ $320". **Touch ID.** The Notary stamps SIGNED v7; the hash appears. | Cryptographic consent |
 | 1:10 | Chaos Panel: webcam −$4. The ledger shows "auto-accepted under Balanced" with the Inspector's thumbs-up. | Not naggy |
-| 1:20 | Chaos Panel: the Gremlin runs the **deal trap** (same SKU: $319 and 15 W). The mandate fires, the Guard steps in, the red pen circles 15 W, and the **layers table** appears (cart hash ✓, merchant ✓, amount ✓, Cartel ✗). **PURCHASE PAUSED. NO PAYMENT WAS MADE.** Pause. *"The payment was valid. The purchase wasn't."* | Semantic diff |
+| 1:20 | GreatHub Chaos Deck: the Gull runs the **deal trap** (same SKU: $319 and 15 W). The mandate fires, the Guard steps in, the red pen circles 15 W, and the **layers table** appears (cart hash ✓, merchant ✓, amount ✓, Cartel ✗). **PURCHASE PAUSED. NO PAYMENT WAS MADE.** Pause. *"The payment was valid. The purchase wasn't."* | Semantic diff |
 | 1:50 | The Halden M27Q-USBC (65 W, $309) appears as the compliant alternative; v7 → v8 diff; **Touch ID**; SIGNED v8. | Recovery |
 | 2:05 | Execute: the Agent Log shows "✓ Verified agent Cartel (RFC 9421)", GreatHub shows "✓ Customer-signed contract", the Visa Acceptance sandbox returns **AUTHORIZED**, and the receipt prints **$870.37**. | Standards + real Visa rail |
 | 2:25 | Breadth (15 s): search "navy linen shirt" in Explore; the Scout runs across Shopify, UPCitemdb and GreatHub; open a product; specs with receipts; **Add as rule** on "≥ 90% linen"; the tier badge reads "Hand off to store". | Browsable, multi-source, honest tiers |

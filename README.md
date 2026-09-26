@@ -95,7 +95,7 @@ Create Vercel projects rooted at `apps/web` and `apps/greathub`, using Next.js a
 
 The repository includes GitHub Actions jobs named `quality` and `database`. Set them as required PR checks in repository settings. Domain assignment, HTTPS verification, cloud linking, cloud migrations, Google credentials, and Sentry delivery require the corresponding accounts/configuration and are not completed by this scaffold.
 
-To link a cloud dev project later, use `pnpm exec supabase login` and `pnpm exec supabase link --project-ref YOUR_DEV_PROJECT_REF`. Review the target before applying any cloud migrations. Only `public` is exposed through the Data API; `internal` and the future `greathub` schema must stay unexposed. A Supabase secret key bypasses RLS project-wide, so separate secret keys alone do not provide schema isolation for GreatHub; its later database access design must enforce that boundary.
+There is one cloud project, `HackGt13`, and this checkout is already linked to it (`supabase/.temp/project-ref`). To relink, use `pnpm exec supabase login` and `pnpm exec supabase link --project-ref <ref>`. Review the target before applying any cloud migrations. Only `public` is exposed through the Data API; `internal` and the future `greathub` schema must stay unexposed. A Supabase secret key bypasses RLS project-wide, so separate secret keys alone do not provide schema isolation for GreatHub; its later database access design must enforce that boundary.
 
 ## Repository layout
 

@@ -66,7 +66,7 @@ Lane D does **not** block the spine. Until G2, D produces mockups, tokens and is
   - [ ] Confirm that the **Visa Acceptance (Cybersource) sandbox** counts as a Visa integration.
   - [ ] Write the answers into SDD §27 and adjust the demo emphasis.
 - [ ] **T0.2 Accounts and keys** (P) — no dependencies
-  - [ ] Supabase: two projects, `cartel-dev` and `cartel-prod` (same region, US East).
+  - [x] Supabase: **one** project, `HackGt13` (linked; ref in `supabase/.temp/project-ref`), for development and the demo. Keeping a dev + prod pair was more upkeep than it was worth.
   - [ ] Vercel: two projects, `cartel-web` and `greathub`.
   - [x] OpenAI API key (primary AI), with a hard spend limit on the project ($10 credit).
   - [x] Meta Model API key (Muse Spark, fallback AI) from the Meta developer console ($50 credit).
@@ -84,12 +84,12 @@ Lane D does **not** block the spine. Until G2, D produces mockups, tokens and is
   - [ ] E pushes them as Zod stubs in `packages/contracts` within the hour so every lane codes against them.
 - [ ] **T0.4 Key material** (P) — depends on T0.2
   - [ ] Script `scripts/gen-keys.ts`: Ed25519 agent key and grant key as JWKs, plus HMAC secrets for the queue worker and webhooks.
-  - [ ] Put them in the Vercel env (prod and dev) and in local `.env.local` files (gitignored).
-- [ ] **T0.5 Mockups in Claude Design** (D) — no dependencies; runs in parallel through about H+3
-  - [ ] Paste the master prompt from `DESIGN_PROMPT.md`, then the per-screen follow-ups in order.
-  - [ ] Export or record the final tokens (colors, type scale, spacing, radii, shadows) and screenshots of every screen into `docs/mockups/`.
+  - [ ] Put them in the Vercel env (both projects) and in local `.env.local` files (gitignored). Key IDs use the `ct-agent-` / `ct-grant-` prefixes.
+- [x] **T0.5 Mockups in Claude Design** (D) — no dependencies; runs in parallel through about H+3
+  - [x] Paste the master prompt from `DESIGN_PROMPT.md`, then the per-screen follow-ups in order.
+  - [x] Record the final tokens and every screen: the designs live in the Claude Design project, indexed file by file in [DESIGN.md](DESIGN.md); the tokens are `apps/web/app/cartel-tokens.css`.
   - [ ] Review the mockups with the whole team in 10 minutes: does the contract screen look trustworthy? Is status readable without color?
-  - ✅ Mockups exist for: landing, explore, search results (loading + loaded), product page, requirements review, workspace, contract, purchase paused, paid receipt, bench, and mobile workspace.
+  - ✅ Mockups exist for: landing, search (loading + loaded + mobile filters), product page, brief, requirements review, workspace (+ Blueprint), contract (+ v2 and Blueprint), purchase paused (+ Blueprint), revised contract and paid receipt, ledger, bench, trust, mobile workspace and paused, 8 edge states, 6 motion storyboards, the Cartel cast, and the whole GreatHub merchant (style tile, home, product, Chaos Deck, Harbor Master's Log, Cargo Manifest, errors, cast). No design yet for Explore, kits, compare, orders list, mandates or settings.
 - [ ] **T0.6 Shopify UCP catalog spike** (M, 60 min) — no dependencies
   - [ ] Publish a draft agent profile at the well-known URL the Shopify docs specify; call `search_catalog` and `get_product` on `catalog.shopify.com/api/ucp/mcp` for "navy linen shirt" and "27 inch 4K USB-C monitor".
   - [ ] Record which fields come back (price, variants, availability, attributes, images, UPID, shop, checkout link) and the rate-limit behavior in SDD §27.
@@ -118,7 +118,7 @@ Implementation update (2026-09-26): local foundation is implemented and verified
   - [ ] Deploy to a Vercel preview.
 - [ ] **T1.4 Supabase init** (P) — depends on T0.2
   - [x] `supabase init`; local Docker stack running; `config.toml` checked into the scaffold.
-  - [ ] Link the cloud dev project.
+  - [x] Link the cloud project (`HackGt13`, the only one).
   - [x] Enable `pgcrypto`, `pg_cron`, `pgmq`, `pg_net`, `pg_trgm` through `0000_foundation.sql`. Optional `vector` deferred.
   - [x] Local anonymous sign-ins, email auth, and manual identity linking enabled.
   - [ ] Configure and enable Google OAuth when credentials are available; configure equivalent cloud Auth settings.
@@ -257,7 +257,7 @@ Implementation notes and deviations: [PHASE5.md](PHASE5.md).
 
 ## Phase 6: GreatHub (M)
 
-Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the Gremlin figure (needs T10B).
+Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the merchant-side figure, which the designs make the Gull (T6B.8). The GreatHub look itself is Phase 6B.
 
 - [x] **T6.1 Storefront**: catalog grid, product pages at `/p/[slug]` with visible specs and `<script type="application/ld+json">` (schema.org `Product` + `Offer` + `additionalProperty`), the "Test merchant" banner
 - [x] **T6.2 Product JSON API**: `GET /api/products/[id]` (requires an agent signature once T6.5 lands)
@@ -283,12 +283,36 @@ Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the Gremlin f
 - [ ] **T6.10 Chaos Panel** `/chaos` (admin token)
   - [x] One button per mutation from SDD §16, each with a parameter form (for example, the new PD watts).
   - [x] **Scenario scripts**: "Flagship deal trap" (Vireo `U2727`: price $329 → $319 **and** USB-C power 90 → 15 W on the same SKU), "Webcam −$4", "Final-sale trap", "Seller rotation", "Injection listing".
-  - [ ] The Gremlin figure appears next to each mutation in the log (after T10B lands).
+  - [ ] The Gull appears next to each mutation in the Catch history (T6B.8; replaces the Gremlin here).
   - [x] **Reset** restores the seed state; **Run mandate tick now** calls Cartel's worker.
   - [x] Mutation log shown live.
   - ✅ Each mutation is visible on the product page and through the ACP GET within 1 s.
 - [x] **T6.11 Mock recall endpoint** (demo mode only, labeled "Mock CPSC (demo)") for the `recall_posted` mutation
 - [x] **T6.12 Merchant orders page**: amount, Visa transaction ID, verification badges (agent ✓, grant ✓, contract signature ✓)
+
+---
+
+## Phase 6B: GreatHub look and cast (M, D reviews)
+
+GreatHub is designed as a GitHub parody set in a harbor ("Dock", "Starfish", "Barnacles", "Captain Inkwell"). Screens, copy and tokens are indexed in [DESIGN.md](DESIGN.md#greathub-merchant-appsgreathub). The behavior from Phase 6 stays as it is; this phase is the visual layer. **Rule for every screen: jokes live in labels and empty states. Prices, specs, SKUs, hashes and verification results stay plain.**
+
+- [ ] **T6B.1 Theme** (design: GreatHub Style Tile)
+  - [ ] Fonts: Hubot Sans (display, wordmark), Mona Sans (UI and body), Monaspace Neon (prices, SKUs, hashes, logs), self-hosted or via `next/font/local`.
+  - [ ] Tokens: Deep Harbor Navy `#0B1B2B`, Sand `#F4ECDD`, card `#FFFDF8`, Sea Glass `#D6F0E0`→`#1E7A4E`, Buoy Red `#D2452F` / Buoy Ink `#A8321F`, Brass `#B8893A` / Light `#E8C77E` / Ink `#7A5A1F`, Rope Tan `#C9A36B`, Driftwood `#5A5046`. Brass and Rope Tan are fills and borders only; brass-colored text uses Brass Ink.
+  - [ ] Shared chrome: navy header with the porthole logo, "TEST MERCHANT" pill, the banner "GreatHub is a test merchant for the Cartel demo. Nothing here ships. Not even to the harbor.", and the footer "We yam what we yam: a test merchant. Built at HackGT 13."
+  - [ ] Buttons (Load the hold, Set sail (agents only), View Ship's Log, Pull into port, Force-ship), 3 px navy focus ring, dashed disabled state; status icons differ by shape (round check, square cross).
+  - ✅ Every text pairing in the Style Tile's contrast table passes AA (or AA large where marked).
+- [ ] **T6B.2 Home** `/` (design: GreatHub Home, desktop + mobile): dock breadcrumb `greathub / the-workday-edit`, Starfish and Hooks counters, section tabs, the Ship's Log hero with Captain Inkwell (`lean`), the catalog as commit-style rows, About with topic pills, and the "Catches this season" tide chart.
+- [ ] **T6B.3 Product** `/p/[slug]` (design: GreatHub Product): porthole photo frame, a disabled "Load the hold" with "Checkout at GreatHub happens through signed AI agents (ACP). Humans: enjoy the view.", a Raw / Rendered specs toggle, and after a `spec_edit` the changed row carries the "Gull footprint" marker. JSON-LD stays identical to the visible specs (T6.1).
+- [ ] **T6B.4 Chaos Deck** `/chaos` (design: GreatHub Chaos Deck, 1920 × 1080 projector layout)
+  - [ ] "Ring the ship's bell" = Run mandate tick now; "Reset to low tide" = Reset.
+  - [ ] "Stir the waters" groups every mutation with its nautical label. **Mutation ids stay the ones in `apps/greathub/lib/chaos.ts`** (`price_raise`, `shipping_fee_added`, `return_fee_added`, `return_window_shortened`, `delivery_slip`, …); the design's `price_hike` / `shipping_fee_add` / `return_fee_add` / `return_window_shorten` / `delivery_delay` are display drafts. Mutations the design doesn't draw (`recall_posted`, `seller_rotation`, `pack_size_shrink`, `subscription_added`) still get buttons.
+  - [ ] Scenario cards (Flagship deal trap, Webcam −$4, Final-sale trap); "Catch history" is the live mutation log (`aria-live`), with the empty state "Calm seas. Nothing's been tampered with."
+- [ ] **T6B.5 Harbor Master's Log** `/agents`: verified-agent banner (Cartel, key `ct-agent-…`), the live table, the lighthouse sweep and bobbing buoy (off under reduced motion). The footer states the real TAP window (≤ 8 min, T6.5), not the design's "60 s".
+- [ ] **T6B.6 Cargo Manifest** `/orders`: order card with the verification aside ("MERCHANT-SIDE DISPUTE EVIDENCE": customer-signed contract + hash pill, scoped grant, Visa Acceptance sandbox transaction), and the empty state "No cargo yet. The hold is hungry." The design's `#PC-89211` becomes a `CT-` display id if one is added; the stored id is unchanged.
+- [ ] **T6B.7 Errors**: 404 "Well, blow me down! This page sank." (spyglass) and 500 "Something's knotted up." (tangled on rope).
+- [ ] **T6B.8 Cast**: `GHFigure` with poses `neutral`, `lean`, `point`, `net`, `spyglass`, `nap`, `gtag`, `gtangled` (props `tag`, `flip`). Captain Inkwell is the mascot, is never beside a failure state, and is at least 64 px tall (else the porthole icon). The Gull appears on the Chaos Deck only, and its price tag always shows the exact real value. Figures never sit on prices, specs, hashes or results. Same reduced-motion and `aria-hidden` rules as T10B.7.
+- `/policies` has no design; restyle it with the T6B.1 theme.
 
 ---
 
@@ -376,12 +400,16 @@ Implementation notes: [PHASE9.md](PHASE9.md).
 
 ## Phase 10: Web shell and paper design system (F + D)
 
-- [ ] **T10.1 Design tokens** (D) — from the T0.5 mockups
+- [ ] **T10.1 Design tokens** (D) — from the T0.5 mockups; source of truth is the design's token file, ported as `apps/web/app/cartel-tokens.css` (Style Tile v2)
   - [ ] The paper and blueprint palettes from SDD §17.7 as CSS variables and Tailwind theme tokens; `pass`, `fail`, `unknown`, `estimate`, `info`, each paired with an icon and text label.
   - [ ] Type scale (Source Serif 4 headings, Geist Sans UI, Geist Mono numbers), spacing, radii, stacked-sheet shadows, focus ring (visible on paper and blueprint).
+  - [ ] Tokens beyond SDD §17.7: `paper-sheet` #FFFFFF (contract, receipt, tables), `rule` #DDD5C4, `rule-soft` #EEE9DF, `graphite-2` #3A3935, `muted` #5E5B56 (small meta text; `pencil` is too light under 20 px), `red-pen-wash` #FBEDEB, `tape` #E8DDB5, `desk` #E9E3D6; type scale 12/13/15/17/22/28/44/56/72; radii sheet 4 / card 8 / pill 999; `shadow-stack`, `shadow-primary` (3 px ink offset on the primary button).
+  - [ ] Focus ring 2.5 px with a 3 px offset (Style Tile v2; the token file's 2 px / 2 px is superseded).
+  - [ ] **Blueprint (dark) only on Workspace, Contract and Purchase Paused**, per Style Tile v2. Other screens stay paper.
   - ✅ Every text/background pairing checked for ≥ 4.5:1 (≥ 3:1 for large text); `--pencil` never carries meaning alone.
 - [ ] **T10.2 Paper materials** (D)
-  - [ ] Paper background: inline SVG `feTurbulence` noise at 3–4% + 24 px dot grid; blueprint variant for dark mode.
+  - [ ] Paper background: 24 px dot grid on app pages (flow screens, workspace, search); **no** dot grid on the formal contract sheet (Contract v2). Blueprint variant for dark mode.
+  - [ ] The `#stamp` SVG turbulence filter, defined once, for the stamped cart-seal logo and every stamp.
   - [ ] Crisp 1 px borders, 8 px card radius; no tilt, tape or sketchy borders.
   - [ ] `Mark` helper (rough-notation) for exactly three uses: red-pen `circle`, `highlight`, `bracket`.
   - [ ] lucide status icons (check, x, help-circle, tilde, alert-triangle); `Stamp` component ("SIGNED v7", "PAID", "BLOCKED").
@@ -391,10 +419,12 @@ Implementation notes: [PHASE9.md](PHASE9.md).
   - [ ] `LayersTable`, `ContractDiff` (git-diff style, Geist Mono), `HashPill` (abbreviated, copy button).
   - [ ] `LedgerTimeline`, `MerchantStatusTable`, `GuardStepper`, `CommandBar` (⌘K), `PlanTray`, `CompareTray`.
   - ✅ Each component is keyboard accessible and has an axe-clean example in both themes.
-- [ ] **T10.4 Layouts**: the three-pane workspace (resizable); Explore grid; on mobile, tabs for Plan · Requirements · Proof with a sticky summary bar, and a two-column Explore grid with a bottom-sheet filter panel
+- [ ] **T10.4 Layouts**: the three-pane workspace (resizable); Explore grid; on mobile, tabs for **Plan · Rules · Proof** with a sticky summary bar ("$896.05 · ✓ 12/12 pass · Ready to sign" + Review contract), and a two-column Explore grid with a bottom-sheet filter panel
 - [ ] **T10.5 Auth UX**: an anonymous session on the first visit; an "upgrade to save & pay" dialog (email OTP / Google) that links the identity so plans are kept
-- [ ] **T10.6 Landing page** `/`: headline, subhead, the cast introduced (one line each), scroll-linked paper sheets (T10B.6), an animated mini Consent Diff, "Start a plan" → `/new`, "Explore" → `/explore`, a "How it works" strip, and a link to `/trust`
-- [ ] **T10.7 `/trust` page**: the trust domains drawn as the cast, what the AI does and doesn't do, the evidence labels (pencil → ink → stamp), the standards used (ACP, UCP, RFC 9421/TAP, AP2 export, WebAuthn), the checkout tiers, and the honesty notes (test merchant, sandbox)
+- [ ] **T10.6 Landing page** `/`: headline
+  - Design (Landing v2, kraft desk background): nav "The Cartel · How it works · Explore · Trust"; H1 "Know exactly what you approved."; the hero contract sheet (v7, 12 of 12 pass, SIGNED v7, then "Fail · USB-C power now 15 W", "Pay paused"); "Meet the Cartel" (one line per figure); "Pencil, ink, stamp"; "The trap" before/after. The animated mini Consent Diff and the rope are specified only in Motion board 01; the mini diff has no design yet., subhead, the cast introduced (one line each), scroll-linked paper sheets (T10B.6), an animated mini Consent Diff, "Start a plan" → `/new`, "Explore" → `/explore`, a "How it works" strip, and a link to `/trust`
+- [ ] **T10.7 `/trust` page**
+  - Design (Ledger Bench Trust): "How Cartel works", four domain cards with CAN / CAN'T lists (Scout proposes, Inspector proves, Notary is you signing, Guard re-checks then pays), "Pencil, ink, stamp", checkout tiers, honesty notes. The standards list is not designed; add it as a plain section.: the trust domains drawn as the cast, what the AI does and doesn't do, the evidence labels (pencil → ink → stamp), the standards used (ACP, UCP, RFC 9421/TAP, AP2 export, WebAuthn), the checkout tiers, and the honesty notes (test merchant, sandbox)
 
 ---
 
@@ -402,13 +432,14 @@ Implementation notes: [PHASE9.md](PHASE9.md).
 
 Everything lives in `apps/web/components/doodle/`. Nothing here may block the spine.
 
-- [ ] **T10B.1 Figure engine**: an SVG skeleton (head, torso, upper and lower arms and legs) driven by joint-angle pose data; Motion interpolates between poses; clean even strokes (no line boil); props attach to the hand joint
+- [ ] **T10B.1 Figure engine** (API from `Figure.dc.html`: `who` ∈ scout / inspector / notary / guard / gremlin / pair, `pose`, `h` 24–400 px, default 96, `dark`; stroke 2 px at ≥ 90 px, 1.75 at ≥ 60, else 1.5): an SVG skeleton (head, torso, upper and lower arms and legs) driven by joint-angle pose data; Motion interpolates between poses; clean even strokes (no line boil); props attach to the hand joint
   - ✅ A `/dev/figures` page shows every pose in both themes.
-- [ ] **T10B.2 Poses**: `idle`, `run[4]`, `stamp[3]`, `block`, `pull[3]`, `sit`, `highfive`, `tangled`, `map`, `thumbsup`
+- [ ] **T10B.2 Poses** (design keys): scout `idle q run1–4 pull1–3 sit map tangled`; inspector `idle q stamp1–3 thumbs`; notary `idle q stamp1–3`; guard `idle q block`; gremlin `idle q swap edit`; pair `highfive`
 - [ ] **T10B.3 Props**: magnifier, clipboard, stamp, stop sign, rope, basket, map, price tag, satchel, binoculars, cap, bow tie
-- [ ] **T10B.4 The cast**: `Scout`, `Inspector`, `Notary`, `Guard`, `Gremlin` per SDD §17.8 (one accent color each; 48–96 px in the app)
+- [ ] **T10B.4 The cast**: `Scout` (ink), `Inspector` (green-check), `Notary` (red-pen), `Guard` (highlighter; the sign bar stays graphite, including in Blueprint), `Gremlin` (tape) per SDD §17.8 and the Character Sheet (48–96 px in the app). The Notary sits beside the contract, never inside it; the Guard stands next to Pay, never on it. The Gremlin belongs to GreatHub; `/bench` is its one Cartel appearance. GreatHub's own cast (Captain Inkwell, the Gull) is T6B.8.
 - [ ] **T10B.5 Event hooks**: `useSearchStatus` (per-source state), `useProofStream` (proof_results broadcast), `useSignatureEvent`, `useDiffEvent`, `usePaymentEvent`, `useBenchProgress`. Figures animate only from these hooks, never from timers.
 - [ ] **T10B.6 Placements** (each with its reduced-motion version and text equivalent, SDD §17.9):
+  - Timings and announcements come from the Motion Storyboards (DESIGN.md): proof stamping ≈ 150 ms per row, announcing only the summary; signing stamp ≤ 600 ms after the server-verified assertion; Guard in ≤ 600 ms with Pay disabled in the same frame first; receipt prints in ≈ 1.1 s; eases out `cubic-bezier(.2,.7,.2,1)`, slam `cubic-bezier(.6,0,.9,.4)`; transform and opacity only.
   - [ ] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking).
   - [ ] Search loading: the Scout runs between source icons; ✓ + count per source.
   - [ ] Proof streaming: the Inspector stamps rows as they arrive.
@@ -417,8 +448,8 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
   - [ ] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value.
   - [ ] Paid: the receipt prints down; high-five.
   - [ ] Bench: Gremlin vs. Guard with the counter.
-  - [ ] Empty plan (Scout on basket), 404 (map upside down), error (tangled in cable).
-  - [ ] Mobile pull-to-refresh on the plan page (stretch).
+  - [ ] Empty plan (Scout on basket), 404 (map upside down, "This page wandered off."), source error (tangled).
+  - [ ] Mobile pull-to-refresh on the plan page (stretch; drawn in Mobile Workspace with Scout `pull3` and "Refreshing prices…").
 - [ ] **T10B.7 Accessibility and performance check**
   - ✅ All figures `aria-hidden`; every state has its text equivalent in an `aria-live` region.
   - ✅ `prefers-reduced-motion`: still poses, no scroll-linked motion.
@@ -431,37 +462,48 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 
 Build every screen against **mock data from the Zod fixtures first**, then switch to real data once the lanes land.
 
-- [ ] **T11.1 `/new`**: brief textarea; scenario template buttons; pack auto-detection shown as a chip; submit → `createPlan`
+- [ ] **T11.1 `/new`**:
+  - Design (Brief and Requirements): "What do you need?", a lined notebook textarea with a 2,000-character counter, the Scout beside it, template chips Home office / Wedding guest / Carry-on kit / Linen shirt, "Nothing is bought until you sign a contract.", primary "Build my plan". brief textarea; scenario template buttons; pack auto-detection shown as a chip; submit → `createPlan`
 - [ ] **T11.2 Requirements review** `/plans/[id]/requirements`
+  - Design: headline "Here's what I understood. These are the rules I won't break without asking you."; YOU SAID rows with a Hard / Preference toggle and edit; hovering a rule highlights its words in the pinned brief card on the right; I ASSUMED rows with Confirm / Edit / Remove; a NEEDS YOUR ANSWER card with two option buttons that show the rule each produces (`desk.width ≤ 48 in` vs `desk.width + arm.reach ≤ 48 in`); pack Default rows with remove; sticky footer "8 rules · 2 to confirm · 1 question", "Edit rules by hand (AI off)", "Find plans".
   - [ ] Three groups: **You said** (the quote shown on hover), **I assumed, confirm?**, **Needs your answer** (question cards).
   - [ ] Edit value and unit, toggle hard/preference, delete, add. **Manual builder form** (the "AI off" path).
   - ✅ With the AI off, the user can build the flagship requirement set entirely by form.
 - [ ] **T11.3 Workspace** `/plans/[id]`
+  - Design (Workspace + Blueprint): header with the stepper Brief ✓ · Rules ✓ · 3 Plans · 4 Contract; requirements rail with strength tags and provenance chips (You said / I assumed → confirmed / Default / I assumed + Confirm / ? Can't check · Waived by you); plan tabs "Plan A · Balanced / B · Cheapest / C · Better chair"; plan sheet with role, item, spec, merchant pill and price, totals with a dashed "~ Estimate" tax, the "Full Cartel checkout" badge, and "Review contract" disabled until every hard rule is checked; PROOF panel ("Deterministic engine · no AI") with the n-of-12 headline, a 12-tick bar, the stamping Inspector while streaming, and a command bar "Ask Cartel… e.g. 'Make it $100 cheaper without changing the monitor'" (⌘K).
   - [ ] Left: requirements (compact). Center: the plan (items, delivered total, plan switcher A/B/C). Right: the Proof panel, **streaming rows via Realtime**.
   - [ ] Command bar: a refinement → `RequirementPatch` preview → confirm → re-solve → changed items highlighted.
-- [ ] **T11.4 Evidence drawer** (intercepting route): the source snapshot in a sandboxed iframe or rendered JSON, with the quote highlighted; provenance (source type, URL, retrieved-at, extractor); freshness; conflicts side by side; an **"Untrusted text"** badge for listing prose
+- [ ] **T11.4 Evidence drawer** (intercepting route)
+  - Design: verdict box ("Pass · 90 W ≥ 65 W"), SOURCE SNAPSHOT with the highlighted quote, a provenance table (Claimed by, Source, Retrieved, Extractor, Extracted `field = value`), the "Untrusted text" note, "Open source page" and the snapshot hash.: the source snapshot in a sandboxed iframe or rendered JSON, with the quote highlighted; provenance (source type, URL, retrieved-at, extractor); freshness; conflicts side by side; an **"Untrusted text"** badge for listing prose
 - [ ] **T11.5 Compare** `/plans/[id]/compare`: a requirement-first table (rows = requirements, columns = plans); tradeoff line per plan; the **minimal conflict banner** with one-click relax actions
 - [ ] **T11.6 Contract** `/plans/[id]/contract`
+  - Design (Contract v2 is current for paper; Contract Blueprint for dark): a §1–§8 section rail (Intent, Approved items, Hard rules, Waivers, Economics, Autonomy, Standing mandate, Expires); a formal white sheet with a contract number (`CT-HO-…`) and hash pill; the waiver line "? Can't check — Chair comfort… I accept this"; a boxed MAXIMUM TOTAL; the Strict / Balanced / Flexible autonomy table (price drops, price rises within max, seller change, rule fails); the Notary in the right gutter once signed; bottom bar "Touch ID signs this exact version. Any change creates v8." → after signing "Armed: waiting for the monitor to reach $320." with Cancel mandate. The OS passkey prompt is a placeholder, not designed.
+  - [ ] **Not designed yet:** the blocked state (Sign disabled because a hard rule fails or an unknown isn't waived). Design it before building.
   - [ ] Exact SKUs, merchant, seller, economics with max total, the autonomy preset selector (with the table from SDD §7.6 shown), waivers (the user must tick each `unknown` hard requirement), the mandate builder (trigger + not-after), `HashPill`.
   - [ ] **Sign with passkey** (T12).
   - ✅ The Sign button stays disabled until every hard requirement is `pass` or waived.
 - [ ] **T11.7 Checkout guard** `/plans/[id]/checkout`: a `GuardStepper` (Refresh cart → Re-fetch specs → Re-prove → Diff → Guard → Pay → Order), each step streaming with timing
 - [ ] **T11.8 Purchase paused** `/plans/[id]/diff/[diffId]`
+  - Design (Purchase Paused + Blueprint + mobile): the red PURCHASE PAUSED stamp, the GreatHub checkout card with a disabled Pay behind the Guard's velvet rope, the 4-layer table whose last layer is **"Cartel re-check"**, the approved-vs-current table with a red-pen circle on the failing value, a dashed "AI summary" card ("Written by AI. The tables are the record."), and the compliant alternative with "Review revised contract". The v{n} → v{n+1} ContractDiff lives on the revised-contract screen (Revised and Receipt), not here.
   - [ ] Headline "PURCHASE PAUSED · NO PAYMENT WAS MADE".
   - [ ] **LayersTable** (cart hash / merchant / amount / Cartel).
   - [ ] An approved-vs-current table; a plain-language explanation (template, with an optional A5 rewording).
   - [ ] **Compliant alternatives** (solver with the failing item's role re-opened).
   - [ ] The `ContractDiff` for v{n} → v{n+1}, then re-sign.
   - [ ] An `aria-live="assertive"` announcement.
-- [ ] **T11.9 Orders** `/orders`, `/orders/[id]`: purchase record, rail and transaction ID, contract hash, proof at purchase, return-policy snapshot, order timeline, **Download Evidence Pack**, **Scan delivery**
-- [ ] **T11.10 Ledger** `/ledger/[planId]`: a timeline of events with actor icons; a **Verify chain** button → ✓ or the broken seq
+- [ ] **T11.9 Orders** `/orders`, `/orders/[id]`
+  - Design (Revised and Receipt): revised contract v8 with the git-style ContractDiff, bracket notes and "Sign v8 with passkey"; the paid receipt printing from a slot (header "CARTEL · RECEIPT"), Paid → Confirmed → Shipped stepper, Download Evidence Pack, Scan delivery, and the Scout + Inspector high-five.: purchase record, rail and transaction ID, contract hash, proof at purchase, return-policy snapshot, order timeline, **Download Evidence Pack**, **Scan delivery**
+- [ ] **T11.10 Ledger** `/ledger/[planId]`: a timeline of events with actor badges (YOU, SYS, AI dashed, MER) and hash pills; a **Verify chain** button → "✓ Chain intact · n entries" or the broken seq; a blocked execution row is red with "✗ Blocked · no payment"
 - [ ] **T11.11 Mandates** `/mandates`: active, fired, blocked and expired; next check; cancel
-- [ ] **T11.12 Bench** `/bench`: the latest CI run, per-category pass rates, a scenario list with expected vs actual, **Run live**
+- [ ] **T11.12 Bench** `/bench`: the latest CI run ("62 / 62 caught · 0 false blocks"), a Gremlin-vs-Guard strip of three attack cards, per-category rows (Identity … Security caught, Benign allowed), a scenario list with expected vs actual, **Run live**
 - [ ] **T11.13 Settings**: `/settings/payment` (Microform card entry; shows brand, last 4 and expiry) and `/settings/signing` (register or remove the signing passkey)
-- [ ] **T11.14 States pass**: every screen has loading, empty, error and degraded states per SDD §17.4; no bare spinners
+- [ ] **T11.14 States pass**
+  - Design (Edge States): empty plan, 404, source error with Retry, no plan fits (the minimal conflict with two relax buttons, e.g. "Raise budget +$84" / "Arrive Wednesday"), sources disagree (side by side with a red bracket; the rule becomes ? Can't check), passkey cancelled ("Nothing was signed." + Try again / Use my phone), hand-off ("Re-checked at 10:42. After this, the store's checkout decides."), AI off.: every screen has loading, empty, error and degraded states per SDD §17.4; no bare spinners
 - [ ] **T11.15 `/explore`**: categories, kits shelf, "Passes popular kits" shelves, recently viewed; works signed out
-- [ ] **T11.16 `/search`**: search bar; per-source status strip (streaming NDJSON); result grid of `ProductCard`s; facet panel (bottom sheet on mobile) with **Add as rule** on each facet; empty and timeout states
+- [ ] **T11.16 `/search`**
+  - Design (Search): per-source strip with the running Scout while loading and ✓ + count per source; dashed skeleton cards (never a spinner); facet rows with "+ Add as rule" and its tooltip ("Filters hide products. Rules are checked against evidence before you pay."); cards with Compare, evidence chip, source pill and tier badge; empty PlanTray at the bottom; mobile filter bottom sheet. Sources in the design say Best Buy; build them as UPCitemdb (T7.9).: search bar; per-source status strip (streaming NDJSON); result grid of `ProductCard`s; facet panel (bottom sheet on mobile) with **Add as rule** on each facet; empty and timeout states
 - [ ] **T11.17 Product page** `/p/[productId]`
+  - Design (Product): active-plan pill in the header, an offers table with a radio per offer and tier badge, "Checks against your plan" with the Inspector, "Specs with receipts" with "+ Make this a rule" on hover, a "Sources disagree" row with a red bracket, and a mobile sticky bar. The design's Best Buy offer becomes a UPCitemdb "Seen at {merchant}" reference offer (proof only, never used for price rules).
   - [ ] Gallery; offers table (one row per source/merchant with price, availability, delivery, tier badge).
   - [ ] **Specs with receipts**: `SpecReceiptRow`s grouped by category; conflicts shown side by side under **Sources disagree**; click → evidence drawer.
   - [ ] **Checks against your plan** (when a plan is active); **Add to plan** (role picker); **Add as rule** on spec rows.
