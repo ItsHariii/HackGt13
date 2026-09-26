@@ -9,9 +9,11 @@ import {
   type VisaAcceptanceConfig,
 } from "./visa-acceptance";
 
-export type RailId = "visa_acceptance" | "simulated";
+export type RailId = "visa_acceptance" | "simulated" | "authorize_net" | "vic";
 
 export const RAIL_LABELS: Record<RailId, string> = {
+  authorize_net: "Authorize.net sandbox",
+  vic: "Visa Intelligent Commerce unavailable: credentials required",
   visa_acceptance:
     "Visa Acceptance sandbox. The scoped grant emulates agent-token controls at the application layer.",
   simulated: "Simulated payment. No network call.",

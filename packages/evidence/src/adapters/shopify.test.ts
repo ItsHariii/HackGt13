@@ -259,6 +259,8 @@ describe("ucpAgentProfile", () => {
     const profile = ucpAgentProfile({ keys: [key] });
     expect(profile.ucp.version).toBe("2026-08-25");
     expect(Object.keys(profile.ucp.capabilities)).toEqual([
+      "dev.ucp.shopping.cart",
+      "dev.ucp.shopping.checkout",
       "dev.ucp.shopping.catalog.search",
       "dev.ucp.shopping.catalog.lookup",
     ]);

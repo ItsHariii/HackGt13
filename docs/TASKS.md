@@ -531,28 +531,30 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 
 ## Phase 13: Checkout and payments (P)
 
+Implementation and verification limits: [PHASE13.md](PHASE13.md). Local migrations applied and live Visa hosted enrollment verified; full signing-to-payment E2E, live Authorize.net enrollment, and live Shopify acceptance remain unverified.
+
 - [x] **T13.1 Visa Acceptance client**
   - [x] REST HTTP-Signature auth (merchant ID, key ID, shared secret) against `apitest.cybersource.com`, using either `cybersource-rest-client` or a thin typed client.
   - ✅ A sandbox smoke test authorizes test card `4111 1111 1111 1111` for $1.00 and logs the transaction ID.
-- [ ] **T13.2 Card enrollment**
-  - [ ] Capture context for Microform Integration v2 → mount the hosted fields in `/settings/payment` → transient token.
-  - [ ] Create a TMS customer and payment instrument from the transient token. **Confirm the exact endpoint and flow in the sandbox docs.** A zero-amount auth with a token-create action is the alternative.
-  - [ ] Store only `rail_ref`, brand, last 4 and expiry.
+- [x] **T13.2 Card enrollment**
+  - [x] Capture context for Microform Integration v2 → mount the hosted fields in `/settings/payment` → transient token.
+  - [x] Create a TMS customer and payment instrument from the transient token. Confirmed the documented zero-amount authorization with `TOKEN_CREATE` against the live sandbox.
+  - [x] Store only `rail_ref`, brand, last 4 and expiry.
   - ✅ The PAN never reaches our server (check the network tab and logs).
-- [ ] **T13.3 Payment rails**: the `PaymentRail` interface (SDD §13.4); `VisaAcceptanceRail`, `SimulatedRail` (always shows a banner), `AuthorizeNetRail` (Accept.js fallback), and a `VicRail` stub mapped to the VIC flow (completed if credentials arrive)
-- [ ] **T13.4 Scoped payment grant**: a JWS (EdDSA) with `merchantOrigin`, `maxTotalMinor`, `currency`, `contractId`, `bodyHash`, `instrumentRef`, `exp` (10 min), `jti`; mint in Cartel, verify in GreatHub
-- [ ] **T13.5 Execute route** `POST /api/checkout/[versionId]/execute` (requires `Idempotency-Key`)
-  - [ ] ACP GET → re-fetch specs → `evaluate` → `consentDiff` → insert snapshot and diff → if `reapprove`/`block`, transition to `invalidated` + ledger + return 409 with the diff ID.
-  - [ ] Otherwise `begin_execution` → mint grant → ACP `complete` (tag `agent-payer-auth`) → `complete_execution` → ledger → broadcast.
-  - ✅ The flagship happy path produces a real sandbox authorization; the flagship trap returns 409 with `classification: block`.
-- [ ] **T13.6 Webhook receiver** `/api/webhooks/greathub`: verify HMAC and timestamp (5 min tolerance); dedupe on `(provider, event_id)`; update the order; ledger
-- [ ] **T13.7 Declines and retries**: map sandbox declines to a clear UI state; a retry needs a user click and a **new** idempotency key; never retry automatically after a timeout. Reconcile first with ACP GET.
-- [ ] **T13.8 Multi-merchant status**: a plan-level `MerchantStatusTable` for plans spanning merchants (paid / failed / not attempted) with honest copy; no auto-rollback claims
+- [x] **T13.3 Payment rails**: the `PaymentRail` interface (SDD §13.4); `VisaAcceptanceRail`, `SimulatedRail` (always shows a banner), `AuthorizeNetRail` (Accept.js fallback), and a `VicRail` stub mapped to the VIC flow (completed if credentials arrive)
+- [x] **T13.4 Scoped payment grant**: a JWS (EdDSA) with `merchantOrigin`, `maxTotalMinor`, `currency`, `contractId`, `bodyHash`, `instrumentRef`, `exp` (10 min), `jti`; mint in Cartel, verify in GreatHub
+- [x] **T13.5 Execute route** `POST /api/checkout/[versionId]/execute` (requires `Idempotency-Key`)
+  - [x] ACP GET → re-fetch specs → `evaluate` → `consentDiff` → insert snapshot and diff → if `reapprove`/`block`, transition to `invalidated` + ledger + return 409 with the diff ID.
+  - [x] Otherwise `begin_execution` → mint grant → ACP `complete` (tag `agent-payer-auth`) → `complete_execution` → ledger → broadcast.
+  - [ ] Full browser flagship signing-to-payment acceptance (depends on Phase 12). Separately verified: real sandbox authorization, merchant contract suite, and checkout-service flagship trap returning `classification: block`.
+- [x] **T13.6 Webhook receiver** `/api/webhooks/greathub`: verify HMAC and timestamp (5 min tolerance); dedupe on `(provider, event_id)`; update the order; ledger
+- [x] **T13.7 Declines and retries**: map sandbox declines to a clear UI state; a retry needs a user click and a **new** idempotency key; never retry automatically after a timeout. Reconcile first with ACP GET.
+- [x] **T13.8 Multi-merchant status**: a plan-level `MerchantStatusTable` for plans spanning merchants (paid / failed / not attempted) with honest copy; no auto-rollback claims
 - [ ] **T13.9 VIC** *(only if Visa provides credentials)*: `@visa/token-manager` / `@visa/api-client`; enroll the card → agent token → Visa Payment Passkey → Payment Instruction (merchant + amount from the contract, referencing `contractId` and `bodyHash`) → credential retrieval → GreatHub charge → outcome signal; switch with `PAYMENT_RAIL=vic`
 - [ ] **T13.10 Shopify hand-off tier** `POST /api/handoff/[versionId]` — depends on T7.5
-  - [ ] Build the cart and checkout through UCP (`cart_mcp`, `checkout_mcp`); re-prove the checkout state against the signed contract; on `identical`/`auto`, record `checkout.handed_off` in the ledger and return the store's checkout URL; on `reapprove`/`block`, show the paused screen as usual.
-  - [ ] UI copy after hand-off: "Re-checked at {time}. After this, the store's checkout decides."
-  - ✅ A Shopify item in a plan hands off with a ledger entry; no Cartel payment is attempted.
+  - [x] Build the cart and checkout through UCP (`cart_mcp`, `checkout_mcp`); re-prove the checkout state against the signed contract; on `identical`/`auto`, record `checkout.handed_off` in the ledger and return the store's checkout URL; on `reapprove`/`block`, show the paused screen as usual.
+  - [x] UI copy after hand-off: "Re-checked at {time}. After this, the store's checkout decides."
+  - [ ] Live Shopify acceptance: an item in a plan hands off with a ledger entry; no Cartel payment is attempted. Requires authorized merchant access and complete checkout evidence.
 
 ---
 

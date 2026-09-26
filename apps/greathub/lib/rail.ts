@@ -1,5 +1,6 @@
 import "server-only";
 import {
+  AuthorizeNetRail,
   type MerchantRail,
   SimulatedRail,
   VisaAcceptanceRail,
@@ -38,6 +39,12 @@ export function merchantRail(): MerchantRail {
         "PAYMENT_RAIL=visa_acceptance but VISA_ACCEPTANCE_* is not configured",
       );
     rail = new VisaAcceptanceRail(visa);
+  } else if (wanted === "authorize_net") {
+    const apiLoginId = process.env.AUTHORIZE_NET_API_LOGIN_ID;
+    const transactionKey = process.env.AUTHORIZE_NET_TRANSACTION_KEY;
+    if (!isConfigured(apiLoginId) || !isConfigured(transactionKey))
+      throw new Error("Authorize.net is not configured");
+    rail = new AuthorizeNetRail({ apiLoginId, transactionKey });
   } else {
     throw new Error(`GreatHub does not support PAYMENT_RAIL=${wanted}`);
   }
