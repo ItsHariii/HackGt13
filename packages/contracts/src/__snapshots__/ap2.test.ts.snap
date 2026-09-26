@@ -1,0 +1,114 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toAp2 > matches the snapshot for contract v8 1`] = `
+{
+  "cartMandate": {
+    "contents": {
+      "cart_expiry": "2026-09-26T14:18:00Z",
+      "id": "c_flagship@8",
+      "merchant_name": "demomart",
+      "payment_request": {
+        "details": {
+          "display_items": [
+            {
+              "amount": {
+                "currency": "USD",
+                "value": 229,
+              },
+              "label": "Birchline Compact Desk 46.5"",
+              "refund_period": 30,
+            },
+            {
+              "amount": {
+                "currency": "USD",
+                "value": 189,
+              },
+              "label": "Kestrel Mesh Task Chair",
+              "refund_period": 30,
+            },
+            {
+              "amount": {
+                "currency": "USD",
+                "value": 309,
+              },
+              "label": "Halden M27Q-USBC 27" 4K USB-C Monitor",
+              "refund_period": 30,
+            },
+            {
+              "amount": {
+                "currency": "USD",
+                "value": 19,
+              },
+              "label": "Loop USB-C Cable 100 W, 2 m",
+              "refund_period": 30,
+            },
+            {
+              "amount": {
+                "currency": "USD",
+                "value": 45,
+              },
+              "label": "Pica 1080p Webcam",
+              "refund_period": 30,
+            },
+            {
+              "amount": {
+                "currency": "USD",
+                "value": 24,
+              },
+              "label": "Shipping",
+              "refund_period": 0,
+            },
+            {
+              "amount": {
+                "currency": "USD",
+                "value": 55.37,
+              },
+              "label": "Estimated tax",
+              "pending": true,
+              "refund_period": 0,
+            },
+          ],
+          "id": "c_flagship@8",
+          "total": {
+            "amount": {
+              "currency": "USD",
+              "value": 870.37,
+            },
+            "label": "Total",
+            "refund_period": 0,
+          },
+        },
+        "method_data": [
+          {
+            "data": {
+              "network": [
+                "visa",
+              ],
+            },
+            "supported_methods": "CARD",
+          },
+        ],
+      },
+      "user_cart_confirmation_required": true,
+    },
+    "merchant_authorization": null,
+  },
+  "intentMandate": {
+    "intent_expiry": "2026-09-26T14:18:00Z",
+    "merchants": [
+      "demomart",
+    ],
+    "natural_language_description": "Build my home office for under $1,000. The desk has to fit a 48-inch alcove, I want a 27-inch 4K monitor that charges my MacBook over one USB-C cable, and everything has to arrive by Monday. Don't substitute anything without asking.",
+    "requires_refundability": false,
+    "skus": [
+      "BL-CD-465",
+      "KS-MESH-TASK",
+      "M27Q-USBC",
+      "LOOP-C100-2M",
+      "PICA-1080",
+    ],
+    "user_cart_confirmation_required": true,
+  },
+  "user_authorization": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiYm9keUhhc2giOiJzaGEyNTY6ZjEzZDEzY2FjNTI4NTMwZDM3NmZkYjkwMjFhYTg2MGI0ZDk2ODNlZTIwMmY3Y2I5Y2JiYjAyYmE1ZWZmNzA1ZSIsImNyZWRlbnRpYWxJZCI6IlptbDRkSFZ5WlMxamNtVmtaVzUwYVdGcyIsImF1dGhlbnRpY2F0b3JEYXRhIjoiWm1sNGRIVnlaUzFoZFhSb1pXNTBhV05oZEc5eUxXUmhkR0UiLCJjbGllbnREYXRhSlNPTiI6IlptbDRkSFZ5WlMxamJHbGxiblF0WkdGMFlRIiwic2lnbmF0dXJlIjoiWm1sNGRIVnlaUzF6YVdkdVlYUjFjbVUifQ",
+}
+`;

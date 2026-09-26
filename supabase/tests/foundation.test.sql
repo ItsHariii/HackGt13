@@ -1,0 +1,17 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(8);
+insert into auth.users (id) values ('11111111-1111-4111-8111-111111111111'), ('22222222-2222-4222-8222-222222222222');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}', true);
+select lives_ok($$insert into public.foundation_plans(id) values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa')$$, 'Owner can create a spike plan');
+select lives_ok($$insert into public.foundation_events(plan_id) values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa')$$, 'Owner can create an event and fire the broadcast trigger');
+select is((select count(*)::int from public.foundation_events), 1, 'Owner can read event');
+select throws_ok($$select public.foundation_health()$$, '42501', null, 'Authenticated clients cannot call server health function');
+select set_config('request.jwt.claims', '{"sub":"22222222-2222-4222-8222-222222222222","role":"authenticated"}', true);
+select is((select count(*)::int from public.foundation_plans), 0, 'Another user cannot read the plan');
+select is((select count(*)::int from public.foundation_events), 0, 'Another user cannot read events');
+select throws_ok($$insert into public.foundation_events(plan_id) values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa')$$, '42501', null, 'Another user cannot insert events');
+select throws_ok($$insert into public.foundation_plans(owner_id) values ('11111111-1111-4111-8111-111111111111')$$, '42501', null, 'Cannot create a plan as someone else');
+select * from finish();
+rollback;

@@ -1,0 +1,22 @@
+{
+  "name": "@proofcart/platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./env": "./src/env.ts",
+    "./health": "./src/health.ts",
+    "./logger": "./src/logger.ts",
+    "./request-id": "./src/request-id.ts",
+    "./jwks": "./src/jwks.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "biome check ."
+  },
+  "dependencies": {
+    "pino": "^10.0.0"
+  }
+}

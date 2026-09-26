@@ -1,0 +1,39 @@
+{
+  "name": "proofcart",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=10 <11"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:packages": "turbo run test",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:lint": "supabase db lint --local --fail-on warning",
+    "db:test": "supabase test db",
+    "db:test:integration": "pnpm --filter @proofcart/db-tests test:db",
+    "db:types": "node scripts/db-types.mjs",
+    "db:types:check": "node scripts/db-types.mjs --check",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "test:realtime": "pnpm --filter @proofcart/web test:realtime"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@types/node": "^24.0.0",
+    "supabase": "2.118.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "5.0.2"
+  },
+  "type": "module"
+}
