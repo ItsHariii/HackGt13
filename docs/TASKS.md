@@ -516,11 +516,14 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 
 ## Phase 12: Signing (P, F for the client)
 
-- [ ] **T12.1 Signing-key registration**: `generateRegistrationOptions` (`userVerification: 'required'`, residentKey preferred) → `verifyRegistrationResponse` → `signing_credentials`
-- [ ] **T12.2 Signing options**: load the version → `contractHash` → insert `signing_challenges` (nonce, 2 min TTL) → options with the custom challenge `ct1:{H}:{N}`
-- [ ] **T12.3 Signing verify**: `verifyAuthenticationResponse` (expected challenge via `isoBase64URL.fromUTF8String(...)`, origin, RP ID, credential, counter); in one transaction: insert the signature, delete the challenge, transition to `signed`, append to the ledger
-- [ ] **T12.4 Client ceremony**: `@simplewebauthn/browser` `startAuthentication`; handle `NotAllowedError` (cancelled) and unsupported devices (offer phone hybrid)
-- [ ] **T12.5 Security tests**
+Implementation and verification: [PHASE12.md](PHASE12.md). The contract review screen that mounts `SignContract` is T11 work.
+
+- [x] **T12.1 Signing-key registration**: `generateRegistrationOptions` (`userVerification: 'required'`, residentKey preferred) → `verifyRegistrationResponse` → `signing_credentials`
+- [x] **T12.2 Signing options**: load the version → `contractHash` → insert `signing_challenges` (nonce, 2 min TTL) → options with the custom challenge `ct1:{H}:{N}`
+- [x] **T12.3 Signing verify**: `verifyAuthenticationResponse` (expected challenge via `isoBase64URL.fromUTF8String(...)`, origin, RP ID, credential, counter); in one transaction: insert the signature, delete the challenge, transition to `signed`, append to the ledger
+  - The challenge is deleted in an earlier transaction, before verification, so a failed attempt is also spent (SDD §12.2 replay defense).
+- [x] **T12.4 Client ceremony**: `@simplewebauthn/browser` `startAuthentication`; handle `NotAllowedError` (cancelled) and unsupported devices (offer phone hybrid)
+- [x] **T12.5 Security tests** (`apps/web/lib/signing-service.test.ts`, `supabase/tests/signing.test.sql`)
   - ✅ A tampered body → the hash mismatches → verification fails.
   - ✅ A reused challenge → fails.
   - ✅ A wrong origin → fails.
