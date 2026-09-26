@@ -7,3 +7,4 @@ export * from "./hash";
 export * from "./primitives";
 export * from "./proof";
 export * from "./requirement";
+export * from "./webauthn";

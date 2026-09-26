@@ -11,5 +11,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "lint": "biome check ."
+  },
+  "dependencies": {
+    "@noble/curves": "1.9.7"
+  },
+  "devDependencies": {
+    "fast-check": "4.10.2"
   }
 }

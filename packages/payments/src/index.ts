@@ -1,2 +1,4 @@
-// payments: implementation belongs to its later phase in docs/TASKS.md.
-export {};
+// payments: the Visa Acceptance client, scoped payment grants and merchant rails.
+export * from "./charge";
+export * from "./grant";
+export * from "./visa-acceptance";
