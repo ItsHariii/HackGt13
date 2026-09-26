@@ -4,7 +4,7 @@ import type {
   Qualifier,
   Quantity,
   Unit,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 
 /** Where a value may come from, in the terms packs use for authority (SDD §11.1). */
 export const AUTHORITIES = [

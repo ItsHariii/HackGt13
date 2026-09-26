@@ -4,7 +4,7 @@ import {
   type Fact,
   type ReasonCode,
   type Value,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import type { Authority, FieldDef } from "./fields";
 import { freshnessMs } from "./fields";
 import { sameValue } from "./values";

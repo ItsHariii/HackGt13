@@ -46,12 +46,12 @@ deduplicating combined results; do not sum chunk counts blindly.
   and conflicting claims do not contribute counts. `promoteToRule(field, op,
   value, 'facet', { role, packs })` creates a hard item requirement with
   `user_selected` provenance; the caller persists it through plan editing.
-- DemoMart offers resolve to `full`, Shopify to `handoff`, and other/reference
+- GreatHub offers resolve to `full`, Shopify to `handoff`, and other/reference
   offers to `proof_only`. Tiers describe integration capability, not freshness.
 
 ## Source configuration and caching
 
-`SOURCES_ENABLED` selects adapters. DemoMart searches the persisted catalog.
+`SOURCES_ENABLED` selects adapters. GreatHub searches the persisted catalog.
 UPCitemdb searches or looks up exact GTINs. Icecat searches previously ingested
 manufacturer specs; exact-GTIN queries can fetch a sheet when `ICECAT_USERNAME`
 is configured. CPSC is a recall checker and is not a search provider. Optional
@@ -82,17 +82,17 @@ before checkout.
 ## Verification
 
 ```sh
-pnpm --filter @proofcart/catalog test
-pnpm --filter @proofcart/catalog --filter @proofcart/db-tests typecheck
+pnpm --filter @cartel/catalog test
+pnpm --filter @cartel/catalog --filter @cartel/db-tests typecheck
 pnpm exec supabase db push --local
 pnpm db:types
-pnpm --filter @proofcart/db-tests test:db src/catalog.db.test.ts
+pnpm --filter @cartel/db-tests test:db src/catalog.db.test.ts
 pnpm test:catalog
 ```
 
 `test:catalog` builds with local Supabase public configuration, starts a temporary
 production server on an available port, checks search/product/kit/plan routes,
-authentication, ownership and origin rejection, and measures 25 DemoMart searches.
+authentication, ownership and origin rejection, and measures 25 GreatHub searches.
 It refuses nonlocal Supabase, makes no external catalog requests, and deletes its
 test users/plans. A local p95 check is not a claim about deployed or live-provider
 latency. The script rebuilds because Next compiles `NEXT_PUBLIC_*` into the bundle.
@@ -103,7 +103,7 @@ includes concurrent GTIN merging, identity fallbacks, cache reuse, service-only
 RPCs, provenance/hash preservation, ownership and transactional rollback.
 
 Verified locally: 18 catalog unit tests, 8 database tests, catalog/database type
-checks, and a production build/API smoke run. The 25-request DemoMart smoke run
+checks, and a production build/API smoke run. The 25-request GreatHub smoke run
 measured 48 ms p95, including a 48 ms first request. A broader suite run passed
 651 tests but found an unrelated pinned-GTIN mismatch in the home-office flagship
 fixture; that run is not claimed as a clean repository-wide pass.

@@ -3,7 +3,7 @@ import {
   type EvidenceState,
   evidenceRank,
   type Fact,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import {

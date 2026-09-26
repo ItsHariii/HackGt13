@@ -1,6 +1,6 @@
 import "server-only";
-import type { Database } from "@proofcart/contracts/db";
-import { requireEnv } from "@proofcart/platform/env";
+import type { Database } from "@cartel/contracts/db";
+import { requireEnv } from "@cartel/platform/env";
 import { createClient } from "@supabase/supabase-js";
 export function createAdminClient(signal?: AbortSignal) {
   return createClient<Database>(

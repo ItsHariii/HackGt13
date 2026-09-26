@@ -22,8 +22,8 @@ const serif = Source_Serif_4({
 });
 export const metadata: Metadata = {
   title: {
-    default: "ProofCart — A little more certain.",
-    template: "%s · ProofCart",
+    default: "Cartel — A little more certain.",
+    template: "%s · Cartel",
   },
   description:
     "Clear rules. Evidence you can inspect. A purchase that stays true to what you approved.",
@@ -41,7 +41,7 @@ export default function RootLayout({
           <Nav />
           <div id="main">{children}</div>
           <footer className="site-footer">
-            <span>ProofCart · Consider it carefully.</span>
+            <span>Cartel · Consider it carefully.</span>
             <Link href="/foundation">Foundation status</Link>
             <span>Built at HackGT 13 / 2026</span>
           </footer>

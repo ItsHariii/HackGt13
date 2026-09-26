@@ -1,5 +1,5 @@
 // ai: the five bounded model roles (SDD §10, TASKS Phase 9).
-// Supabase wiring lives in `@proofcart/ai/supabase` so pure consumers don't
+// Supabase wiring lives in `@cartel/ai/supabase` so pure consumers don't
 // load it.
 export * from "./calls";
 export * from "./config";

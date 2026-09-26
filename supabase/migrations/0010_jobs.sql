@@ -4,8 +4,8 @@
 -- {worker_url}/api/internal/queue/{name}. The worker drains the queue through the srv_queue_*
 -- wrappers, archives on success and moves a message to {queue}_dlq after 5 reads.
 --
--- Wake-up auth: headers x-proofcart-timestamp (unix seconds) and
--- x-proofcart-signature = 'v1=' || hex(hmac_sha256(worker_hmac_secret, '{timestamp}.{queue}')).
+-- Wake-up auth: headers x-cartel-timestamp (unix seconds) and
+-- x-cartel-signature = 'v1=' || hex(hmac_sha256(worker_hmac_secret, '{timestamp}.{queue}')).
 -- Only the timestamp and queue name are signed, so body serialization can never break it.
 --
 -- Vault secrets are created as 'unset'. Configure per environment (never in a migration):
@@ -23,7 +23,7 @@ select pgmq.create(q) from unnest(array[
 do $$
 begin
   if not exists (select 1 from vault.secrets where name = 'worker_url') then
-    perform vault.create_secret('unset', 'worker_url', 'Base URL of the ProofCart web app that drains queues');
+    perform vault.create_secret('unset', 'worker_url', 'Base URL of the Cartel web app that drains queues');
   end if;
   if not exists (select 1 from vault.secrets where name = 'worker_hmac_secret') then
     perform vault.create_secret('unset', 'worker_hmac_secret', 'Must equal INTERNAL_QUEUE_HMAC_SECRET in apps/web');
@@ -57,8 +57,8 @@ begin
     body := jsonb_build_object('queue', p_queue),
     headers := jsonb_build_object(
       'content-type', 'application/json',
-      'x-proofcart-timestamp', v_ts,
-      'x-proofcart-signature', 'v1=' || encode(extensions.hmac(v_ts || '.' || p_queue, v_secret, 'sha256'), 'hex')
+      'x-cartel-timestamp', v_ts,
+      'x-cartel-signature', 'v1=' || encode(extensions.hmac(v_ts || '.' || p_queue, v_secret, 'sha256'), 'hex')
     ),
     timeout_milliseconds := 5000
   );
@@ -151,7 +151,7 @@ select cron.schedule('mandates-tick', '15 seconds', 'select internal.mandates_ti
 select cron.schedule('offers-refresh', '* * * * *', 'select internal.offers_refresh()');
 select cron.schedule('ledger-audit', '17 3 * * *', 'select internal.ledger_audit()');
 
--- Worker-side queue access for the secret key, limited to ProofCart's queues.
+-- Worker-side queue access for the secret key, limited to Cartel's queues.
 create or replace function internal.assert_queue(p_queue text)
 returns void language plpgsql immutable set search_path = '' as $$
 begin

@@ -1,4 +1,4 @@
-import type { Money } from "@proofcart/contracts";
+import type { Money } from "@cartel/contracts";
 import { dec, mul, roundHalfEven, roundHalfUp } from "./decimal";
 
 /*

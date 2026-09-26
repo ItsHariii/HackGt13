@@ -1,5 +1,5 @@
 import "server-only";
-import type { Database } from "@proofcart/contracts/db";
+import type { Database } from "@cartel/contracts/db";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSupabaseConfig } from "./config";

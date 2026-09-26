@@ -1,4 +1,4 @@
-import { CatalogError, forkKit } from "@proofcart/catalog/supabase";
+import { CatalogError, forkKit } from "@cartel/catalog/supabase";
 import { apiError, catalogReady, jsonResponse, userId } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 

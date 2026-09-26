@@ -13,7 +13,7 @@ export default function Foundation() {
       <p className="text-sm">
         Readiness:{" "}
         <a className="text-link" href="/api/health">
-          ProofCart health ↗
+          Cartel health ↗
         </a>
       </p>
     </main>

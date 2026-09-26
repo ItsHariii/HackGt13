@@ -1,3 +1,3 @@
 import "server-only";
-import { createLogger } from "@proofcart/platform/logger";
+import { createLogger } from "@cartel/platform/logger";
 export const logger = createLogger("web");

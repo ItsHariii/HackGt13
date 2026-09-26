@@ -1,4 +1,4 @@
-import { effectiveImportance, type Requirement } from "@proofcart/contracts";
+import { effectiveImportance, type Requirement } from "@cartel/contracts";
 import type { BasketLimits } from "./types";
 
 export interface LimitsFromRequirements {

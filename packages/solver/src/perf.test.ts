@@ -21,7 +21,7 @@ function pick<T>(items: readonly T[], r: number): T {
 function benchmark(): SolverProblem {
   const next = rng(20260926);
   const roles = Array.from({ length: 8 }, (_, i) => ({ id: `role${i}` }));
-  const merchants = ["demomart", "northwind", "harbor"].map((id, i) => ({
+  const merchants = ["greathub", "northwind", "harbor"].map((id, i) => ({
     id,
     shippingMinor: 1500 + i * 600,
   }));

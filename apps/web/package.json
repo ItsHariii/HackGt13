@@ -1,5 +1,5 @@
 {
-  "name": "@proofcart/web",
+  "name": "@cartel/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,9 +12,9 @@
     "test:realtime": "node scripts/realtime-smoke.mjs"
   },
   "dependencies": {
-    "@proofcart/catalog": "workspace:*",
-    "@proofcart/contracts": "workspace:*",
-    "@proofcart/platform": "workspace:*",
+    "@cartel/catalog": "workspace:*",
+    "@cartel/contracts": "workspace:*",
+    "@cartel/platform": "workspace:*",
     "@sentry/nextjs": "11.0.0",
     "@supabase/supabase-js": "2.117.2",
     "next": "16.3.6",
@@ -28,10 +28,10 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.0.0",
-    "@proofcart/acp": "workspace:*",
-    "@proofcart/evidence": "workspace:*",
-    "@proofcart/rule-packs": "workspace:*",
-    "@proofcart/tap": "workspace:*"
+    "@cartel/acp": "workspace:*",
+    "@cartel/evidence": "workspace:*",
+    "@cartel/rule-packs": "workspace:*",
+    "@cartel/tap": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",

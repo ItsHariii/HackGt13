@@ -56,7 +56,7 @@ const SHIRT: UcpProduct = {
 
 const rpc = (structuredContent: unknown) =>
   json({ jsonrpc: "2.0", id: 1, result: { structuredContent } });
-const PROFILE = "https://proofcart.example/.well-known/ucp";
+const PROFILE = "https://cartel.example/.well-known/ucp";
 
 describe("normalizeUcpProduct", () => {
   const p = normalizeUcpProduct(SHIRT, "2026-09-26T10:00:00.000Z");
@@ -252,7 +252,7 @@ describe("ucpAgentProfile", () => {
       kty: "OKP",
       crv: "Ed25519",
       x: "abc",
-      kid: "pc-agent",
+      kid: "ct-agent",
       alg: "EdDSA",
       use: "sig",
     };

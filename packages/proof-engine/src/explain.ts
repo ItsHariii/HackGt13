@@ -6,7 +6,7 @@ import {
   type Qualifier,
   toMajor,
   type Value,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import type { FieldDef } from "./fields";
 import {
   isBox,
@@ -159,7 +159,7 @@ export function formatTarget(
 export type ExplainOptions = {
   /** The field's definition, for its label. Falls back to the field path. */
   def?: FieldDef | undefined;
-  /** Display name of the source behind the fact: "Manufacturer", "DemoMart checkout". */
+  /** Display name of the source behind the fact: "Manufacturer", "GreatHub checkout". */
   source?: string | undefined;
   /** Seconds since the fact was fetched, for "Confirmed · … · 4 min ago". */
   ageSeconds?: number | null | undefined;

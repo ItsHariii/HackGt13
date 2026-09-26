@@ -3,8 +3,8 @@ import { createTestAuthenticator } from "./fixtures/authenticator";
 import { derToP1363, verifyContractSignature } from "./webauthn";
 
 const bodyHash = `sha256:${"a".repeat(64)}` as const;
-const origin = "https://proofcart.example";
-const rpId = "proofcart.example";
+const origin = "https://cartel.example";
+const rpId = "cartel.example";
 const expect0 = { bodyHash, expectedOrigin: origin, expectedRpId: rpId };
 
 describe.each(["ES256", "EdDSA"] as const)(

@@ -4,7 +4,7 @@ import { effectiveImportance } from "./requirement";
 /*
  * AP2-shaped export (SDD §12.4). Field names follow the AP2 Python SDK
  * models (`ap2.models.mandate`, `ap2.models.payment_request`), checked
- * 2026-09-26. AP2 carries `user_authorization` on its PaymentMandate; ProofCart
+ * 2026-09-26. AP2 carries `user_authorization` on its PaymentMandate; Cartel
  * does not issue payment mandates, so the export returns the user's
  * authorization next to the cart mandate instead.
  */
@@ -44,7 +44,7 @@ export type Ap2CartMandate = {
     cart_expiry: string;
     merchant_name: string;
   };
-  /** Only the merchant can sign cart contents; ProofCart leaves this empty. */
+  /** Only the merchant can sign cart contents; Cartel leaves this empty. */
   merchant_authorization: null;
 };
 

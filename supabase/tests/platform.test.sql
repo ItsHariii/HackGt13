@@ -1,4 +1,4 @@
--- T2.9–T2.11 and T2.12: Realtime triggers, queues, cron, Vault, storage and the DemoMart schema.
+-- T2.9–T2.11 and T2.12: Realtime triggers, queues, cron, Vault, storage and the GreatHub schema.
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(16);
@@ -11,7 +11,7 @@ select is(
 );
 select is(
   (select array_agg(jobname::text || '@' || schedule order by jobname) from cron.job),
-  array['demomart-idempotency-gc@17 * * * *', 'ledger-audit@17 3 * * *', 'mandates-tick@15 seconds', 'nonce-gc@*/10 * * * *', 'offers-refresh@* * * * *'],
+  array['greathub-idempotency-gc@17 * * * *', 'ledger-audit@17 3 * * *', 'mandates-tick@15 seconds', 'nonce-gc@*/10 * * * *', 'offers-refresh@* * * * *'],
   'Cron jobs scheduled'
 );
 select is(
@@ -91,14 +91,14 @@ select is(internal.offers_refresh(), 1, 'Stale offer in a signed contract is que
 set local role service_role;
 select is((select count(*)::int from public.srv_queue_read('q_mandate_eval', 60, 10)), 1, 'The worker reads the queue');
 select throws_ok($$select public.srv_queue_read('pgmq_internal', 60, 10)$$, 'unknown_queue: pgmq_internal', 'Only known queues');
-select ok((select count(*) from demomart.products) > 0, 'The DemoMart server key reaches the demomart schema');
+select ok((select count(*) from greathub.products) > 0, 'The GreatHub server key reaches the greathub schema');
 reset role;
 
 set local role authenticated;
-select throws_ok($$select count(*) from demomart.products$$, '42501', null, 'Clients cannot reach the demomart schema');
+select throws_ok($$select count(*) from greathub.products$$, '42501', null, 'Clients cannot reach the greathub schema');
 reset role;
 set local role anon;
-select throws_ok($$select count(*) from demomart.offers$$, '42501', null, 'Anonymous visitors cannot reach the demomart schema');
+select throws_ok($$select count(*) from greathub.offers$$, '42501', null, 'Anonymous visitors cannot reach the greathub schema');
 reset role;
 
 select * from finish();

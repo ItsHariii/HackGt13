@@ -1,16 +1,16 @@
-import type { ProofResult, Requirement } from "@proofcart/contracts";
+import type { ProofResult, Requirement } from "@cartel/contracts";
 import {
   evaluateResults,
   fieldDef,
   packDefaults,
   signGate,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 import { describe, expect, it } from "vitest";
 import { apparel } from "./apparel";
 import {
   ASTER_HEEL_FACTS,
-  demomartCheckout,
-  demomartOffer,
+  greathubCheckout,
+  greathubOffer,
   MARLOW_WRAP_FACTS,
   specFact,
   WEDDING_NOW,
@@ -135,7 +135,7 @@ describe("apparel: wedding guest (SDD §16.1)", () => {
       observed: "2026-10-07",
     });
     const late = (deliveryBy: string) => {
-      const dress = demomartOffer({
+      const dress = greathubOffer({
         id: "dm_off_marlow_late",
         productId: "dm_marlow_wrap_navy",
         sku: "MW-WRAP-NVY-M",
@@ -143,7 +143,7 @@ describe("apparel: wedding guest (SDD §16.1)", () => {
         priceMinor: 16_800,
         deliveryBy,
       });
-      return demomartCheckout(
+      return greathubCheckout(
         [{ role: "dress", offer: dress, facts: MARLOW_WRAP_FACTS }],
         {
           now: WEDDING_NOW,
@@ -241,7 +241,7 @@ describe("apparel: wedding guest (SDD §16.1)", () => {
       maxReturnFee: { amountMinor: 500, currency: "USD" },
     });
     expect(returnable?.field).toBe("offer.final_sale");
-    const dress = demomartOffer({
+    const dress = greathubOffer({
       id: "dm_off_fee",
       productId: "dm_marlow_wrap_navy",
       sku: "MW-WRAP-NVY-M",
@@ -250,7 +250,7 @@ describe("apparel: wedding guest (SDD §16.1)", () => {
       terms: { finalSale: false, returnWindowDays: 30, returnFeeMinor: 795 },
     });
     const r = run(
-      demomartCheckout([{ role: "dress", offer: dress, facts: [] }], {
+      greathubCheckout([{ role: "dress", offer: dress, facts: [] }], {
         now: WEDDING_NOW,
       }),
       [fee as Requirement],

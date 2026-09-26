@@ -1,5 +1,5 @@
-import { fieldDef } from "@proofcart/proof-engine";
-import { homeOffice } from "@proofcart/rule-packs";
+import { fieldDef } from "@cartel/proof-engine";
+import { homeOffice } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import {
   type FactStore,

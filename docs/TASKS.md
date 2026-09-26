@@ -1,4 +1,4 @@
-# ProofCart — Build Plan & Checklists
+# Cartel — Build Plan & Checklists
 
 Companion to [`SDD.md`](./SDD.md). Section references like **§13.5** point to the design doc. Mockups come from Claude Design using [`DESIGN_PROMPT.md`](./DESIGN_PROMPT.md).
 
@@ -14,7 +14,7 @@ Companion to [`SDD.md`](./SDD.md). Section references like **§13.5** point to t
 
 Several agents work on this repo at once. These rules keep them from overwriting each other.
 
-1. **Start on a new branch, off the latest `main`.** Before the first edit: `git fetch origin`, then `git checkout -b <lane>/<task-id>-<slug> --no-track origin/main` (for example `m/t7.3-demomart-adapter`). Never work on `main`, and never commit to another agent's branch.
+1. **Start on a new branch, off the latest `main`.** Before the first edit: `git fetch origin`, then `git checkout -b <lane>/<task-id>-<slug> --no-track origin/main` (for example `m/t7.3-greathub-adapter`). Never work on `main`, and never commit to another agent's branch.
 2. **One checkout per agent.** If another agent may be using the main checkout (check `git worktree list` and `git status`), don't switch its branch. Create your own worktree instead: `git worktree add ../HackGt13-<slug> -b <branch> --no-track origin/main`.
 3. **Commit only your own files.** Stage paths explicitly (`git add <paths>`), never `git add -A` in a shared checkout.
 4. **Verify before a PR.** Run the CI steps: `pnpm exec biome ci .`, `pnpm typecheck`, `pnpm test`, `pnpm build`, plus `pnpm db:lint`, `pnpm db:test`, `pnpm db:types:check` and `pnpm db:test:integration` when migrations change.
@@ -28,8 +28,8 @@ Several agents work on this repo at once. These rules keep them from overwriting
 |---|---|---|
 | **P**: Platform | Supabase, infra, CI, signing, guard, payments, mandates | 3 people: P also takes the payment side of M |
 | **E**: Engine | `contracts`, `proof-engine`, `rule-packs`, `solver`, `bench` | 2 people: E + P merge; F + M merge |
-| **F**: Frontend | Every ProofCart screen including Explore, wiring, accessibility | — |
-| **M**: Merchant + AI | DemoMart, ACP, TAP, evidence and catalog adapters, AI layer, demo production | 3 people: M splits into P (DemoMart/ACP/TAP) and F (AI UX) |
+| **F**: Frontend | Every Cartel screen including Explore, wiring, accessibility | — |
+| **M**: Merchant + AI | GreatHub, ACP, TAP, evidence and catalog adapters, AI layer, demo production | 3 people: M splits into P (GreatHub/ACP/TAP) and F (AI UX) |
 | **D**: Design + delight | Claude Design mockups, paper-and-doodle system, the cast and micro-interactions (`components/doodle`) | 4 people: F owns D; M helps after G3. With 5 people, D is its own lane. |
 
 ### Timeline and gates (H0 = hacking start; about 36 h total)
@@ -37,7 +37,7 @@ Several agents work on this repo at once. These rules keep them from overwriting
 | Gate | Hour | Must be true |
 |---|---|---|
 | **G0** | H+1.5 | Accounts created, Visa questions asked, v0 schemas frozen, lanes assigned |
-| **G1** | H+6 | Both apps deployed to production domains; migrations applied; packages compile in CI; DemoMart catalog seeded; Realtime spike works |
+| **G1** | H+6 | Both apps deployed to production domains; migrations applied; packages compile in CI; GreatHub catalog seeded; Realtime spike works |
 | **G2**, spine green | H+14 | Form-entered requirements → proof report → contract → **passkey sign** → execute through ACP → **Visa Acceptance sandbox authorization** → order. A Chaos Panel `spec_edit` **blocks** payment. |
 | **G3** | H+22 | AI layer, solver, Realtime proof streaming, mandates, and the core screens in the paper theme. Explore search works across ≥ 2 live sources; the product page shows specs with receipts. |
 | **G4**, feature freeze | H+28 | ProofBench ≥ 60 scenarios green; Evidence Pack; ledger verification; TAP and ACP badges; all screens have their states; Scout, Inspector, Notary and Guard wired to real events with reduced-motion parity |
@@ -49,7 +49,7 @@ Hour:   0    2    4    6    8   10   12   14   16   18   20   22   24   26   28 
 P   : [0][--Foundation--][--DB/guard--][sign][--payments--][mandates][hardening][---demo---]
 E   : [0][contracts][---proof-engine---][packs][--solver--][--bench--][tests][polish][-demo-]
 F   : [0][shell/design][--screens (mock data)--][wire real data][paused/diff][states][a11y][demo]
-M   : [0][demomart][ACP][TAP][chaos][shopify/upc/icecat][search][--AI layer--][evidence][demo prod]
+M   : [0][greathub][ACP][TAP][chaos][shopify/upc/icecat][search][--AI layer--][evidence][demo prod]
 D   : [0][mockups][tokens+paper][marks+stamps][figure engine][poses][Scout/Inspector][Notary/Guard][polish][demo]
                     G1 ▲             G2 ▲                     G3 ▲       G4 ▲       G5 ▲    ▲ submit
 ```
@@ -66,8 +66,8 @@ Lane D does **not** block the spine. Until G2, D produces mockups, tokens and is
   - [ ] Confirm that the **Visa Acceptance (Cybersource) sandbox** counts as a Visa integration.
   - [ ] Write the answers into SDD §27 and adjust the demo emphasis.
 - [ ] **T0.2 Accounts and keys** (P) — no dependencies
-  - [ ] Supabase: two projects, `proofcart-dev` and `proofcart-prod` (same region, US East).
-  - [ ] Vercel: two projects, `proofcart-web` and `demomart`.
+  - [ ] Supabase: two projects, `cartel-dev` and `cartel-prod` (same region, US East).
+  - [ ] Vercel: two projects, `cartel-web` and `greathub`.
   - [x] OpenAI API key (primary AI), with a hard spend limit on the project ($10 credit).
   - [x] Meta Model API key (Muse Spark, fallback AI) from the Meta developer console ($50 credit).
   - [ ] Set spend limits on both before the first call; keep the demo profile (`gpt-6-sol`) off until rehearsals (SDD §10.4).
@@ -77,7 +77,7 @@ Lane D does **not** block the spine. Until G2, D produces mockups, tokens and is
   - [x] **Icecat** account (Open Icecat) → username and API token.
   - [ ] eBay is optional: production Buy API access is partner-only, so don't wait on it.
   - [ ] Sentry project(s).
-  - [ ] Domain: `proofcart.<tld>` + `demomart.<tld>` (check whether HackGT offers free domains).
+  - [ ] Domain: `cartel.<tld>` + `greathub.<tld>` (check whether HackGT offers free domains).
   - [ ] Store every secret in a shared password manager, **never in git**.
 - [ ] **T0.3 Schema freeze v0** (E leads, all attend, 45 min) — no dependencies
   - [ ] Agree on `Requirement`, `Fact`, `EvidenceState`, `ProofResult`, `ProofReport`, `ContractBody`, `Change`, `ConsentDiff` and `AutonomyPolicy` exactly as in SDD §7.2, §8.4, §12.1 and §7.7.
@@ -93,7 +93,7 @@ Lane D does **not** block the spine. Until G2, D produces mockups, tokens and is
 - [ ] **T0.6 Shopify UCP catalog spike** (M, 60 min) — no dependencies
   - [ ] Publish a draft agent profile at the well-known URL the Shopify docs specify; call `search_catalog` and `get_product` on `catalog.shopify.com/api/ucp/mcp` for "navy linen shirt" and "27 inch 4K USB-C monitor".
   - [ ] Record which fields come back (price, variants, availability, attributes, images, UPID, shop, checkout link) and the rate-limit behavior in SDD §27.
-  - ✅ Go/no-go on Shopify as a live source. If no-go, UPCitemdb + Icecat + DemoMart carry Explore and apparel falls back to DemoMart data.
+  - ✅ Go/no-go on Shopify as a live source. If no-go, UPCitemdb + Icecat + GreatHub carry Explore and apparel falls back to GreatHub data.
 - [ ] **G0 check**: accounts done, questions asked, schemas pushed, lanes assigned, mockups underway.
 
 ---
@@ -113,7 +113,7 @@ Implementation update (2026-09-26): local foundation is implemented and verified
   - [x] Tailwind v4; shadcn config and Radix-based button; `next/font` Source Serif 4, Geist Sans, Geist Mono; `next-themes` paper/blueprint themes.
   - [x] Base layout, top nav, 404 and error boundaries; responsive landing and workspace shell.
   - [ ] Deploy to a Vercel preview.
-- [ ] **T1.3 `apps/demomart` scaffold** (M) — depends on T1.1
+- [ ] **T1.3 `apps/greathub` scaffold** (M) — depends on T1.1
   - [x] Next.js on port 3001, distinct Tailwind theme and persistent "Test merchant" banner.
   - [ ] Deploy to a Vercel preview.
 - [ ] **T1.4 Supabase init** (P) — depends on T0.2
@@ -170,17 +170,17 @@ All migrations go in `supabase/migrations/`, numbered. Each one must pass `supab
 - [x] **T2.9 `0009_realtime.sql`**: broadcast triggers on `proof_results`, `consent_diffs` and `ledger_events`; `realtime.messages` policies
 - [x] **T2.10 `0010_jobs.sql`**: pgmq queues (`q_mandate_eval`, `q_fact_refresh`, `q_webhooks`, `q_evidence_pack` and a `_dlq` for each); Vault secrets `worker_url` and `worker_hmac_secret`; cron jobs `mandates-tick` (15 s), `offers-refresh` (1 min), `ledger-audit` (nightly)
 - [x] **T2.11 `0011_storage.sql`**: buckets `sources` (private), `evidence-packs` (private), `product-images` (public), with policies
-- [x] **T2.12 `0100_demomart.sql`**: schema `demomart`
+- [x] **T2.12 `0100_greathub.sql`**: schema `greathub`
   - [x] Tables: `sellers`, `products`, `variants`, `listings` (spec jsonb, **mutable**), `offers`, `policies`, `checkout_sessions`, `orders`, `mutation_log`, `tap_nonces`, `agent_log`, `webhook_outbox`.
   - [x] Cron `nonce-gc` (10 min).
-- [ ] **T2.13 `seed.sql`**: the DemoMart catalog (M writes the data, P wires it). **Fictional brands only.** The flagship items and prices must match the canonical demo dataset in SDD §16.1 exactly.
+- [ ] **T2.13 `seed.sql`**: the GreatHub catalog (M writes the data, P wires it). **Fictional brands only.** The flagship items and prices must match the canonical demo dataset in SDD §16.1 exactly.
   - [x] **Home office** (about 25 products): Birchline desks at 44", 46.5", 48", 52" widths; Kestrel chairs with and without adjustable lumbar; **Vireo U2727** (27" 4K, USB-C up to 90 W, $329), **Halden M27Q-USBC** (27" 4K, 65 W, $309) and a few other monitors; Loop USB-C cables at 60 W / 100 W / 240 W; Pica webcams; docks.
   - [x] **Apparel** (about 20): Marlow navy dresses and suits with **garment measurements**, the Marlow Navy Wrap Dress ($168, can flip to final sale at $118), Aster heels, fiber blends (including a heather variant with polyester), return policies with and without fees.
   - [x] **Travel** (about 15): Fieldnote 21" (21.5 × 14 × 9 in) and Atlas "International" (10.8 in deep) carry-ons, Volt power banks at 10k / 20k / 26.8k / 30k mAh (some with Wh stated, some without), adapters, toiletry bottles.
   - [x] **Kits**: "Starter home office", "Wedding guest", "Carry-on kit" with their requirements and starter items.
   - [ ] Every product has a GTIN, a brand, an MPN and spec fields that match its JSON-LD. (GTIN/brand/MPN/spec done and tested; JSON-LD is rendered in Phase 6.)
   - ✅ `supabase db reset` loads everything; the storefront renders it; the flagship basket totals $896.05.
-  - Seed loads and totals verified (`demomart.quote` = $896.05 / $891.77 / $881.07 / $870.37). Storefront rendering is open until Phase 6.
+  - Seed loads and totals verified (`greathub.quote` = $896.05 / $891.77 / $881.07 / $870.37). Storefront rendering is open until Phase 6.
 - [x] **T2.14 Type generation**: `pnpm db:types` → `packages/contracts/src/db.ts`; CI fails if the types are stale
 - [x] **T2.15 Bootstrap DB integration tests**: a Vitest project that runs against local Supabase with helper fixtures (users, plans, signed contracts)
 - [x] **T2.16 `0012_catalog_search.sql`**: `products.upid`, `products.image_url`, generated `search_tsv` + GIN index, trigram index on `title`; tables `product_external_refs` (unique `(source, external_id)`), `search_queries`, `kits`, `kit_requirements`, `kit_items`; catalog and kits readable by `anon` and `authenticated` (SDD §19.3)
@@ -255,7 +255,7 @@ Implementation notes and deviations: [PHASE5.md](PHASE5.md).
 
 ---
 
-## Phase 6: DemoMart (M)
+## Phase 6: GreatHub (M)
 
 Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the Gremlin figure (needs T10B).
 
@@ -265,26 +265,26 @@ Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the Gremlin f
   - [x] `POST /acp/checkout_sessions`, `POST /acp/checkout_sessions/{id}`, `GET /acp/checkout_sessions/{id}`, `POST …/complete`, `POST …/cancel`.
   - [x] Headers: honor `Idempotency-Key`, echo `Request-Id`, require `API-Version: 2025-09-12`.
   - [x] Totals computed server-side (`items_base_amount`, `subtotal`, `fulfillment`, `tax`, `fee`, `total`); statuses; `messages[]` for errors (`out_of_stock`, `invalid`, `payment_declined`).
-  - ✅ Contract tests in `packages/acp` pass against DemoMart.
-- [x] **T6.4 `x_proofcart` extension** on line items: seller ID, GTIN, `final_sale`, return policy, spec URL
+  - ✅ Contract tests in `packages/acp` pass against GreatHub.
+- [x] **T6.4 `x_cartel` extension** on line items: seller ID, GTIN, `final_sale`, return policy, spec URL
 - [x] **T6.5 TAP verifier middleware** — depends on T8.1
   - [x] Parse `Signature-Input` / `Signature`; enforce the window (≤ 8 min, `created` in the past, `expires` in the future); nonce replay check in `tap_nonces`; fetch JWKS with a 5 min cache; verify Ed25519; verify `Content-Digest` for bodies.
   - [x] Every request is logged to `agent_log` (key ID, tag, verdict, reason).
   - ✅ An unsigned request gets 401; a replayed nonce gets 401; a valid one passes.
 - [x] **T6.6 Agent Log page** `/agents`: a live table (Realtime or 1 s poll) with ✓/✗, key ID, tag and path
 - [x] **T6.7 Grant and contract verification on `/complete`**
-  - [x] Verify the `ScopedPaymentGrant` JWS against the ProofCart JWKS (merchant origin, amount ≤ max, not expired, contract hash present).
-  - [x] Verify the included WebAuthn assertion against the included public key (expected origin and RP ID are ProofCart's).
+  - [x] Verify the `ScopedPaymentGrant` JWS against the Cartel JWKS (merchant origin, amount ≤ max, not expired, contract hash present).
+  - [x] Verify the included WebAuthn assertion against the included public key (expected origin and RP ID are Cartel's).
   - [x] Show "✓ Customer-signed contract v{n} · {hash}" on the merchant order.
 - [x] **T6.8 Charging** — depends on T13.1
   - [x] Call `POST /pts/v2/payments` (Visa Acceptance sandbox) with the instrument, `capture: true`, `clientReferenceInformation.code = contractId@v`, and `merchantDefinedInformation` = [contract ID, body hash, grant ID].
   - [x] Map decline and error codes to ACP `messages[]`.
-- [x] **T6.9 Order webhooks out**: `order_created` / `order_updated` → ProofCart, HMAC `X-Signature` + timestamp; outbox with retries (1s, 5s, 30s)
+- [x] **T6.9 Order webhooks out**: `order_created` / `order_updated` → Cartel, HMAC `X-Signature` + timestamp; outbox with retries (1s, 5s, 30s)
 - [ ] **T6.10 Chaos Panel** `/chaos` (admin token)
   - [x] One button per mutation from SDD §16, each with a parameter form (for example, the new PD watts).
   - [x] **Scenario scripts**: "Flagship deal trap" (Vireo `U2727`: price $329 → $319 **and** USB-C power 90 → 15 W on the same SKU), "Webcam −$4", "Final-sale trap", "Seller rotation", "Injection listing".
   - [ ] The Gremlin figure appears next to each mutation in the log (after T10B lands).
-  - [x] **Reset** restores the seed state; **Run mandate tick now** calls ProofCart's worker.
+  - [x] **Reset** restores the seed state; **Run mandate tick now** calls Cartel's worker.
   - [x] Mutation log shown live.
   - ✅ Each mutation is visible on the product page and through the ACP GET within 1 s.
 - [x] **T6.11 Mock recall endpoint** (demo mode only, labeled "Mock CPSC (demo)") for the `recall_posted` mutation
@@ -296,10 +296,10 @@ Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the Gremlin f
 
 - [x] **T7.1 Snapshotter**: `snapshot(url | response)` → sha256 → Storage `sources/{hash}` → `sources` row; content-type aware
 - [x] **T7.2 JSON-LD extractor**: parse `application/ld+json`; map fields using the pack's `jsonLd` paths; unit-parse; produce `Fact`s with state set by authority (merchant JSON-LD → `source_stated`; checkout API price → `verified`)
-- [x] **T7.3 DemoMart adapter**: a TAP-signed client (`packages/tap`) + ACP client (`packages/acp`); `refreshOffer`, `refreshSpecs`, `getCheckout`
+- [x] **T7.3 GreatHub adapter**: a TAP-signed client (`packages/tap`) + ACP client (`packages/acp`); `refreshOffer`, `refreshSpecs`, `getCheckout`
 - [x] **T7.4 CPSC adapter**: `GET https://www.saferproducts.gov/RestWebServices/Recall?format=json&ProductName=…`, matched by brand and model; fact `recall.active` with state `verified`; label "No recall found as of {t}"
 - [ ] **T7.5 Shopify adapter (UCP)** — depends on T0.6 going "go"
-  - [x] MCP client for `catalog.shopify.com/api/ucp/mcp`: `search_catalog`, `lookup_catalog`, `get_product`; requests reference ProofCart's agent profile.
+  - [x] MCP client for `catalog.shopify.com/api/ucp/mcp`: `search_catalog`, `lookup_catalog`, `get_product`; requests reference Cartel's agent profile.
   - [x] Map products (UPID, title, images, shop), variants (options, availability, price) and attributes onto `products`, `offers`, `facts` (state `source_stated`, source "Shopify Catalog").
   - [x] Back off on rate limits; results cached through `search_queries`. *(Responses are cached as `sources` snapshots; the `search_queries` row is written by T7B.3.)*
   - ✅ "navy linen shirt" returns ≥ 10 real products with price, variants and at least one fiber fact where the listing provides it.
@@ -331,7 +331,7 @@ Implementation and source-policy exceptions: [PHASE7B.md](PHASE7B.md). UI render
 - [x] **T7B.4 Facets**: derived from the pack ontology for the detected category; counts per facet value; exposes `promoteToRule(field, op, value, 'facet', { role, packs })`
 - [x] **T7B.5 Product API** `GET /api/products/[id]`: product, offers per source, spec rows with evidence state, source, age and conflict flag; item-scope proof against the active plan
 - [x] **T7B.6 Kits**: `forkKit(slug)` copies kit requirements (as `pack_default`) and starter items into a new plan
-- [x] **T7B.7 Checkout tier resolver**: per offer → `full` (DemoMart), `handoff` (Shopify), `proof_only` (UPCitemdb offers and others); exposed on product and plan APIs
+- [x] **T7B.7 Checkout tier resolver**: per offer → `full` (GreatHub), `handoff` (Shopify), `proof_only` (UPCitemdb offers and others); exposed on product and plan APIs
 
 ---
 
@@ -344,7 +344,7 @@ Implementation notes: [PHASE8.md](PHASE8.md).
   - [x] Ed25519 via Web Crypto (fallback `@noble/curves`).
   - [x] `Content-Digest: sha-256=:…:` (RFC 9530).
   - ✅ The RFC 9421 Appendix B Ed25519 test vector passes; a round-trip sign/verify property test passes.
-- [x] **T8.2 JWKS**: `GET /.well-known/jwks.json` on ProofCart (agent key + grant key, `kty: OKP`, `crv: Ed25519`); cache headers; key rotation supported through `kid`
+- [x] **T8.2 JWKS**: `GET /.well-known/jwks.json` on Cartel (agent key + grant key, `kty: OKP`, `crv: Ed25519`); cache headers; key rotation supported through `kid`
 - [x] **T8.3 ACP types and client**: request/response types for API-Version `2025-09-12`, automatic `Idempotency-Key` and `Request-Id`, and error mapping to typed results
 
 ---
@@ -427,7 +427,7 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 
 ---
 
-## Phase 11: ProofCart screens (F, wired with E/M/P)
+## Phase 11: Cartel screens (F, wired with E/M/P)
 
 Build every screen against **mock data from the Zod fixtures first**, then switch to real data once the lanes land.
 
@@ -448,7 +448,7 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 - [ ] **T11.7 Checkout guard** `/plans/[id]/checkout`: a `GuardStepper` (Refresh cart → Re-fetch specs → Re-prove → Diff → Guard → Pay → Order), each step streaming with timing
 - [ ] **T11.8 Purchase paused** `/plans/[id]/diff/[diffId]`
   - [ ] Headline "PURCHASE PAUSED · NO PAYMENT WAS MADE".
-  - [ ] **LayersTable** (cart hash / merchant / amount / ProofCart).
+  - [ ] **LayersTable** (cart hash / merchant / amount / Cartel).
   - [ ] An approved-vs-current table; a plain-language explanation (template, with an optional A5 rewording).
   - [ ] **Compliant alternatives** (solver with the failing item's role re-opened).
   - [ ] The `ContractDiff` for v{n} → v{n+1}, then re-sign.
@@ -475,7 +475,7 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 ## Phase 12: Signing (P, F for the client)
 
 - [ ] **T12.1 Signing-key registration**: `generateRegistrationOptions` (`userVerification: 'required'`, residentKey preferred) → `verifyRegistrationResponse` → `signing_credentials`
-- [ ] **T12.2 Signing options**: load the version → `contractHash` → insert `signing_challenges` (nonce, 2 min TTL) → options with the custom challenge `pc1:{H}:{N}`
+- [ ] **T12.2 Signing options**: load the version → `contractHash` → insert `signing_challenges` (nonce, 2 min TTL) → options with the custom challenge `ct1:{H}:{N}`
 - [ ] **T12.3 Signing verify**: `verifyAuthenticationResponse` (expected challenge via `isoBase64URL.fromUTF8String(...)`, origin, RP ID, credential, counter); in one transaction: insert the signature, delete the challenge, transition to `signed`, append to the ledger
 - [ ] **T12.4 Client ceremony**: `@simplewebauthn/browser` `startAuthentication`; handle `NotAllowedError` (cancelled) and unsupported devices (offer phone hybrid)
 - [ ] **T12.5 Security tests**
@@ -498,19 +498,19 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
   - [ ] Store only `rail_ref`, brand, last 4 and expiry.
   - ✅ The PAN never reaches our server (check the network tab and logs).
 - [ ] **T13.3 Payment rails**: the `PaymentRail` interface (SDD §13.4); `VisaAcceptanceRail`, `SimulatedRail` (always shows a banner), `AuthorizeNetRail` (Accept.js fallback), and a `VicRail` stub mapped to the VIC flow (completed if credentials arrive)
-- [ ] **T13.4 Scoped payment grant**: a JWS (EdDSA) with `merchantOrigin`, `maxTotalMinor`, `currency`, `contractId`, `bodyHash`, `instrumentRef`, `exp` (10 min), `jti`; mint in ProofCart, verify in DemoMart
+- [ ] **T13.4 Scoped payment grant**: a JWS (EdDSA) with `merchantOrigin`, `maxTotalMinor`, `currency`, `contractId`, `bodyHash`, `instrumentRef`, `exp` (10 min), `jti`; mint in Cartel, verify in GreatHub
 - [ ] **T13.5 Execute route** `POST /api/checkout/[versionId]/execute` (requires `Idempotency-Key`)
   - [ ] ACP GET → re-fetch specs → `evaluate` → `consentDiff` → insert snapshot and diff → if `reapprove`/`block`, transition to `invalidated` + ledger + return 409 with the diff ID.
   - [ ] Otherwise `begin_execution` → mint grant → ACP `complete` (tag `agent-payer-auth`) → `complete_execution` → ledger → broadcast.
   - ✅ The flagship happy path produces a real sandbox authorization; the flagship trap returns 409 with `classification: block`.
-- [ ] **T13.6 Webhook receiver** `/api/webhooks/demomart`: verify HMAC and timestamp (5 min tolerance); dedupe on `(provider, event_id)`; update the order; ledger
+- [ ] **T13.6 Webhook receiver** `/api/webhooks/greathub`: verify HMAC and timestamp (5 min tolerance); dedupe on `(provider, event_id)`; update the order; ledger
 - [ ] **T13.7 Declines and retries**: map sandbox declines to a clear UI state; a retry needs a user click and a **new** idempotency key; never retry automatically after a timeout. Reconcile first with ACP GET.
 - [ ] **T13.8 Multi-merchant status**: a plan-level `MerchantStatusTable` for plans spanning merchants (paid / failed / not attempted) with honest copy; no auto-rollback claims
-- [ ] **T13.9 VIC** *(only if Visa provides credentials)*: `@visa/token-manager` / `@visa/api-client`; enroll the card → agent token → Visa Payment Passkey → Payment Instruction (merchant + amount from the contract, referencing `contractId` and `bodyHash`) → credential retrieval → DemoMart charge → outcome signal; switch with `PAYMENT_RAIL=vic`
+- [ ] **T13.9 VIC** *(only if Visa provides credentials)*: `@visa/token-manager` / `@visa/api-client`; enroll the card → agent token → Visa Payment Passkey → Payment Instruction (merchant + amount from the contract, referencing `contractId` and `bodyHash`) → credential retrieval → GreatHub charge → outcome signal; switch with `PAYMENT_RAIL=vic`
 - [ ] **T13.10 Shopify hand-off tier** `POST /api/handoff/[versionId]` — depends on T7.5
   - [ ] Build the cart and checkout through UCP (`cart_mcp`, `checkout_mcp`); re-prove the checkout state against the signed contract; on `identical`/`auto`, record `checkout.handed_off` in the ledger and return the store's checkout URL; on `reapprove`/`block`, show the paused screen as usual.
   - [ ] UI copy after hand-off: "Re-checked at {time}. After this, the store's checkout decides."
-  - ✅ A Shopify item in a plan hands off with a ledger entry; no ProofCart payment is attempted.
+  - ✅ A Shopify item in a plan hands off with a ledger entry; no Cartel payment is attempted.
 
 ---
 
@@ -573,9 +573,9 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 
 ## Phase 18: Demo and submission (M lead, everyone)
 
-- [ ] **T18.1 Reset script** `pnpm demo:reset`: resets the DemoMart seed, clears the demo user's plans, keeps the enrolled card and signing passkey, warms the prompt cache, pre-runs the bench, and pre-warms the search cache for "navy linen shirt"
+- [ ] **T18.1 Reset script** `pnpm demo:reset`: resets the GreatHub seed, clears the demo user's plans, keeps the enrolled card and signing passkey, warms the prompt cache, pre-runs the bench, and pre-warms the search cache for "navy linen shirt"
 - [ ] **T18.2 Demo environment check** (run 30 min before judging)
-  - [ ] Production URLs load; `/api/health` is green in both apps; the JWKS is reachable from DemoMart.
+  - [ ] Production URLs load; `/api/health` is green in both apps; the JWKS is reachable from GreatHub.
   - [ ] Touch ID works on the demo laptop on the **production** domain; the phone backup is signed in.
   - [ ] Visa Acceptance sandbox smoke test passes; `PAYMENT_RAIL` is correct.
   - [ ] Chaos Panel is open in its own window, **Reset** has run, the Agent Log is visible.
@@ -588,7 +588,7 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 - [ ] **T18.5 Devpost**
   - [ ] Inspiration, what it does, how we built it (the architecture diagram from SDD §6.1), challenges, accomplishments, what we learned, what's next.
   - [ ] Screenshots: the landing page with the cast, Explore search, a product page with specs and receipts, the workspace, the paused screen with the Guard and the layers table, the contract with its stamp and hash, `/bench`, the Agent Log.
-  - [ ] **Honesty notes**: DemoMart is a test merchant; the payment is a Visa Acceptance sandbox; the scoped grant emulates agent-token controls; VIC status.
+  - [ ] **Honesty notes**: GreatHub is a test merchant; the payment is a Visa Acceptance sandbox; the scoped grant emulates agent-token controls; VIC status.
   - [ ] Links: the live app, the repo, the video.
 - [ ] **T18.6 README.md**: a one-paragraph pitch, the architecture, local setup (`pnpm i`, `supabase start`, `pnpm dev`), env vars, scripts, the test and bench commands
 - [ ] **T18.7 Judge Q&A drill**: each person answers two questions from SDD §25.3 out loud
@@ -601,7 +601,7 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 **Never cut.** This is the demo's integrity:
 
 1. The Proof Engine + `home-office` pack + the same-SKU Consent Diff.
-2. The DemoMart Chaos Panel (visible).
+2. The GreatHub Chaos Panel (visible).
 3. Passkey signing over the contract hash.
 4. The DB payment guard.
 5. A real Visa Acceptance sandbox authorization, or Authorize.net if the Visa Acceptance sandbox is blocked.
@@ -614,7 +614,7 @@ Build every screen against **mock data from the Zod fixtures first**, then switc
 3. The landing-page rope (keep the stacked paper sheets without the Scout).
 4. Kits pages (keep "Make it mine" from the landing page only) and the Compare tray.
 5. The Shopify hand-off tier (keep Shopify products as proof-only).
-6. Live Shopify search (fall back to the warm cache + UPCitemdb + DemoMart).
+6. Live Shopify search (fall back to the warm cache + UPCitemdb + GreatHub).
 7. Delivery-match scanning (keep the typed-GTIN version).
 8. Email notifications for mandates (keep the in-app toast).
 9. The AP2 export UI (keep the endpoint and the file in the Evidence Pack).

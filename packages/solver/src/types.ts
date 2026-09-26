@@ -1,4 +1,4 @@
-import type { BasketLine } from "@proofcart/contracts";
+import type { BasketLine } from "@cartel/contracts";
 
 /*
  * Solver input and output (SDD §9). The solver is pure: it receives

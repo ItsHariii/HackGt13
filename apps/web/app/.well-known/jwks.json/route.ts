@@ -1,7 +1,7 @@
-import { proofcartJwks } from "@proofcart/platform/jwks";
+import { cartelJwks } from "@cartel/platform/jwks";
 export const dynamic = "force-dynamic";
 export function GET() {
-  const keys = proofcartJwks({
+  const keys = cartelJwks({
     agentJwk: process.env.AGENT_SIGNING_JWK,
     agentKid: process.env.AGENT_KEY_ID,
     grantJwk: process.env.GRANT_SIGNING_JWK,

@@ -1,4 +1,4 @@
-import type { Box } from "@proofcart/contracts";
+import type { Box } from "@cartel/contracts";
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import {

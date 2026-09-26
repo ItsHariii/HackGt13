@@ -1,11 +1,11 @@
-import type { Value } from "@proofcart/contracts";
+import type { Value } from "@cartel/contracts";
 import {
   addDays,
   definePack,
   isIsoDate,
   isQuantity,
   type Resolved,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 
 /*
  * Apparel (SDD §8.3, §16.1 "Wedding guest"): fit from garment measurements

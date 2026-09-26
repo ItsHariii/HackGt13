@@ -1,5 +1,5 @@
 {
-  "name": "@proofcart/catalog",
+  "name": "@cartel/catalog",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,12 +14,12 @@
     "lint": "biome check ."
   },
   "dependencies": {
-    "@proofcart/contracts": "workspace:*",
-    "@proofcart/evidence": "workspace:*",
-    "@proofcart/proof-engine": "workspace:*",
+    "@cartel/contracts": "workspace:*",
+    "@cartel/evidence": "workspace:*",
+    "@cartel/proof-engine": "workspace:*",
     "@supabase/supabase-js": "2.117.2"
   },
   "devDependencies": {
-    "@proofcart/rule-packs": "workspace:*"
+    "@cartel/rule-packs": "workspace:*"
   }
 }

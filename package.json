@@ -1,5 +1,5 @@
 {
-  "name": "proofcart",
+  "name": "cartel",
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@10.34.5",
@@ -21,16 +21,16 @@
     "db:reset": "supabase db reset",
     "db:lint": "supabase db lint --local --fail-on warning",
     "db:test": "supabase test db",
-    "db:test:integration": "pnpm --filter @proofcart/db-tests test:db",
+    "db:test:integration": "pnpm --filter @cartel/db-tests test:db",
     "db:types": "node scripts/db-types.mjs",
     "db:types:check": "node scripts/db-types.mjs --check",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
-    "test:realtime": "pnpm --filter @proofcart/web test:realtime",
+    "test:realtime": "pnpm --filter @cartel/web test:realtime",
     "test:catalog": "node scripts/catalog-smoke.mjs",
-    "test:acp-contract": "node scripts/demomart-contract.mjs",
-    "ai:smoke": "pnpm --filter @proofcart/ai ai:smoke",
-    "ai:cost": "pnpm --filter @proofcart/ai ai:cost",
-    "eval:ai": "pnpm --filter @proofcart/ai eval:ai"
+    "test:acp-contract": "node scripts/greathub-contract.mjs",
+    "ai:smoke": "pnpm --filter @cartel/ai ai:smoke",
+    "ai:cost": "pnpm --filter @cartel/ai ai:cost",
+    "eval:ai": "pnpm --filter @cartel/ai eval:ai"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

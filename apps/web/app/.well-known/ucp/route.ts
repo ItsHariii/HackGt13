@@ -1,7 +1,7 @@
-import { ucpAgentProfile } from "@proofcart/evidence";
-import { publicJwks } from "@proofcart/platform/jwks";
+import { ucpAgentProfile } from "@cartel/evidence";
+import { publicJwks } from "@cartel/platform/jwks";
 export const dynamic = "force-dynamic";
-// ProofCart's UCP platform profile. Shopify's catalog fetches it on every call (SDD §11.2).
+// Cartel's UCP platform profile. Shopify's catalog fetches it on every call (SDD §11.2).
 export function GET() {
   const agent = publicJwks(
     process.env.AGENT_SIGNING_JWK,

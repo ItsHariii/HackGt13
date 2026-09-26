@@ -11,7 +11,7 @@
         "SENTRY_*",
         "SUPABASE_*",
         "AGENT_*",
-        "PROOFCART_*",
+        "CARTEL_*",
         "LOG_LEVEL"
       ]
     },
@@ -27,11 +27,11 @@
       "outputs": ["coverage/**"]
     },
     "lint": {},
-    "@proofcart/web#build": {
+    "@cartel/web#build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
-    "@proofcart/demomart#build": {
+    "@cartel/greathub#build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     }
@@ -41,8 +41,8 @@
     "SUPABASE_*",
     "SENTRY_*",
     "AGENT_*",
-    "PROOFCART_*",
-    "DEMOMART_*",
+    "CARTEL_*",
+    "GREATHUB_*",
     "LOG_LEVEL"
   ]
 }

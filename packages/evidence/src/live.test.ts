@@ -1,4 +1,4 @@
-import { apparel, homeOffice, travel } from "@proofcart/rule-packs";
+import { apparel, homeOffice, travel } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import { createCpscAdapter } from "./adapters/cpsc";
 import { createIcecat, icecatClaims } from "./adapters/icecat";

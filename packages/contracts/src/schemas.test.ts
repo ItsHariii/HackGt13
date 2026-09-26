@@ -257,7 +257,7 @@ describe("Offer and Basket", () => {
   const offer = {
     id: "dm_off_48300",
     productId: "dm_vireo_u2727",
-    merchant: "demomart",
+    merchant: "greathub",
     sellerId: "dm_seller_1",
     sku: "U2727",
     gtin: "00812345000024",
@@ -319,7 +319,7 @@ describe("ProofReport", () => {
   it("checks the summary against the results", () => {
     const results = [pass, comfort];
     const report = {
-      schema: "proofcart.report/1",
+      schema: "cartel.report/1",
       engineVersion: "1.0.0",
       packs: { "home-office": "1.0.0" },
       evaluatedAt: "2026-09-26T14:02:11Z",
@@ -469,7 +469,7 @@ describe("ConsentDiff", () => {
     basis: "floor.hard_pass_to_fail",
   } as const;
   const diff = {
-    schema: "proofcart.diff/1",
+    schema: "cartel.diff/1",
     contractHash: HASH,
     classification: "block",
     changes: [webcamDrop, dealTrap],
@@ -502,13 +502,13 @@ describe("ConsentDiff", () => {
 
 describe("ScopedPaymentGrant", () => {
   const grant = {
-    iss: "https://proofcart.example",
-    aud: "https://demomart.example",
+    iss: "https://cartel.example",
+    aud: "https://greathub.example",
     sub: FLAGSHIP_CONTRACT_V8.subject,
     jti: "g_1",
     iat: 1_790_000_000,
     exp: 1_790_000_600,
-    merchantId: "demomart",
+    merchantId: "greathub",
     contractId: "c_flagship",
     contractVersion: 8,
     contractHash: HASH,
@@ -531,7 +531,7 @@ describe("ScopedPaymentGrant", () => {
 
 describe("signingChallenge", () => {
   it("embeds the bare hex hash and nonce (SDD §12.2)", () => {
-    expect(signingChallenge(HASH, "n1")).toBe(`pc1:${"a".repeat(64)}:n1`);
+    expect(signingChallenge(HASH, "n1")).toBe(`ct1:${"a".repeat(64)}:n1`);
   });
 });
 
@@ -545,7 +545,7 @@ describe("URLs", () => {
       expect(
         ContractBody.safeParse({
           ...FLAGSHIP_CONTRACT_V8,
-          merchants: [{ id: "demomart", origin }],
+          merchants: [{ id: "greathub", origin }],
         }).success,
       ).toBe(false);
     }

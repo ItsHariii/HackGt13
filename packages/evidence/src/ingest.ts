@@ -1,5 +1,5 @@
-import type { Database, Json } from "@proofcart/contracts/db";
-import { fieldDef, type Pack } from "@proofcart/proof-engine";
+import type { Database, Json } from "@cartel/contracts/db";
+import { fieldDef, type Pack } from "@cartel/proof-engine";
 import type { createIcecat } from "./adapters/icecat";
 import { icecatClaims, icecatIdentity } from "./adapters/icecat";
 import type { CheckoutOfferUpdate } from "./checkout";

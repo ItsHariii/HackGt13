@@ -1,4 +1,4 @@
-import type { Database } from "@proofcart/contracts/db";
+import type { Database } from "@cartel/contracts/db";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AiCallRecord, AiCallSink } from "./calls";
 

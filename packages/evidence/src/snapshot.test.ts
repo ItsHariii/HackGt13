@@ -1,4 +1,4 @@
-import { sha256Hex } from "@proofcart/contracts";
+import { sha256Hex } from "@cartel/contracts";
 import { describe, expect, it } from "vitest";
 import { SourceError } from "./http";
 import { cachedFetch, extensionFor, snapshot } from "./snapshot";

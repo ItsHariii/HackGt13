@@ -1,6 +1,6 @@
 /*
  * Role hints from a source's category and title, for catalog sources that
- * don't use ProofCart's roles. A hint only decides which pack fields are read
+ * don't use Cartel's roles. A hint only decides which pack fields are read
  * for a product; the user still chooses what fills a role in a plan.
  * Order matters: "monitor arm" is not a monitor, "USB-C cable" is not a dock.
  */

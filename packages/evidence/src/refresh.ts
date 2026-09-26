@@ -1,5 +1,5 @@
-import type { Pack } from "@proofcart/proof-engine";
-import type { createDemoMartAdapter } from "./adapters/demomart";
+import type { Pack } from "@cartel/proof-engine";
+import type { createGreatHubAdapter } from "./adapters/greathub";
 import { applyCheckoutOffer, writeClaims } from "./ingest";
 import type { Db, EvidenceStore } from "./supabase";
 
@@ -23,7 +23,7 @@ function hex(bytes: ArrayBuffer): string {
 }
 
 /**
- * Checks the cron wake-up signature (0010_jobs.sql): `x-proofcart-signature:
+ * Checks the cron wake-up signature (0010_jobs.sql): `x-cartel-signature:
  * v1=hex(hmac_sha256(secret, "{timestamp}.{queue}"))`, timestamp within 5 min.
  */
 export async function verifyQueueWake(
@@ -32,8 +32,8 @@ export async function verifyQueueWake(
   secret: string,
   nowMs: number = Date.now(),
 ): Promise<boolean> {
-  const ts = headers.get("x-proofcart-timestamp") ?? "";
-  const sig = headers.get("x-proofcart-signature") ?? "";
+  const ts = headers.get("x-cartel-timestamp") ?? "";
+  const sig = headers.get("x-cartel-signature") ?? "";
   if (!/^\d{1,12}$/.test(ts) || !sig.startsWith("v1=") || !secret) return false;
   if (Math.abs(nowMs / 1000 - Number(ts)) > MAX_SKEW_S) return false;
   const key = await crypto.subtle.importKey(
@@ -155,12 +155,12 @@ export type OfferRefreshDeps = {
   db: Db;
   store: EvidenceStore;
   packs: readonly Pack[];
-  demomart: ReturnType<typeof createDemoMartAdapter> | null;
+  greathub: ReturnType<typeof createGreatHubAdapter> | null;
 };
 
 /**
  * Refreshes one offer from the source that is authoritative for it. Only
- * DemoMart offers have a checkout to ask; reference offers (UPCitemdb) are
+ * GreatHub offers have a checkout to ask; reference offers (UPCitemdb) are
  * history and hand-off offers (Shopify) are re-read on view instead.
  */
 export async function refreshOffer(
@@ -178,14 +178,14 @@ export async function refreshOffer(
   if (
     !offer ||
     offer.reference_only ||
-    offer.source !== "demomart" ||
-    !deps.demomart
+    offer.source !== "greathub" ||
+    !deps.greathub
   )
     return "skipped";
   const sku = offer.products?.external_id;
   if (!sku) return "skipped";
-  const read = await deps.demomart.refreshOffer(sku);
-  if (!read.line) throw new Error(`DemoMart priced no line for ${sku}`);
+  const read = await deps.greathub.refreshOffer(sku);
+  if (!read.line) throw new Error(`GreatHub priced no line for ${sku}`);
   await applyCheckoutOffer(deps.db, offer.id, read.line.offer);
   await writeClaims(
     deps.store,

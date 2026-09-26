@@ -4,7 +4,7 @@ Implemented September 26, 2026 against SDD §7.3–§7.7, §8, §16.1, §22.1 an
 
 ## Delivered
 
-### `@proofcart/proof-engine` (depends only on `@proofcart/contracts`)
+### `@cartel/proof-engine` (depends only on `@cartel/contracts`)
 
 | Module | Contents |
 |---|---|
@@ -23,10 +23,10 @@ Implemented September 26, 2026 against SDD §7.3–§7.7, §8, §16.1, §22.1 an
 | `jsonld.ts` | `resolveJsonLdPath`, `readAs`, `extractJsonLd` over a pack's `jsonLd` map (QuantitativeValue and UN/CEFACT unit codes supported) |
 | `offer-facts.ts` | `offerFacts(offer, meta)`: checkout offer → the offer facts the engine reads |
 
-### `@proofcart/rule-packs`
+### `@cartel/rule-packs`
 
 - `homeOffice`, `apparel`, `travel` (all `1.0.0`), `PACKS`, `packsFor(versions)`.
-- `@proofcart/rule-packs/fixtures`: a DemoMart checkout builder, `approveCheckout`, the flagship timeline (`flagshipStates`, `flagshipV7`, `flagshipV8`), the wedding kit and the carry-on items.
+- `@cartel/rule-packs/fixtures`: a GreatHub checkout builder, `approveCheckout`, the flagship timeline (`flagshipStates`, `flagshipV7`, `flagshipV8`), the wedding kit and the carry-on items.
 
 ## Verified locally
 
@@ -40,7 +40,7 @@ Implemented September 26, 2026 against SDD §7.3–§7.7, §8, §16.1, §22.1 an
 - **T4.12 (fast-check):** invariants 1, 2, 3, 4 and 5 over random flagship mutations, with a check that the generator actually reaches both the block case and the pass → unknown case. Invariant 7 is in `money.test.ts`, 9 in `evidence.test.ts`, 6 in contracts, and 8 belongs to the solver (Phase 5).
 - **T4.14:** Biome override on `proof-engine`, `rule-packs` and `solver` sources (`noRestrictedImports`: fs, network, Supabase, AI SDKs and the impure workspace packages; `noRestrictedGlobals`: `fetch`, `XMLHttpRequest`, `WebSocket`, `process`, `performance`). A probe file confirmed it fires. Biome can't express `Date.now()` or `Math.random()`, so `purity.test.ts` also scans those sources for clock, randomness and I/O calls.
 
-## Changes to `@proofcart/contracts`
+## Changes to `@cartel/contracts`
 
 - `Box` value, `{ dims: [n, n, n], unit }` with a length unit, added to the `Value` union. Bag sizes need all three axes at once for the orientation-aware check.
 - `ReasonCode` gains `incomparable`, labelled "These values can't be compared", for different dimensions, currencies or shapes. It is never a failure.

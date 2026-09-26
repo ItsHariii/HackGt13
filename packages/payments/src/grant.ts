@@ -1,15 +1,15 @@
 // Scoped payment grants (SDD §13.2, T13.4): a short-lived EdDSA JWS that lets
 // exactly one merchant charge at most the contract's maximum, once.
 
-import { GRANT_MAX_LIFETIME_S, ScopedPaymentGrant } from "@proofcart/contracts";
+import { GRANT_MAX_LIFETIME_S, ScopedPaymentGrant } from "@cartel/contracts";
 import {
   type Ed25519PublicKey,
   type SigningKey,
   signJws,
   verifyJws,
-} from "@proofcart/tap";
+} from "@cartel/tap";
 
-export const GRANT_JWS_TYPE = "proofcart-grant+jwt";
+export const GRANT_JWS_TYPE = "cartel-grant+jwt";
 
 export type GrantClaimsInput = Omit<
   ScopedPaymentGrant,

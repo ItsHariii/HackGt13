@@ -1,4 +1,4 @@
-# ProofCart: rules for every agent
+# Cartel: rules for every agent
 
 Several agents work in this repo at the same time. Before any edit:
 

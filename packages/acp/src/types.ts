@@ -33,8 +33,8 @@ export const Item = z.strictObject({
 });
 export type Item = z.infer<typeof Item>;
 
-/** DemoMart's product-fact extension on each line item (ACP carries none). */
-export const XProofcartItem = z.looseObject({
+/** GreatHub's product-fact extension on each line item (ACP carries none). */
+export const XCartelItem = z.looseObject({
   title: z.string(),
   seller_id: z.string(),
   gtin: z.string(),
@@ -61,14 +61,14 @@ export const XProofcartItem = z.looseObject({
   offer_id: z.string(),
   offer_revision: z.number().int().positive(),
 });
-export type XProofcartItem = z.infer<typeof XProofcartItem>;
+export type XCartelItem = z.infer<typeof XCartelItem>;
 
 export const LineItem = z.looseObject({
   id: z.string(),
   item: z.looseObject({
     id: z.string(),
     quantity: z.number().int(),
-    x_proofcart: XProofcartItem.optional(),
+    x_cartel: XCartelItem.optional(),
   }),
   base_amount: Minor,
   discount: Minor,
@@ -157,7 +157,7 @@ export const Order = z.looseObject({
 });
 export type Order = z.infer<typeof Order>;
 
-/** The contract a session is being created for (DemoMart extension). */
+/** The contract a session is being created for (GreatHub extension). */
 export const ContractRef = z.strictObject({
   contract_id: z.string().min(1).max(128),
   version: z.number().int().positive(),
@@ -184,7 +184,7 @@ export const CheckoutSession = z.looseObject({
   messages: z.array(Message),
   links: z.array(Link),
   order: Order.optional(),
-  x_proofcart: z
+  x_cartel: z
     .looseObject({
       contract: ContractRef.loose().nullable(),
       revision: z.string(),
@@ -197,7 +197,7 @@ export const CreateSessionRequest = z.strictObject({
   items: z.array(Item).min(1).max(50),
   buyer: Buyer.optional(),
   fulfillment_address: Address.optional(),
-  x_proofcart: z.strictObject({ contract: ContractRef }).optional(),
+  x_cartel: z.strictObject({ contract: ContractRef }).optional(),
 });
 export type CreateSessionRequest = z.infer<typeof CreateSessionRequest>;
 
@@ -207,14 +207,14 @@ export const UpdateSessionRequest = z
     buyer: Buyer.optional(),
     fulfillment_address: Address.optional(),
     fulfillment_option_id: z.string().min(1).max(64).optional(),
-    x_proofcart: z.strictObject({ contract: ContractRef }).optional(),
+    x_cartel: z.strictObject({ contract: ContractRef }).optional(),
   })
   .refine((r) => Object.keys(r).length > 0, "nothing to update");
 export type UpdateSessionRequest = z.infer<typeof UpdateSessionRequest>;
 
 /**
- * `payment_data.provider = "proofcart"` carries a scoped payment grant (a JWS)
- * as the token. `x_proofcart` carries the signed contract so the merchant can
+ * `payment_data.provider = "cartel"` carries a scoped payment grant (a JWS)
+ * as the token. `x_cartel` carries the signed contract so the merchant can
  * check the grant against it and keep it as dispute evidence.
  */
 export const CompleteSessionRequest = z.strictObject({
@@ -224,7 +224,7 @@ export const CompleteSessionRequest = z.strictObject({
     provider: z.string().min(1).max(64),
     billing_address: Address.optional(),
   }),
-  x_proofcart: z
+  x_cartel: z
     .strictObject({
       contract: z.record(z.string(), z.unknown()),
       signature: z.record(z.string(), z.unknown()).optional(),
@@ -249,7 +249,7 @@ export const AcpError = z.looseObject({
 });
 export type AcpError = z.infer<typeof AcpError>;
 
-/** Order webhook body DemoMart POSTs to ProofCart. */
+/** Order webhook body GreatHub POSTs to Cartel. */
 export const OrderEvent = z.looseObject({
   type: z.enum(["order_created", "order_updated"]),
   event_id: z.string(),

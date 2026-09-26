@@ -1,20 +1,16 @@
-import {
-  hashJson,
-  Requirement,
-  requirementSetHash,
-} from "@proofcart/contracts";
-import type { Database, Json } from "@proofcart/contracts/db";
+import { hashJson, Requirement, requirementSetHash } from "@cartel/contracts";
+import type { Database, Json } from "@cartel/contracts/db";
 import type {
   NormalizedProduct,
   SourceRecord,
   SourceType,
-} from "@proofcart/evidence";
+} from "@cartel/evidence";
 import {
   factFromRow,
   ingestProduct,
   supabaseEvidenceStore,
-} from "@proofcart/evidence/supabase";
-import type { Pack } from "@proofcart/proof-engine";
+} from "@cartel/evidence/supabase";
+import type { Pack } from "@cartel/proof-engine";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { identityKey, normalizeProduct, normalizeRoles } from "./normalize";
 import { type CatalogProduct, checkoutTier } from "./product";

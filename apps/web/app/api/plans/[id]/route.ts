@@ -1,4 +1,4 @@
-import { CatalogError, loadPlan } from "@proofcart/catalog/supabase";
+import { CatalogError, loadPlan } from "@cartel/catalog/supabase";
 import {
   apiError,
   catalogReady,

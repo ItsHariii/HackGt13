@@ -129,12 +129,12 @@ describe("Content-Digest (RFC 9530)", () => {
 });
 
 describe("TAP sign/verify round trip", async () => {
-  const { privateJwk, publicJwk } = await generateEd25519Jwk("pc-agent-test");
+  const { privateJwk, publicJwk } = await generateEd25519Jwk("ct-agent-test");
   const signing = await signingKeyFromEnv(JSON.stringify(privateJwk));
   const publicKey = await importPublicJwk(publicJwk);
   const resolveKey = async (kid: string) =>
-    kid === "pc-agent-test" ? publicKey : null;
-  const url = "https://demomart.example/acp/checkout_sessions/cs_1/complete";
+    kid === "ct-agent-test" ? publicKey : null;
+  const url = "https://greathub.example/acp/checkout_sessions/cs_1/complete";
   const body = JSON.stringify({ payment_data: { token: "t" } });
   const now = 1_790_000_000;
 
@@ -157,7 +157,7 @@ describe("TAP sign/verify round trip", async () => {
   it("accepts a valid signature and reports its parameters", async () => {
     const msg = await signed({ nonce: "n-1" });
     expect(msg.headers.get("signature-input")).toBe(
-      'sig1=("@method" "@authority" "@path" "content-digest");created=1790000000;expires=1790000300;keyid="pc-agent-test";alg="ed25519";nonce="n-1";tag="agent-payer-auth"',
+      'sig1=("@method" "@authority" "@path" "content-digest");created=1790000000;expires=1790000300;keyid="ct-agent-test";alg="ed25519";nonce="n-1";tag="agent-payer-auth"',
     );
     const result = await verifyRequest(msg, {
       body,
@@ -169,7 +169,7 @@ describe("TAP sign/verify round trip", async () => {
       ok: true,
       signature: {
         label: "sig1",
-        keyId: "pc-agent-test",
+        keyId: "ct-agent-test",
         created: now,
         expires: now + 300,
         nonce: "n-1",
@@ -200,7 +200,7 @@ describe("TAP sign/verify round trip", async () => {
     for (const changed of [
       { ...msg, url: url.replace("complete", "cancel") },
       { ...msg, method: "PUT" },
-      { ...msg, url: url.replace("demomart.example", "evil.example") },
+      { ...msg, url: url.replace("greathub.example", "evil.example") },
     ]) {
       const result = await verifyRequest(changed, {
         body,
@@ -222,7 +222,7 @@ describe("TAP sign/verify round trip", async () => {
     ).toMatchObject({
       ok: false,
       reason: "unknown_key",
-      keyId: "pc-agent-test",
+      keyId: "ct-agent-test",
     });
     expect(
       await verifyRequest({ method: "GET", url, headers: {} }, { resolveKey }),
@@ -284,17 +284,17 @@ describe("TAP sign/verify round trip", async () => {
 });
 
 describe("EdDSA JWS", async () => {
-  const { privateJwk, publicJwk } = await generateEd25519Jwk("pc-grant-test");
+  const { privateJwk, publicJwk } = await generateEd25519Jwk("ct-grant-test");
   const key = {
-    keyId: "pc-grant-test",
+    keyId: "ct-grant-test",
     privateKey: await importPrivateJwk(privateJwk),
   };
   const pub = await importPublicJwk(publicJwk);
-  const resolve = async (kid: string) => (kid === "pc-grant-test" ? pub : null);
+  const resolve = async (kid: string) => (kid === "ct-grant-test" ? pub : null);
 
   it("round-trips and checks the type", async () => {
-    const jws = await signJws({ a: 1 }, key, "proofcart-grant+jwt");
-    expect(await verifyJws(jws, resolve, "proofcart-grant+jwt")).toMatchObject({
+    const jws = await signJws({ a: 1 }, key, "cartel-grant+jwt");
+    expect(await verifyJws(jws, resolve, "cartel-grant+jwt")).toMatchObject({
       ok: true,
       payload: { a: 1 },
     });
@@ -312,7 +312,7 @@ describe("EdDSA JWS", async () => {
       ok: false,
       reason: "bad_signature",
     });
-    const none = `${btoa(JSON.stringify({ alg: "none", kid: "pc-grant-test" })).replace(/=+$/, "")}.e30.`;
+    const none = `${btoa(JSON.stringify({ alg: "none", kid: "ct-grant-test" })).replace(/=+$/, "")}.e30.`;
     expect(await verifyJws(none, resolve)).toMatchObject({
       ok: false,
       reason: "unsupported_alg",
@@ -332,7 +332,7 @@ describe("JwksCache", () => {
     let calls = 0;
     let clock = 0;
     const cache = new JwksCache(
-      "https://proofcart.example/.well-known/jwks.json",
+      "https://cartel.example/.well-known/jwks.json",
       {
         now: () => clock,
         fetch: (async () => {

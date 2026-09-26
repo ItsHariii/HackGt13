@@ -1,11 +1,11 @@
-import { UNIT_DIMENSION, Value } from "@proofcart/contracts";
+import { UNIT_DIMENSION, Value } from "@cartel/contracts";
 import type {
   IcecatSheet,
   NormalizedProduct,
   SnapshotStore,
   UcpProduct,
   UpcItem,
-} from "@proofcart/evidence";
+} from "@cartel/evidence";
 import {
   icecatClaims,
   icecatIdentity,
@@ -14,14 +14,14 @@ import {
   normalizeGtin,
   normalizeUcpProduct,
   normalizeUpcItem,
-} from "@proofcart/evidence";
+} from "@cartel/evidence";
 import {
   type FieldDef,
   fieldDef,
   isQuantity,
   type Pack,
   readAs,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 
 function typedValue(raw: Value | null, def: FieldDef): Value | null {
   const parsed = Value.safeParse(raw);
@@ -138,7 +138,7 @@ export function mapIcecat(
   );
 }
 
-export function mapDemoMart(
+export function mapGreatHub(
   product: Omit<NormalizedProduct, "source" | "facts">,
   jsonLd: unknown,
   packs: readonly Pack[],
@@ -146,7 +146,7 @@ export function mapDemoMart(
   return normalizeProduct(
     {
       ...product,
-      source: "demomart",
+      source: "greathub",
       facts: jsonLdClaims(jsonLd, {
         packs,
         roles: normalizeRoles(product.roles),

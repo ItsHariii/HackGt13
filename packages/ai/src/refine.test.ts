@@ -1,6 +1,6 @@
-import { RequirementPatch } from "@proofcart/contracts";
-import { FLAGSHIP_REQUIREMENTS } from "@proofcart/contracts/fixtures";
-import { homeOffice } from "@proofcart/rule-packs";
+import { RequirementPatch } from "@cartel/contracts";
+import { FLAGSHIP_REQUIREMENTS } from "@cartel/contracts/fixtures";
+import { homeOffice } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import { buildPatches, refineRequirements } from "./refine";
 import type { PatchProposal } from "./schemas";

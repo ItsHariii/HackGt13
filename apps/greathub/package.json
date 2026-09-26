@@ -1,0 +1,35 @@
+{
+  "name": "@cartel/greathub",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack --port 3001",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "biome check ."
+  },
+  "dependencies": {
+    "@cartel/acp": "workspace:*",
+    "@cartel/contracts": "workspace:*",
+    "@cartel/payments": "workspace:*",
+    "@cartel/platform": "workspace:*",
+    "@cartel/tap": "workspace:*",
+    "@sentry/nextjs": "11.0.0",
+    "@supabase/supabase-js": "2.117.2",
+    "lucide-react": "^0.577.0",
+    "next": "16.3.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "server-only": "0.0.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "tailwindcss": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  },
+  "type": "module"
+}

@@ -1,4 +1,4 @@
-import type { Value } from "@proofcart/contracts";
+import type { Value } from "@cartel/contracts";
 import {
   type FieldDef,
   type FieldKind,
@@ -6,7 +6,7 @@ import {
   type Pack,
   readAs,
   sameValue,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 import { claimState } from "./claims";
 import { type ClaimedFact, SOURCE_AUTHORITY } from "./types";
 
@@ -34,7 +34,7 @@ export type FactCandidate = {
 
 export type ExtractionField = { field: string; label: string; kind: FieldKind };
 
-/** The model call. `@proofcart/ai` provides one; it never sees tools. */
+/** The model call. `@cartel/ai` provides one; it never sees tools. */
 export type FactExtractor = (input: {
   text: string;
   fields: readonly ExtractionField[];

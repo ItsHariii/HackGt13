@@ -2,7 +2,7 @@ import type { SolverCandidate, SolverProblem } from "../types";
 
 /*
  * Solver fixtures built on the flagship home-office catalog (SDD §16.1).
- * DemoMart ships flat $24.00 and tax is 7% of merchandise, as in the seed.
+ * GreatHub ships flat $24.00 and tax is 7% of merchandise, as in the seed.
  */
 
 const MON = "2026-09-28";
@@ -17,7 +17,7 @@ const base = {
     { id: "cable" },
     { id: "webcam" },
   ],
-  merchants: [{ id: "demomart", shippingMinor: 2400 }],
+  merchants: [{ id: "greathub", shippingMinor: 2400 }],
 } satisfies Partial<SolverProblem>;
 
 function dm(
@@ -30,7 +30,7 @@ function dm(
   return {
     id,
     role,
-    merchant: "demomart",
+    merchant: "greathub",
     unitPriceMinor,
     deliveryBy,
     ...(scores ? { scores } : {}),

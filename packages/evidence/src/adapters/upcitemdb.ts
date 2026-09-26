@@ -1,4 +1,4 @@
-import { parseMoney } from "@proofcart/proof-engine";
+import { parseMoney } from "@cartel/proof-engine";
 import { normalizeGtin } from "../claims";
 import {
   type FetchLike,

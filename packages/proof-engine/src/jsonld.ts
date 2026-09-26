@@ -1,4 +1,4 @@
-import type { Value } from "@proofcart/contracts";
+import type { Value } from "@cartel/contracts";
 import type { FieldDef } from "./fields";
 import { parseMoney } from "./money";
 import { fieldDef, type Pack } from "./pack";

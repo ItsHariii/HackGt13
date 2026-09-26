@@ -63,11 +63,11 @@
                   "openai": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
                   "@supabase/supabase-js": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
                   "@supabase/ssr": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
-                  "@proofcart/platform": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
-                  "@proofcart/ai": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
-                  "@proofcart/evidence": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
-                  "@proofcart/catalog": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
-                  "@proofcart/payments": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access."
+                  "@cartel/platform": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@cartel/ai": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@cartel/evidence": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@cartel/catalog": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access.",
+                  "@cartel/payments": "The proof engine, rule packs and solver are pure (SDD \u00a78.1): no I/O, database, model or filesystem access."
                 },
                 "patterns": [
                   {

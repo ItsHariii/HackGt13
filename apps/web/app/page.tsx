@@ -93,7 +93,7 @@ export default function Home() {
         <div className="section-heading">
           <p className="eyebrow">Nothing hidden between the lines</p>
           <h2>From “I need” to “I approve.”</h2>
-          <p>The approach behind ProofCart.</p>
+          <p>The approach behind Cartel.</p>
         </div>
         <div className="steps">
           {[

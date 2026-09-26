@@ -1,4 +1,4 @@
-import { CORE_FIELDS, type FieldDef, type Pack } from "@proofcart/proof-engine";
+import { CORE_FIELDS, type FieldDef, type Pack } from "@cartel/proof-engine";
 
 /*
  * The field list the model is allowed to name. It is rendered once per pack
@@ -6,7 +6,7 @@ import { CORE_FIELDS, type FieldDef, type Pack } from "@proofcart/proof-engine";
  * OpenAI's automatic prompt caching can reuse it (SDD §10.1).
  *
  * A field the ontology doesn't list cannot become a requirement or a fact:
- * `@proofcart/ai` drops it and records the drop.
+ * `@cartel/ai` drops it and records the drop.
  */
 
 export type OntologyEntry = {

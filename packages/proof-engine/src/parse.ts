@@ -5,7 +5,7 @@ import type {
   Quantity,
   Range,
   Unit,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import { dec, decOf, mul, toNumber, toText } from "./decimal";
 import { compareQuantity, dimensionOf } from "./units";
 

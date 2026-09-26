@@ -1,4 +1,4 @@
-import type { Box, EvidenceState, Operator, Value } from "@proofcart/contracts";
+import type { Box, EvidenceState, Operator, Value } from "@cartel/contracts";
 import { describe, expect, it } from "vitest";
 import type { Resolved } from "./evidence";
 import type { FieldDef } from "./fields";

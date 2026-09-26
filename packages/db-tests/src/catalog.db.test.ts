@@ -5,9 +5,9 @@ import {
   loadPlan,
   localSearch,
   planContext,
-} from "@proofcart/catalog/supabase";
-import { requirementSetHash } from "@proofcart/contracts";
-import type { Json } from "@proofcart/contracts/db";
+} from "@cartel/catalog/supabase";
+import { requirementSetHash } from "@cartel/contracts";
+import type { Json } from "@cartel/contracts/db";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   admin,

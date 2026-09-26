@@ -1,5 +1,5 @@
 {
-  "name": "@proofcart/rule-packs",
+  "name": "@cartel/rule-packs",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,8 +14,8 @@
     "lint": "biome check ."
   },
   "dependencies": {
-    "@proofcart/contracts": "workspace:*",
-    "@proofcart/proof-engine": "workspace:*"
+    "@cartel/contracts": "workspace:*",
+    "@cartel/proof-engine": "workspace:*"
   },
   "devDependencies": {
     "fast-check": "^4.10.2"

@@ -1,5 +1,5 @@
-import type { EvidenceState, ReasonCode, Value } from "@proofcart/contracts";
-import type { Authority } from "@proofcart/proof-engine";
+import type { EvidenceState, ReasonCode, Value } from "@cartel/contracts";
+import type { Authority } from "@cartel/proof-engine";
 
 /** `sources.source_type` values (supabase/migrations/0002_catalog.sql). */
 export const SOURCE_TYPES = [
@@ -111,7 +111,7 @@ export type Availability =
 
 /** A product as one source describes it, before identity resolution (SDD §11.5). */
 export type NormalizedProduct = {
-  source: "shopify" | "upcitemdb" | "icecat" | "demomart";
+  source: "shopify" | "upcitemdb" | "icecat" | "greathub";
   externalId: string;
   title: string;
   brand?: string;

@@ -1,4 +1,4 @@
-# ProofCart — Claude Design prompts
+# Cartel — Claude Design prompts
 
 How to use this file:
 
@@ -14,15 +14,15 @@ All numbers and names below match the canonical demo dataset in `SDD.md` §16.1.
 ## Part 1: Master brief (paste this first)
 
 ```
-You are designing ProofCart, a web app for a Visa-sponsored hackathon (HackGT 13). I need high-fidelity mockups for desktop (1440 px wide) and mobile (390 px wide). Please read this whole brief before designing anything; I will ask for individual screens afterwards.
+You are designing Cartel, a web app for a Visa-sponsored hackathon (HackGT 13). I need high-fidelity mockups for desktop (1440 px wide) and mobile (390 px wide). Please read this whole brief before designing anything; I will ask for individual screens afterwards.
 
-WHAT PROOFCART IS
-ProofCart is the policy, evidence and consent layer between an AI shopping decision and a payment. A shopper describes what they need ("a home office under $1,000, the desk must fit a 48-inch alcove…"). ProofCart turns that into explicit rules, finds products, proves each rule against evidence with a deterministic engine, and has the shopper sign an exact Purchase Contract with a passkey (Touch ID). Right before any money moves, ProofCart re-checks the live checkout. If anything material changed (for example, the merchant quietly edited a monitor's specs on the same SKU), the purchase is paused and no payment is made. It is also a browsable catalog: products come from several real sources, and every spec shows its "receipt" (who says so, and when).
+WHAT CARTEL IS
+Cartel is the policy, evidence and consent layer between an AI shopping decision and a payment. A shopper describes what they need ("a home office under $1,000, the desk must fit a 48-inch alcove…"). Cartel turns that into explicit rules, finds products, proves each rule against evidence with a deterministic engine, and has the shopper sign an exact Purchase Contract with a passkey (Touch ID). Right before any money moves, Cartel re-checks the live checkout. If anything material changed (for example, the merchant quietly edited a monitor's specs on the same SKU), the purchase is paused and no payment is made. It is also a browsable catalog: products come from several real sources, and every spec shows its "receipt" (who says so, and when).
 
 Taglines:
 - "Know exactly what you approved, and stop the purchase if that changes."
 - "The payment was valid. The purchase wasn't."
-- "ProofCart doesn't ask you to trust the AI. It gives the AI rules it can't spend around."
+- "Cartel doesn't ask you to trust the AI. It gives the AI rules it can't spend around."
 
 AUDIENCE AND TONE
 Everyday shoppers making considered purchases, and hackathon judges from a payments company. The product must feel trustworthy and precise, with a warm, memorable, hand-made personality. Think "a beautifully kept notebook for serious decisions". Playful at the edges (landing page, empty states, loading, success moments). Formal and crisp wherever money moves (contract, checkout, receipt). It must never look childish.
@@ -63,7 +63,7 @@ Status vocabulary (use these exact labels, always with an icon):
 - ✓ Pass / ✗ Fail / ? Can't check / ~ Estimate
 - Evidence labels: "Confirmed · Merchant checkout · 12 s ago", "Manufacturer says", "Seller says", "Evidence suggests", "Estimate", "Can't check", "Sources disagree"
 - Requirement provenance: "You said" (ink), "You chose" (ink), "I assumed" (pencil, with a Confirm button), "Default" (small gray tag)
-- Checkout tiers: "Full ProofCart checkout", "Hand off to store", "Proof only"
+- Checkout tiers: "Full Cartel checkout", "Hand off to store", "Proof only"
 
 THE CAST (stick figures; each one is a part of the system)
 Simple, charming line-drawn stick figures in graphite with a single accent color each. Round head, no facial detail beyond two dots and a small line. Clean, even strokes (illustration quality, not scribbles). In the app they are 48–96 px tall; on the landing page they can be larger.
@@ -71,7 +71,7 @@ Simple, charming line-drawn stick figures in graphite with a single accent color
 - INSPECTOR (the proof engine): magnifying glass and clipboard. Accent green. Checks and stamps each rule ✓ ✗ ?.
 - NOTARY (consent/signing): bow tie and a big rubber stamp. Accent red stamp ink. Stamps the contract only after Touch ID.
 - GUARD (the payment guard): holds a stop sign and stands by a velvet rope barrier. Accent highlighter yellow on the sign. Steps in front of the Pay button when the purchase no longer matches.
-- GREMLIN (appears only on the DemoMart test-merchant Chaos Panel): small, mischievous, carries price tags and a pencil. Swaps tags and edits specs so the others can catch it.
+- GREMLIN (appears only on the GreatHub test-merchant Chaos Panel): small, mischievous, carries price tags and a pencil. Swaps tags and edits specs so the others can catch it.
 Rules: the figures are decorative helpers at the edges of the UI. They never sit inside the contract text, the card-entry form or on the Pay button itself.
 
 SAMPLE DATA (use exactly)
@@ -88,7 +88,7 @@ Rules:
 - Chair has adjustable lumbar (Preference, I assumed)
 - Chair comfort (Can't check: subjective; waived by the user)
 
-Plan A (merchant: DemoMart, a clearly labeled test merchant):
+Plan A (merchant: GreatHub, a clearly labeled test merchant):
 - Desk: Birchline Compact Desk 46.5" · $229.00 · width 46.5 in (Manufacturer says)
 - Chair: Kestrel Mesh Task Chair · $189.00 · adjustable lumbar (Manufacturer says) · comfort: Can't check
 - Monitor: Vireo U2727 27" 4K USB-C · SKU U2727 · $329.00 · USB-C power up to 90 W (Manufacturer says)
@@ -100,10 +100,10 @@ Proof summary: 12 of 12 hard rules pass · 1 can't check (waived)
 
 Events:
 1. Webcam $49 → $45: auto-accepted under Balanced. New total $891.77.
-2. Deal trap on the same SKU U2727: price $329 → $319 AND USB-C power 90 W → 15 W. The price drop fires the mandate. ProofCart re-checks: 15 W < 65 W → FAIL → purchase paused. The total would have been $881.07. No payment was made.
+2. Deal trap on the same SKU U2727: price $329 → $319 AND USB-C power 90 W → 15 W. The price drop fires the mandate. Cartel re-checks: 15 W < 65 W → FAIL → purchase paused. The total would have been $881.07. No payment was made.
 3. Replacement: Halden M27Q-USBC 27" 4K · USB-C power 65 W · $309.00. Contract v8: merchandise $791.00 · shipping $24.00 · tax $55.37 · delivered total $870.37 · max $885.00 · hash sha256:b04d…19e2. Paid: Visa Acceptance sandbox · AUTHORIZED · transaction ID 7412 8830 1956 · order #PC-89211.
 
-Explore sample: search "navy linen shirt". Sources: Shopify Catalog ✓ 42 results · UPCitemdb ✓ 0 · DemoMart ✓ 6. Products use fictional names (e.g., "Harbor Linen Shirt, Navy · $68 · 100% linen (Seller says) · Hand off to store").
+Explore sample: search "navy linen shirt". Sources: Shopify Catalog ✓ 42 results · UPCitemdb ✓ 0 · GreatHub ✓ 6. Products use fictional names (e.g., "Harbor Linen Shirt, Navy · $68 · 100% linen (Seller says) · Hand off to store").
 
 DESIGN SYSTEM DELIVERABLES
 Components I need to see, used consistently across screens: RequirementChip, EvidenceBadge, ProofRow, ProofSummary, PlanCard, ProductCard, SpecReceiptRow, FacetChip (with an "Add as rule" affordance), CheckoutTierBadge, SourcePill, LayersTable, ContractDiff (git-diff style, monospace), HashPill (abbreviated, copy icon), LedgerTimeline, GuardStepper, CommandBar, PlanTray (bottom sheet), CompareTray, Stamp, Mark (red-pen circle / highlighter / bracket).
@@ -113,7 +113,7 @@ HARD CONSTRAINTS
 - Never convey status with color alone: always icon + text.
 - No handwriting fonts. All text is typeset.
 - Contract, checkout and receipt screens are formal: document page, straight lines, stamps; no playful figures inside them.
-- No real retailer logos or real product names. Sources can be named in small text ("Shopify Catalog", "UPCitemdb", "DemoMart (test merchant)").
+- No real retailer logos or real product names. Sources can be named in small text ("Shopify Catalog", "UPCitemdb", "GreatHub (test merchant)").
 - Avoid: generic fintech gradients, glassmorphism, neon, stock photos, emoji-as-icons, clutter, "AI sparkle" icons.
 
 Before designing screens, reply with: (1) a one-page style tile (colors, type specimens, card and border samples, the pencil/ink/red-pen/stamp states, status icons), and (2) a short list of any questions. Then wait for my screen requests.
@@ -140,7 +140,7 @@ DIRECTION CHANGE: drop the handwriting style completely. I want this to feel tru
 1. Cast art: please draw them yourself. Keep them simple and consistent: round head, two-segment limbs, 2 px strokes at 96 px tall, graphite plus one accent color each. We'll rebuild them as SVG in code, so construction clarity matters more than polish. Don't leave empty slots.
 2. Handwriting font: neither. See the direction change above.
 3. Blueprint (dark) theme: only three key screens: the workspace with the proof panel, the contract, and the purchase-paused screen. Everything else is light only.
-4. Touch ID: show only ProofCart's side before and after (the "Sign with passkey" button, then the signed state). In between, use a neutral, clearly generic placeholder card labeled "System passkey prompt". Do not recreate Apple's system UI.
+4. Touch ID: show only Cartel's side before and after (the "Sign with passkey" button, then the signed state). In between, use a neutral, clearly generic placeholder card labeled "System passkey prompt". Do not recreate Apple's system UI.
 5. Priority, in this order:
    a. Workspace (plan + streaming proof panel + evidence drawer)
    b. Contract and signed state
@@ -148,7 +148,7 @@ DIRECTION CHANGE: drop the handwriting style completely. I want this to feel tru
    d. Revised contract diff (v7 → v8) and the paid receipt
    e. Search results (loading + loaded) and the product page with specs and receipts
    f. Landing page
-   g. ProofBench, ledger, and the DemoMart Chaos Panel
+   g. ProofBench, ledger, and the GreatHub Chaos Panel
    h. Edge states and the trust page
 6. Mobile: only the approval and alert moments: sign (contract + signed state), purchase paused, and paid receipt, plus the workspace's sticky summary bar ("$896.05 · 12/12 pass · Ready to sign"). No other mobile screens for now.
 
@@ -165,8 +165,8 @@ Please update the style tile with the new typography and borders first, then sta
 Design the landing page, desktop 1440 wide and mobile 390 wide.
 
 Structure, top to bottom, as a stack of paper sheets:
-1. Top nav: ProofCart wordmark (Source Serif 4, with a small stamp-style check mark), links Explore · How it works · Trust, and a "Start a plan" button.
-2. Hero sheet: headline "Know exactly what you approved." Subhead: "ProofCart lets AI shop for you, proves every rule against real evidence, and stops the payment if anything changes." Primary button "Start a plan", secondary "Explore products". On the right, a small live-looking vignette: a mini contract card with "SIGNED v7" stamped on it, and the Guard standing beside a Pay button holding the stop sign.
+1. Top nav: Cartel wordmark (Source Serif 4, with a small stamp-style check mark), links Explore · How it works · Trust, and a "Start a plan" button.
+2. Hero sheet: headline "Know exactly what you approved." Subhead: "Cartel lets AI shop for you, proves every rule against real evidence, and stops the payment if anything changes." Primary button "Start a plan", secondary "Explore products". On the right, a small live-looking vignette: a mini contract card with "SIGNED v7" stamped on it, and the Guard standing beside a Pay button holding the stop sign.
 3. Scroll moment: show the Scout hanging from a rope at the top edge of the next sheet, as if pulling it down into view. (This will be scroll-linked in code. Show it as a frozen mid-pull frame.)
 4. "Meet the crew" sheet: the four figures in a row (Scout, Inspector, Notary, Guard), each with one line: "Scout finds. Never holds the wallet." / "Inspector checks every rule against evidence." / "Notary stamps only after your Touch ID." / "Guard stops the payment if anything changes."
 5. "Pencil, ink, stamp" sheet: three small columns explaining the visual language with examples: pencil "I assumed: USB-C power ≥ 65 W · Confirm?", ink "Manufacturer says 90 W", stamp "SIGNED v7".
@@ -183,13 +183,13 @@ Design /search?q=navy linen shirt in two states on desktop, plus the loaded stat
 
 Shared layout: a clean search bar at the top; below it a "source strip" showing each source's status; a left facet panel; a results grid of ProductCards; a PlanTray collapsed at the bottom ("Your plan · 0 items").
 
-State A, loading: the Scout mid-run between three source icons in the source strip. Status reads "Shopify Catalog ✓ 42 · UPCitemdb · searching… · DemoMart ✓ 6". Results that have arrived are shown; remaining slots are paper-textured skeleton cards (no spinners). An aria-live style text line under the strip: "Searching Shopify Catalog, UPCitemdb, DemoMart…".
+State A, loading: the Scout mid-run between three source icons in the source strip. Status reads "Shopify Catalog ✓ 42 · UPCitemdb · searching… · GreatHub ✓ 6". Results that have arrived are shown; remaining slots are paper-textured skeleton cards (no spinners). An aria-live style text line under the strip: "Searching Shopify Catalog, UPCitemdb, GreatHub…".
 
-State B, loaded: all sources settled ("Shopify Catalog ✓ 42 · UPCitemdb ✓ 0 · DemoMart ✓ 6"). The Scout rests at the end of the strip with a full satchel.
+State B, loaded: all sources settled ("Shopify Catalog ✓ 42 · UPCitemdb ✓ 0 · GreatHub ✓ 6"). The Scout rests at the end of the strip with a full satchel.
 
 Facet panel: Price, Fiber (Linen ≥ 90%, Cotton, Blend), Size, Color, Returnable, Arrives by. Each facet value has a small "+ Add as rule" affordance. Show "Linen ≥ 90%" selected and a tooltip preview: "Add as rule: Fiber linen ≥ 90% (You chose)".
 
-ProductCard: image, name, price, fiber claim with its evidence label ("100% linen · Seller says"), SourcePill ("Shopify Catalog"), CheckoutTierBadge ("Hand off to store"), and a compare checkbox. Use fictional products: Harbor Linen Shirt, Navy ($68); Tidewater Camp Shirt ($74); Selvedge & Co. Linen Overshirt ($92); Marlow Linen Popover ($58, DemoMart, "Full ProofCart checkout").
+ProductCard: image, name, price, fiber claim with its evidence label ("100% linen · Seller says"), SourcePill ("Shopify Catalog"), CheckoutTierBadge ("Hand off to store"), and a compare checkbox. Use fictional products: Harbor Linen Shirt, Navy ($68); Tidewater Camp Shirt ($74); Selvedge & Co. Linen Overshirt ($92); Marlow Linen Popover ($58, GreatHub, "Full Cartel checkout").
 
 Mobile: two-column grid, facets in a bottom sheet opened by a "Filters" button, the source strip scrolls horizontally.
 ```
@@ -200,14 +200,14 @@ Mobile: two-column grid, facets in a bottom sheet opened by a "Filters" button, 
 Design the product page for "Halden M27Q-USBC 27" 4K USB-C Monitor" on desktop and mobile.
 
 Left: image gallery on a clean paper card.
-Right top: name, "Offers" table with one row per source: DemoMart (test merchant) $309.00 · in stock · arrives Sat Sep 26 · "Full ProofCart checkout"; Newegg (via UPCitemdb) $329.99 · last seen Sep 20 · "Proof only". Buttons: "Add to plan" (primary) and "Compare".
+Right top: name, "Offers" table with one row per source: GreatHub (test merchant) $309.00 · in stock · arrives Sat Sep 26 · "Full Cartel checkout"; Newegg (via UPCitemdb) $329.99 · last seen Sep 20 · "Proof only". Buttons: "Add to plan" (primary) and "Compare".
 
 "Specs with receipts" section: a table of SpecReceiptRows. Each row = spec name · value (Geist Mono) · evidence label · source · age. Rows:
 - Screen size · 27 in · Manufacturer says · Icecat · 3 min ago
 - Resolution · 3840 × 2160 (4K) · Manufacturer says · Icecat
 - USB-C power delivery · 65 W · Manufacturer says · Icecat
-- Width · 24.1 in · Seller says · DemoMart
-- Refresh rate · 60 Hz · Sources disagree: DemoMart says 60 Hz, UPCitemdb listing says 75 Hz (show both values and a small red-pen bracket)
+- Width · 24.1 in · Seller says · GreatHub
+- Refresh rate · 60 Hz · Sources disagree: GreatHub says 60 Hz, UPCitemdb listing says 75 Hz (show both values and a small red-pen bracket)
 - Price · $309.00 · Confirmed · Merchant checkout · 12 s ago
 Each row has a subtle "Make this a rule" affordance on hover.
 
@@ -242,7 +242,7 @@ Layout: three persistent panes.
 - Left, REQUIREMENTS (compact list of RequirementChips with provenance markers).
 - Center, YOUR PLAN: plan switcher tabs "Plan A · Balanced" (selected), "Plan B · Cheapest", "Plan C · Better chair"; the five items from Plan A as rows (role, product, price, SourcePill); totals block: Merchandise $815.00 · Shipping $24.00 · Est. tax $57.05 (pencil, "Estimate") · Delivered total $896.05 (bold, Geist Mono).
 - Right, PROOF: a ProofSummary header "11 of 12 checked…" and ProofRows appearing one by one. The Inspector is walking down the list, mid-stamp on the "USB-C power ≥ 65 W" row. Rows: ✓ Delivered total ≤ $1,000 · ✓ Desk width ≤ 48 in (46.5 in, Manufacturer says) · ✓ Monitor 27 in, 4K · ✓ USB-C power ≥ 65 W (up to 90 W, Manufacturer says) · ✓ Cable ≥ 65 W (100 W) · ~ Arrives by Mon Sep 28 (Estimate) · ? Chair comfort (Can't check: subjective).
-- Bottom: CommandBar "Ask ProofCart… e.g. 'Make it $100 cheaper without changing the monitor'".
+- Bottom: CommandBar "Ask Cartel… e.g. 'Make it $100 cheaper without changing the monitor'".
 
 Also show the evidence drawer open over the right pane for the USB-C row: source snapshot text with the quote "USB-C upstream port with power delivery up to 90 W" highlighted in yellow, provenance (Manufacturer · Icecat · retrieved 2 min ago · extractor: JSON-LD), and a small "Untrusted text" note explaining that listing prose is treated as data.
 ```
@@ -253,7 +253,7 @@ Also show the evidence drawer open over the right pane for the USB-C row: source
 Design /plans/[id]/contract. This screen must feel formal and trustworthy.
 
 The contract is a document page (Source Serif 4, numbered clauses) on crisp paper, titled "PURCHASE CONTRACT v7".
-Sections: Intent (the brief, quoted) · Approved items (exact SKUs, merchant "DemoMart (test merchant)", seller, qty, unit price in Geist Mono) · Hard rules (12, each with ✓) · Waivers ("Chair comfort: Can't check. I accept this.") · Economics (merchandise, shipping, est. tax, delivered total $896.05, MAXIMUM TOTAL $910.00) · Autonomy: a three-option selector Strict / Balanced (selected) / Flexible with a small table of what each allows ("Price drops: auto", "Seller change: always asks", "Rule fails: always blocks") · Standing mandate: "Execute when the Vireo U2727 is ≤ $320, before Mon Sep 28" · Expires · HashPill "sha256:7c1e…a94f".
+Sections: Intent (the brief, quoted) · Approved items (exact SKUs, merchant "GreatHub (test merchant)", seller, qty, unit price in Geist Mono) · Hard rules (12, each with ✓) · Waivers ("Chair comfort: Can't check. I accept this.") · Economics (merchandise, shipping, est. tax, delivered total $896.05, MAXIMUM TOTAL $910.00) · Autonomy: a three-option selector Strict / Balanced (selected) / Flexible with a small table of what each allows ("Price drops: auto", "Seller change: always asks", "Rule fails: always blocks") · Standing mandate: "Execute when the Vireo U2727 is ≤ $320, before Mon Sep 28" · Expires · HashPill "sha256:7c1e…a94f".
 
 Bottom: a single primary button "Sign with passkey" with a fingerprint icon, and small text "Touch ID signs this exact version. Any change creates v8."
 
@@ -270,9 +270,9 @@ The Guard figure stands in front of a greyed-out Pay button, holding the stop si
 
 Layers table (the key visual), four rows, each with a check or cross:
 - Cart hash (SKU, qty, price) · ✓ unchanged SKU U2727
-- Merchant · ✓ DemoMart
+- Merchant · ✓ GreatHub
 - Amount within max · ✓ $881.07 ≤ $910.00
-- ProofCart re-check · ✗ USB-C power 15 W < 65 W required
+- Cartel re-check · ✗ USB-C power 15 W < 65 W required
 Caption: "Every payment check passed. The purchase still didn't match what you approved."
 
 Approved vs current table for the monitor: Model Vireo U2727 → Vireo U2727 (same SKU) · Price $329.00 → $319.00 · USB-C power 90 W → 15 W (red-pen circle around 15 W) · Your rule ≥ 65 W · Result ✓ Pass → ✗ Fail.
@@ -293,7 +293,7 @@ Design two screens.
 + Delivered total  $870.37
 Hard rules: 12 / 12 pass. Max total $885.00. Button "Sign v8 with passkey".
 
-(2) The paid state and order record. A receipt strip "printing" down from the top of the page (document style, perforated edge) with: PAID $870.37 · Visa Acceptance sandbox · AUTHORIZED · Transaction 7412 8830 1956 · Order #PC-89211 · Purchase Contract v8 · sha256:b04d…19e2 · 12/12 hard rules passed · Signed Sep 26, 10:44. Two small figures high-five beside it. Below: an order timeline (Paid → Confirmed → Shipped, the last two pending), buttons "Download Evidence Pack" and "Scan delivery", and a small line "Verified agent ProofCart (RFC 9421) · Customer-signed contract verified by the merchant".
+(2) The paid state and order record. A receipt strip "printing" down from the top of the page (document style, perforated edge) with: PAID $870.37 · Visa Acceptance sandbox · AUTHORIZED · Transaction 7412 8830 1956 · Order #PC-89211 · Purchase Contract v8 · sha256:b04d…19e2 · 12/12 hard rules passed · Signed Sep 26, 10:44. Two small figures high-five beside it. Below: an order timeline (Paid → Confirmed → Shipped, the last two pending), buttons "Download Evidence Pack" and "Scan delivery", and a small line "Verified agent Cartel (RFC 9421) · Customer-signed contract verified by the merchant".
 ```
 
 ### 2.9 Ledger, ProofBench and trust page
@@ -305,15 +305,15 @@ Design three supporting screens, desktop only.
 
 (2) /bench: "ProofBench". A big counter "62 / 62 caught · 0 false blocks". Category rows with small bar charts (Identity 8/8, Same-SKU facts 8/8, Economics 8/8, Terms 6/6, Delivery 4/4, Availability 3/3, Recurring 3/3, Evidence 8/8, Derived 4/4, Security 5/5, Benign 5/5 allowed). A strip illustration of the Gremlin trying tricks (swapping a price tag, editing a spec) and the Guard blocking each. Button "Run live".
 
-(3) /trust: "How ProofCart works". The four trust domains as the cast, left to right, with arrows: Scout (AI: proposes) → Inspector (engine: proves) → Notary (you: sign) → Guard (checks again, then pays). Under each: "Can" / "Can't" lists (e.g., Scout can: find products, suggest rules. Can't: pay, change signed contracts). Then the pencil/ink/stamp legend, the three checkout tiers, and "Honesty notes": DemoMart is a test merchant; payments run in the Visa Acceptance sandbox.
+(3) /trust: "How Cartel works". The four trust domains as the cast, left to right, with arrows: Scout (AI: proposes) → Inspector (engine: proves) → Notary (you: sign) → Guard (checks again, then pays). Under each: "Can" / "Can't" lists (e.g., Scout can: find products, suggest rules. Can't: pay, change signed contracts). Then the pencil/ink/stamp legend, the three checkout tiers, and "Honesty notes": GreatHub is a test merchant; payments run in the Visa Acceptance sandbox.
 ```
 
-### 2.10 DemoMart Chaos Panel (separate brand)
+### 2.10 GreatHub Chaos Panel (separate brand)
 
 ```
-Design the DemoMart test-merchant admin page /chaos. DemoMart is a separate brand from ProofCart: clean, simple, slightly retro store styling (cream and forest green), with a banner "DemoMart is a test merchant for demos" at the top. Keep the hand-drawn Gremlin as the only doodle.
+Design the GreatHub test-merchant admin page /chaos. GreatHub is a separate brand from Cartel: clean, simple, slightly retro store styling (cream and forest green), with a banner "GreatHub is a test merchant for demos" at the top. Keep the hand-drawn Gremlin as the only doodle.
 
-Layout: left, a list of mutation buttons grouped (Price: price drop, price raise, shipping fee added · Specs: spec edit same SKU, variant swap, JSON-LD conflict · Terms: final-sale flip, return fee added · Delivery: slip, out of stock · Security: injection text). Center: "Scenario scripts" cards: "Flagship deal trap: Vireo U2727 $329 → $319 and USB-C 90 W → 15 W", "Webcam −$4", "Final-sale trap", with Run buttons; the Gremlin is mid-swap on the flagship card. Right: a live Mutation log and an "Agent Log" table (time · agent · key ID pc-agent-2026-09 · tag agent-payer-auth · ✓ Verified / ✗ Rejected · reason). Buttons: "Run mandate tick now" and "Reset".
+Layout: left, a list of mutation buttons grouped (Price: price drop, price raise, shipping fee added · Specs: spec edit same SKU, variant swap, JSON-LD conflict · Terms: final-sale flip, return fee added · Delivery: slip, out of stock · Security: injection text). Center: "Scenario scripts" cards: "Flagship deal trap: Vireo U2727 $329 → $319 and USB-C 90 W → 15 W", "Webcam −$4", "Final-sale trap", with Run buttons; the Gremlin is mid-swap on the flagship card. Right: a live Mutation log and an "Agent Log" table (time · agent · key ID ct-agent-2026-09 · tag agent-payer-auth · ✓ Verified / ✗ Rejected · reason). Buttons: "Run mandate tick now" and "Reset".
 ```
 
 ### 2.11 Empty, error and edge states
@@ -347,7 +347,7 @@ Paused: the stamp and "No payment was made." at the top, the layers table as fou
 ### 3.1 Character sheet
 
 ```
-Create a character sheet for the ProofCart cast on a paper background.
+Create a character sheet for the Cartel cast on a paper background.
 For each figure (Scout, Inspector, Notary, Guard, Gremlin): a front view and a 3/4 view at 96 px and at 48 px, their props, and their accent color. Show the construction: a circle head, a torso line, two-segment arms and legs, so developers can rebuild them as SVG with joint angles.
 Then show these poses for the relevant figures, each labeled: idle, run (4 frames), stamp (3 frames: raise, slam, lift), block (stop sign up), pull (3 frames on a rope), sit (on a basket), high-five (two figures), tangled (in a cable), map (upside down), thumbs-up.
 Keep the line weight consistent (about 2 px at 96 px tall), clean even strokes, graphite color, one accent per figure.

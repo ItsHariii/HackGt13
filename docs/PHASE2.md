@@ -19,13 +19,13 @@ Implemented September 26, 2026 against SDD §7, §12–§16 and §19, and the Ph
 | `0011_storage.sql` | `sources` and `evidence-packs` (private), `product-images` (public) |
 | `0012_catalog_search.sql` | `upid`, `image_url`, weighted `search_tsv` with a GIN index, trigram index on title, `product_external_refs`, `search_queries`, kits, and `public.search_products` (full-text rank plus trigram word similarity) |
 | `0013_ops.sql` | `ai_calls` (server only) and `bench_runs` (publicly readable) |
-| `0100_demomart.sql` | The `demomart` schema: all 12 tables from T2.12, an offer `revision` bumped on every change (usable as an ETag), `demomart.quote()` for checkout pricing, and cron `nonce-gc` |
+| `0100_greathub.sql` | The `greathub` schema: all 12 tables from T2.12, an offer `revision` bumped on every change (usable as an ETag), `greathub.quote()` for checkout pricing, and cron `nonce-gc` |
 
-**Seed.** 60 DemoMart products (65 variants) under fictional brands: 25 home office, 20 apparel, 15 travel. Kits come with requirements and starter items. ProofCart's catalog is pre-ingested from the DemoMart rows, but every offer is already stale and no facts are seeded, because a fact needs a real source snapshot.
+**Seed.** 60 GreatHub products (65 variants) under fictional brands: 25 home office, 20 apparel, 15 travel. Kits come with requirements and starter items. Cartel's catalog is pre-ingested from the GreatHub rows, but every offer is already stale and no facts are seeded, because a fact needs a real source snapshot.
 
 **Server access.** `internal` stays unexposed. The secret key reaches the guard, ledger and queues only through `public.srv_*` wrappers, which are `SECURITY DEFINER` and whose execute right is revoked from anon and authenticated. Errors come back as stable message codes (`contract_not_signed`, `material_change`, …).
 
-**Types.** `pnpm db:types` writes `packages/contracts/src/db.ts` (public, exported as `@proofcart/contracts/db`) and `apps/demomart/lib/supabase/db.ts` (demomart). `pnpm db:types:check` fails CI when either file is stale.
+**Types.** `pnpm db:types` writes `packages/contracts/src/db.ts` (public, exported as `@cartel/contracts/db`) and `apps/greathub/lib/supabase/db.ts` (greathub). `pnpm db:types:check` fails CI when either file is stale.
 
 **Integration tests.** `packages/db-tests` is a Vitest project that runs against the local stack with anonymous-user fixtures. It refuses any non-loopback URL. It is kept out of `pnpm test`; run it with `pnpm db:test:integration`.
 
@@ -40,12 +40,12 @@ Implemented September 26, 2026 against SDD §7, §12–§16 and §19, and the Ph
   - RLS enabled on every table, and user B reading, updating and deleting zero rows across every table
   - catalog GTIN validity, fictional brands only, and all four §16.1 totals ($896.05, $891.77, $881.07, $870.37)
   - "usb c monitr" returning the Vireo and Halden monitors first
-  - queues, cron and Vault; a mandate tick that enqueues or expires; offers refresh; buckets; the DemoMart schema closed to clients
+  - queues, cron and Vault; a mandate tick that enqueues or expires; offers refresh; buckets; the GreatHub schema closed to clients
 - `supabase db lint --fail-on warning`: clean. The lint caught a real bug in `offers_refresh`, where a set-returning `pgmq.send` sat inside `count()`. It is fixed and now covered by a test.
 - `pnpm db:test:integration`: 14 tests through PostgREST and Realtime. They cover the guard lifecycle over RPC, rejection codes, clients blocked from the wrappers, RLS between two anonymous users, owner-only private broadcasts (the intruder gets `CHANNEL_ERROR`), and seeded kit requirements parsing with the contracts `Requirement` schema.
 - `pnpm typecheck` (15/15) and `pnpm test` (106) pass. `pnpm db:types:check` passes.
 
-The full `pnpm build` was not re-run. The only app-side change is the generated `apps/demomart/lib/supabase/db.ts`, which typechecks.
+The full `pnpm build` was not re-run. The only app-side change is the generated `apps/greathub/lib/supabase/db.ts`, which typechecks.
 
 ## Decisions and deviations
 
@@ -55,14 +55,14 @@ The full `pnpm build` was not re-run. The only app-side change is the generated 
   - Retries from `failed` are allowed, as the state machine permits.
 - **`payment_executions.diff_id` uses NO ACTION, not RESTRICT.** With RESTRICT, deleting a plan that had a payment could fail partway through the cascade. A test covers plan deletion through paid orders.
 - **The ledger has no foreign key to plans.** Deleting a plan leaves its events verifiable but unreadable (RLS joins through plans), which is how "anonymized, chain intact" from §20.3 is honored. Payloads must never carry personal data.
-- **Cron wake-ups sign only `{timestamp}.{queue}`** (HMAC-SHA256, header `x-proofcart-signature: v1=…`), so body serialization can never break verification. Both Vault secrets start as `unset`, and jobs skip the wake-up until they are configured.
-- **`demomart` is exposed through PostgREST to service_role only** (`config.toml` `api.schemas`). Supabase secret keys all map to service_role, so the ProofCart and DemoMart split is enforced by code, not by the database. Hard isolation would need a separate Supabase project.
+- **Cron wake-ups sign only `{timestamp}.{queue}`** (HMAC-SHA256, header `x-cartel-signature: v1=…`), so body serialization can never break verification. Both Vault secrets start as `unset`, and jobs skip the wake-up until they are configured.
+- **`greathub` is exposed through PostgREST to service_role only** (`config.toml` `api.schemas`). Supabase secret keys all map to service_role, so the Cartel and GreatHub split is enforced by code, not by the database. Hard isolation would need a separate Supabase project.
 - **Seed alignment with Phase 3 fixtures.** Flagship SKUs match `packages/contracts/src/fixtures/flagship.ts` (`BL-CD-465`, `KS-MESH-TASK`, `M27Q-USBC`, `LOOP-C100-2M`, `PICA-1080`), and the GTIN numbering matches. The fixture's GTINs have invalid GS1 check digits; the database uses the valid ones: Halden `00812345000016`, desk `00812345000108`, chair `00812345000207`, cable `00812345000405`, webcam `00812345000504`.
 
 ## Remaining
 
 - Cloud migration push, which is still blocked by the Phase 1 cloud setup. After `supabase db push --include-seed`:
-  - add `demomart` to the dashboard's exposed schemas
+  - add `greathub` to the dashboard's exposed schemas
   - set the Vault `worker_url` and `worker_hmac_secret`
 - The storefront and JSON-LD rendering for T2.13 are Phase 6.
 - If a teammate regenerates `packages/contracts/package.json`, keep the `./db` export.

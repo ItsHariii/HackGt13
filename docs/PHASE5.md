@@ -4,7 +4,7 @@ Implemented September 26, 2026 against SDD §9, §22.1 (invariant 8), §23 and t
 
 ## Delivered
 
-`@proofcart/solver` (dependencies: `@proofcart/contracts`, `highs` 1.15.3; dev: `fast-check` 4):
+`@cartel/solver` (dependencies: `@cartel/contracts`, `highs` 1.15.3; dev: `fast-check` 4):
 
 | Module | Contents |
 |---|---|

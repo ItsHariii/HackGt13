@@ -23,7 +23,7 @@ const localEnv = {
   NEXT_PUBLIC_SUPABASE_URL: local.API_URL,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: local.PUBLISHABLE_KEY,
   SUPABASE_SECRET_KEY: local.SECRET_KEY,
-  SOURCES_ENABLED: "demomart",
+  SOURCES_ENABLED: "greathub",
   SENTRY_AUTH_TOKEN: "",
   SENTRY_DSN: "",
   NEXT_PUBLIC_SENTRY_DSN: "",
@@ -116,7 +116,7 @@ try {
       .map((line) => JSON.parse(line));
     timings.push(performance.now() - start);
     assert.equal(rows.length, 1);
-    assert.equal(rows[0].source, "demomart");
+    assert.equal(rows[0].source, "greathub");
     assert(["ok", "cached"].includes(rows[0].status));
     assert(rows[0].products.length > 0);
     productId = rows[0].products[0].id;

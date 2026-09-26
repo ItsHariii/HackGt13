@@ -1,5 +1,5 @@
-import type { Requirement } from "@proofcart/contracts";
-import type { Pack } from "@proofcart/proof-engine";
+import type { Requirement } from "@cartel/contracts";
+import type { Pack } from "@cartel/proof-engine";
 import { buildFacets, type Facet } from "./facets";
 import { type CatalogProduct, rankProducts } from "./product";
 

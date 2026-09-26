@@ -1,4 +1,4 @@
-import type { Pack } from "@proofcart/proof-engine";
+import type { Pack } from "@cartel/proof-engine";
 import { apparel } from "./apparel";
 import { homeOffice } from "./home-office";
 import { travel } from "./travel";
@@ -12,7 +12,7 @@ export {
 export { homeOffice, requiredLaptopWatts } from "./home-office";
 export { NOMINAL_CELL_VOLTAGE, travel } from "./travel";
 
-/** Every pack ProofCart ships, by ID. */
+/** Every pack Cartel ships, by ID. */
 export const PACKS: Readonly<Record<string, Pack>> = Object.freeze({
   [homeOffice.id]: homeOffice,
   [apparel.id]: apparel,

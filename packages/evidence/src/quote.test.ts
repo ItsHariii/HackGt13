@@ -1,4 +1,4 @@
-import { homeOffice, travel } from "@proofcart/rule-packs";
+import { homeOffice, travel } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
 import {
   extractQuotedFacts,

@@ -3,11 +3,11 @@ import {
   contractHash,
   ProofReport,
   type ProofResult,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import {
   FLAGSHIP_CONTRACT_V8,
   FLAGSHIP_REQUIREMENTS,
-} from "@proofcart/contracts/fixtures";
+} from "@cartel/contracts/fixtures";
 import {
   evaluate,
   evaluateResults,
@@ -16,7 +16,7 @@ import {
   fieldDef,
   packDefaults,
   signGate,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 import { describe, expect, it } from "vitest";
 import {
   FLAGSHIP_PACKS,
@@ -213,11 +213,11 @@ describe("home-office flagship (SDD §16.1)", () => {
     expect(
       explain(one(report.results, "r_budget"), {
         def: fieldDef("basket.delivered_total", FLAGSHIP_PACKS),
-        source: "DemoMart checkout",
+        source: "GreatHub checkout",
         ageSeconds: 4,
       }),
     ).toBe(
-      "Delivered total: $896.05 (Confirmed · DemoMart checkout · just now), which meets at most $1,000.00.",
+      "Delivered total: $896.05 (Confirmed · GreatHub checkout · just now), which meets at most $1,000.00.",
     );
   });
 });
@@ -364,7 +364,7 @@ describe("home-office roles and pairs", () => {
     expect(run(null)).toEqual([]);
   });
 
-  it("extracts facts from DemoMart JSON-LD with the pack's map", () => {
+  it("extracts facts from GreatHub JSON-LD with the pack's map", () => {
     const doc = {
       "@context": "https://schema.org",
       "@type": "Product",

@@ -1,4 +1,4 @@
-import { extractJsonLd, fieldDef, type Pack } from "@proofcart/proof-engine";
+import { extractJsonLd, fieldDef, type Pack } from "@cartel/proof-engine";
 import { claim } from "./claims";
 import { type ClaimedFact, SOURCE_AUTHORITY } from "./types";
 

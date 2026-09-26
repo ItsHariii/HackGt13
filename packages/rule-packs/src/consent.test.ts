@@ -2,13 +2,13 @@ import {
   autonomyPolicy,
   ConsentDiff,
   type ContractBody,
-} from "@proofcart/contracts";
+} from "@cartel/contracts";
 import {
   type ApprovedState,
   type CheckoutState,
   ConsentInputError,
   consentDiff,
-} from "@proofcart/proof-engine";
+} from "@cartel/proof-engine";
 import { describe, expect, it } from "vitest";
 import {
   FLAGSHIP_PACKS,

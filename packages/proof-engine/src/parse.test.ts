@@ -1,4 +1,4 @@
-import type { Box, Quantity, Range } from "@proofcart/contracts";
+import type { Box, Quantity, Range } from "@cartel/contracts";
 import { describe, expect, it } from "vitest";
 import {
   type ParseHint,

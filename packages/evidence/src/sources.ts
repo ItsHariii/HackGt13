@@ -3,7 +3,7 @@ export const SWITCHABLE_SOURCES = [
   "shopify",
   "icecat",
   "upcitemdb",
-  "demomart",
+  "greathub",
   "cpsc",
   "openfoodfacts",
   "ebay",
@@ -20,7 +20,7 @@ export function enabledSources(
     "shopify",
     "icecat",
     "upcitemdb",
-    "demomart",
+    "greathub",
     "cpsc",
   ],
 ): Set<SwitchableSource> {

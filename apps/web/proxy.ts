@@ -1,4 +1,4 @@
-import { requestId } from "@proofcart/platform/request-id";
+import { requestId } from "@cartel/platform/request-id";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { getSupabaseConfig } from "@/lib/supabase/config";

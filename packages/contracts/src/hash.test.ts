@@ -220,7 +220,7 @@ describe("requirementSetHash", () => {
 describe("reportHash", () => {
   it("excludes the hash field itself", async () => {
     const body = {
-      schema: "proofcart.report/1" as const,
+      schema: "cartel.report/1" as const,
       engineVersion: "1.0.0",
       packs: { "home-office": "1.0.0" },
       evaluatedAt: "2026-09-26T14:02:11Z",

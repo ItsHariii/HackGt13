@@ -20,12 +20,12 @@ begin
   on conflict (id) do nothing;
   insert into public.contract_versions (id, contract_id, plan_id, version, body, body_hash, status, autonomy, expires_at)
   values (v_id, p_contract, 'a0000000-0000-4000-8000-000000000001', p_version,
-    '{"economics": {"currency": "USD", "maxTotalMinor": 91000}, "merchants": [{"id": "demomart"}]}',
+    '{"economics": {"currency": "USD", "maxTotalMinor": 91000}, "merchants": [{"id": "greathub"}]}',
     v_hash, 'awaiting_signature', '{"preset": "balanced"}', p_expires);
   if p_sign then
     insert into public.contract_signatures (contract_version_id, credential_id, credential_public_key, body_hash, challenge,
       authenticator_data, client_data_json, signature, verified_at)
-    values (v_id, 'c0000000-0000-4000-8000-000000000001', '\x01', v_hash, 'pc1:' || v_hash || ':nonce',
+    values (v_id, 'c0000000-0000-4000-8000-000000000001', '\x01', v_hash, 'ct1:' || v_hash || ':nonce',
       '\x02', '\x03', '\x04', now());
     perform internal.transition_contract(v_id, 'signed', 'user:11111111-1111-4111-8111-111111111111', 'contract.signed');
   end if;
@@ -175,7 +175,7 @@ select throws_ok(
   'execution_token_consumed', 'A second consumption fails'
 );
 
-select internal.complete_execution((select id from t where name = 'exec'), 'authorized', 'txn_123', null, 'demomart', 'dm_ord_1');
+select internal.complete_execution((select id from t where name = 'exec'), 'authorized', 'txn_123', null, 'greathub', 'dm_ord_1');
 select is(
   (select status::text from public.contract_versions where id = (select id from t where name = 'ok')) || '/'
     || (select status::text from public.orders where merchant_order_id = 'dm_ord_1'),
