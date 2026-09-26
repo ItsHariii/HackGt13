@@ -560,12 +560,19 @@ Implementation and verification limits: [PHASE13.md](PHASE13.md). Local migratio
 
 ## Phase 14: Standing mandates (P)
 
-- [ ] **T14.1 Arm and cancel**: `armMandate` (status `signed → armed`), `cancelMandate`; the mandate is part of the signed body
-- [ ] **T14.2 Cron → queue → worker**: `mandates-tick` enqueues due mandates into `q_mandate_eval` and `pg_net` POSTs to `/api/internal/queue/mandate_eval` with the Vault HMAC
-- [ ] **T14.3 Worker**: HMAC check; `pgmq.read` with a 60 s visibility timeout; process; archive on success; after 5 attempts move to the DLQ; structured logs
-- [ ] **T14.4 Trigger evaluation**: refresh the offer → `price_lte` / `back_in_stock` → if it fired, reuse the T13.5 path (same code, actor `system:mandate`)
-- [ ] **T14.5 Notifications**: an in-app Realtime toast plus an entry on `/mandates`; optional email
-- [ ] **T14.6 Demo hook**: the Chaos Panel's "Run tick now" calls the worker directly (admin token)
+Migration `0015_mandates.sql`; worker in `apps/web/lib/mandate-service.ts` (pure, unit-tested) and `lib/mandates.ts`. Verified: pgTAP, DB integration (arm/cancel, owner-only `user:{id}` broadcast), unit tests for trigger evaluation and outcomes, and a live local tick (enqueue → drain → settle → ledger). The browser flagship still depends on Phase 12 signing and a running GreatHub, so it is not yet verified end to end.
+
+- [x] **T14.1 Arm and cancel**: `armMandate` (status `signed → armed`), `cancelMandate`; the mandate is part of the signed body
+  - Server Actions on `/mandates`. Arming copies trigger and deadline from `body.mandate`, never from the caller. Cancel returns the contract to `signed` (new `armed → signed` transition); a cancelled mandate cannot be re-armed.
+- [x] **T14.2 Cron → queue → worker**: `mandates-tick` enqueues due mandates into `q_mandate_eval` and `pg_net` POSTs to `/api/internal/queue/mandate_eval` with the Vault HMAC
+- [x] **T14.3 Worker**: HMAC check; `pgmq.read` with a 60 s visibility timeout; process; archive on success; after 5 attempts move to the DLQ; structured logs
+- [x] **T14.4 Trigger evaluation**: refresh the offer → `price_lte` / `back_in_stock` → if it fired, reuse the T13.5 path (same code, actor `system:mandate`)
+  - Idempotency key `mandate-{id}`: a redelivered message only reconciles. `reconcile_required` keeps the mandate armed; guard verdicts settle it, 5xx retries. `recurring` pays once per signed version.
+  - Also fixed `loadCheckout`: `contract_versions` has no FK to `plans`, so the owner check now goes through `contracts → plans` (it failed with PGRST200 before).
+- [x] **T14.5 Notifications**: an in-app Realtime toast plus an entry on `/mandates`; optional email
+  - Toast on the private `user:{id}` topic (any page). Email is not implemented.
+- [x] **T14.6 Demo hook**: the Chaos Panel's "Run tick now" calls the worker directly (admin token)
+  - `POST /api/internal/mandates/tick` (`Bearer ADMIN_TOKEN`, 16+ characters) runs `mandates_tick()` and drains the queue in-request.
   - ✅ The flagship: arm the mandate, run the deal-trap scenario, the tick fires, the purchase is blocked, and the paused screen appears within 2 s.
 
 ---

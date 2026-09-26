@@ -41,7 +41,7 @@ returns uuid language sql as $$
 $$;
 
 -- State machine ---------------------------------------------------------------------------------
-select is((select count(*)::int from internal.contract_transitions), 16, 'Transition table includes failed checkout invalidation');
+select is((select count(*)::int from internal.contract_transitions), 17, 'Transition table includes failed checkout invalidation and mandate cancel');
 
 select throws_ok(
   $$insert into public.contract_versions (contract_id, plan_id, version, body, body_hash, status, autonomy, expires_at)

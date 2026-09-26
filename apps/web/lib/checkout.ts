@@ -36,9 +36,9 @@ export async function loadCheckout(
   const db = createAdminClient();
   const versionResult = await db
     .from("contract_versions")
-    .select("*,plans!inner(user_id)")
+    .select("*,contracts!inner(plans!inner(user_id))")
     .eq("id", versionId)
-    .eq("plans.user_id", owner)
+    .eq("contracts.plans.user_id", owner)
     .maybeSingle();
   if (versionResult.error)
     throw new CheckoutError("checkout_storage_failed", 503);
