@@ -407,23 +407,23 @@ Implementation notes: [PHASE9.md](PHASE9.md).
   - [x] Focus ring 2.5 px with a 3 px offset (Style Tile v2; the token file's 2 px / 2 px is superseded).
   - [x] **Blueprint (dark) only on Workspace, Contract and Purchase Paused**, per Style Tile v2. Other screens stay paper. Those screens opt in with `data-blueprint` on their root; the theme toggle lives in the workspace header.
   - ✅ Every text/background pairing checked (`apps/web/lib/tokens.test.ts`, both themes) for ≥ 4.5:1 (≥ 3:1 for large text); `--pencil` never carries meaning alone.
-- [ ] **T10.2 Paper materials** (D)
-  - [ ] Paper background: 24 px dot grid on app pages (flow screens, workspace, search); **no** dot grid on the formal contract sheet (Contract v2). Blueprint variant for dark mode.
-  - [ ] The `#stamp` SVG turbulence filter, defined once, for the stamped cart-seal logo and every stamp.
-  - [ ] Crisp 1 px borders, 8 px card radius; no tilt, tape or sketchy borders.
-  - [ ] `Mark` helper (rough-notation) for exactly three uses: red-pen `circle`, `highlight`, `bracket`.
-  - [ ] lucide status icons (check, x, help-circle, tilde, alert-triangle); `Stamp` component ("SIGNED v7", "PAID", "BLOCKED").
-- [ ] **T10.3 Components** (F; Storybook optional, otherwise a `/dev/components` route)
-  - [ ] `RequirementChip` (provenance marker: You said / You chose / I assumed / Default), `EvidenceBadge`, `ProofRow`, `ProofSummary`, `PlanCard`.
-  - [ ] `ProductCard`, `SpecReceiptRow`, `FacetChip` (with Add as rule), `CheckoutTierBadge`, `SourcePill`.
-  - [ ] `LayersTable`, `ContractDiff` (git-diff style, Geist Mono), `HashPill` (abbreviated, copy button).
-  - [ ] `LedgerTimeline`, `MerchantStatusTable`, `GuardStepper`, `CommandBar` (⌘K), `PlanTray`, `CompareTray`.
+- [x] **T10.2 Paper materials** (D) — `components/paper/` (`Mark`, `Stamp`, `StatusMark`); `.sheet` / `.sheet-formal` surfaces in `cartel-tokens.css`
+  - [x] Paper background: 24 px dot grid on app pages (flow screens, workspace, search); **no** dot grid on the formal contract sheet (Contract v2). Blueprint variant for dark mode.
+  - [x] The `#stamp` SVG turbulence filter, defined once, for the stamped cart-seal logo and every stamp.
+  - [x] Crisp 1 px borders, 8 px card radius; no tilt, tape or sketchy borders.
+  - [x] `Mark` helper (rough-notation) for exactly three uses: red-pen `circle`, `highlight`, `bracket`.
+  - [x] lucide status icons (check, x, help-circle, tilde, alert-triangle); `Stamp` component ("SIGNED v7", "PAID", "BLOCKED").
+- [x] **T10.3 Components** (F; Storybook optional, otherwise a `/dev/components` route) — `components/cartel/`, shown at `/dev/components`; `pnpm --filter @cartel/web test:a11y` runs axe on it and the Phase 10 pages
+  - [x] `RequirementChip` (provenance marker: You said / You chose / I assumed / Default), `EvidenceBadge`, `ProofRow`, `ProofSummary`, `PlanCard`.
+  - [x] `ProductCard`, `SpecReceiptRow`, `FacetChip` (with Add as rule), `CheckoutTierBadge`, `SourcePill`.
+  - [x] `LayersTable`, `ContractDiff` (git-diff style, Geist Mono), `HashPill` (abbreviated, copy button).
+  - [x] `LedgerTimeline`, `MerchantStatusTable`, `GuardStepper`, `CommandBar` (⌘K), `PlanTray`, `CompareTray`.
   - ✅ Each component is keyboard accessible and has an axe-clean example in both themes.
-- [ ] **T10.4 Layouts**: the three-pane workspace (resizable); Explore grid; on mobile, tabs for **Plan · Rules · Proof** with a sticky summary bar ("$896.05 · ✓ 12/12 pass · Ready to sign" + Review contract), and a two-column Explore grid with a bottom-sheet filter panel
-- [ ] **T10.5 Auth UX**: an anonymous session on the first visit; an "upgrade to save & pay" dialog (email OTP / Google) that links the identity so plans are kept
-- [ ] **T10.6 Landing page** `/`: headline
-  - Design (Landing v2, kraft desk background): nav "The Cartel · How it works · Explore · Trust"; H1 "Know exactly what you approved."; the hero contract sheet (v7, 12 of 12 pass, SIGNED v7, then "Fail · USB-C power now 15 W", "Pay paused"); "Meet the Cartel" (one line per figure); "Pencil, ink, stamp"; "The trap" before/after. The animated mini Consent Diff and the rope are specified only in Motion board 01; the mini diff has no design yet., subhead, the cast introduced (one line each), scroll-linked paper sheets (T10B.6), an animated mini Consent Diff, "Start a plan" → `/new`, "Explore" → `/explore`, a "How it works" strip, and a link to `/trust`
-- [ ] **T10.7 `/trust` page**
+- [x] **T10.4 Layouts**: the three-pane workspace (resizable); Explore grid; on mobile, tabs for **Plan · Rules · Proof** with a sticky summary bar ("$896.05 · ✓ 12/12 pass · Ready to sign" + Review contract), and a two-column Explore grid with a bottom-sheet filter panel. Workspace dividers drag or take arrow keys (widths remembered); `ExploreLayout` / `ExploreGrid` in `components/layouts/`, shown at `/dev/layouts`.
+- [x] **T10.5 Auth UX**: an anonymous session on the first visit; an "upgrade to save & pay" dialog (email OTP / Google) that links the identity so plans are kept. `useUpgrade().open(reason)` opens it from anywhere; the email code uses the `email_change` template in `supabase/templates/`. Google needs `[auth.external.google]` credentials.
+- [x] **T10.6 Landing page** `/`: headline
+  - Design (Landing v2, kraft desk background): nav "The Cartel · How it works · Explore · Trust"; H1 "Know exactly what you approved."; the hero contract sheet (v7, 12 of 12 pass, SIGNED v7, then "Fail · USB-C power now 15 W", "Pay paused"); "Meet the Cartel" (one line per figure); "Pencil, ink, stamp"; "The trap" before/after. The animated mini Consent Diff and the rope are specified only in Motion board 01; the mini diff has no design yet., subhead, the cast introduced (one line each), scroll-linked paper sheets (T10B.6), an animated mini Consent Diff, "Start a plan" → `/new`, "Explore" → `/explore`, a "How it works" strip, and a link to `/trust`. Built with a static mini diff and no figures; the animated diff, rope and scroll-linked sheets are T10B.6, the figures T10B.4.
+- [x] **T10.7 `/trust` page**
   - Design (Ledger Bench Trust): "How Cartel works", four domain cards with CAN / CAN'T lists (Scout proposes, Inspector proves, Notary is you signing, Guard re-checks then pays), "Pencil, ink, stamp", checkout tiers, honesty notes. The standards list is not designed; add it as a plain section.: the trust domains drawn as the cast, what the AI does and doesn't do, the evidence labels (pencil → ink → stamp), the standards used (ACP, UCP, RFC 9421/TAP, AP2 export, WebAuthn), the checkout tiers, and the honesty notes (test merchant, sandbox)
 
 ---

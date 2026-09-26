@@ -88,6 +88,11 @@
   --shadow-drawer: -24px 0 48px -24px rgb(43 42 40 / 0.45);
 }
 
+/* Highlighter strength behind text (checked in lib/tokens.test.ts). */
+:root {
+  --highlight-alpha: 60%;
+}
+
 /* Tokens that reference other tokens. `inline` makes utilities resolve them
    on the element, so they follow Blueprint inside its scope. */
 @theme inline {
@@ -135,6 +140,7 @@
   --color-diff-add-text: #b5e6b8;
   --shadow-page: 0 30px 60px -30px rgb(0 0 0 / 0.55);
   --shadow-drawer: -24px 0 48px -24px rgb(0 0 0 / 0.6);
+  --highlight-alpha: 24%;
 }
 
 @layer components {

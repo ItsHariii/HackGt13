@@ -11,7 +11,6 @@ const MARK: Record<
   {
     fallback: string;
     color: string;
-    alpha?: number | undefined;
     config: Parameters<typeof annotate>[1];
   }
 > = {
@@ -67,10 +66,12 @@ export function Mark({
     const el = ref.current;
     if (!el || !show) return;
     const spec = MARK[type];
-    const token = getComputedStyle(el).getPropertyValue(spec.color).trim();
+    const style = getComputedStyle(el);
+    const token = style.getPropertyValue(spec.color).trim();
+    const alpha = style.getPropertyValue("--highlight-alpha").trim() || "60%";
     const color =
       type === "highlight"
-        ? `color-mix(in srgb, ${token} 55%, transparent)`
+        ? `color-mix(in srgb, ${token} ${alpha}, transparent)`
         : token;
     const a = annotate(el, {
       ...spec.config,

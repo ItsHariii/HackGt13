@@ -242,6 +242,11 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# Saving an anonymous session (TASKS T10.5) links an email with a code.
+[auth.email.template.email_change]
+subject = "Your Cartel code"
+content_path = "./supabase/templates/email_change.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

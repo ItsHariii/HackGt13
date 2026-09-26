@@ -33,7 +33,7 @@ export function ProductCard({
     >
       <div
         aria-hidden="true"
-        className="mb-1 aspect-[4/3] rounded-sheet border border-rule-soft bg-[repeating-linear-gradient(135deg,var(--color-paper)_0_6px,var(--color-paper-shade)_6px_12px)]"
+        className="mb-1 h-28 rounded-sheet sm:h-36 border border-rule-soft bg-[repeating-linear-gradient(135deg,var(--color-paper)_0_6px,var(--color-paper-shade)_6px_12px)]"
       />
       <h3
         id={`${id}-name`}

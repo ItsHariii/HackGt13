@@ -32,7 +32,7 @@ export function Stamp({
   return (
     <span
       className={cn(
-        "stamp inline-flex flex-col items-center leading-none [filter:url(#stamp)]",
+        "stamp inline-flex flex-col items-center normal-case leading-none [filter:url(#stamp)]",
         size === "sm" && "border-2 px-2 py-1 text-[12px]",
         size === "md" && "text-[18px]",
         size === "lg" && "border-4 px-4 py-2 text-[40px]",

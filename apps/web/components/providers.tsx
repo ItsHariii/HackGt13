@@ -1,6 +1,7 @@
 "use client";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
+import { UpgradeProvider } from "./auth/upgrade-dialog";
 import { SessionProvider } from "./session-provider";
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -10,7 +11,9 @@ export function Providers({ children }: { children: ReactNode }) {
       enableSystem={false}
       disableTransitionOnChange
     >
-      <SessionProvider>{children}</SessionProvider>
+      <SessionProvider>
+        <UpgradeProvider>{children}</UpgradeProvider>
+      </SessionProvider>
     </ThemeProvider>
   );
 }
