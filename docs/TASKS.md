@@ -8,8 +8,19 @@ Companion to [`SDD.md`](./SDD.md). Section references like **§13.5** point to t
 
 - Each task has an **ID**, an **owner lane**, its **dependencies** and its **acceptance criteria**. Check a box only when the acceptance criteria are met.
 - **Build the spine first.** At every gate the end-to-end flow must work, even if it looks rough. Polish comes after the spine is green.
-- Branching: `git checkout -b <lane>/<task-id>-<slug> --no-track origin/main`. Keep PRs small, merge to `main` often, and never push straight to `main`.
 - Each commit and PR says what changed and why.
+
+### Agent workflow (every agent, every task)
+
+Several agents work on this repo at once. These rules keep them from overwriting each other.
+
+1. **Start on a new branch, off the latest `main`.** Before the first edit: `git fetch origin`, then `git checkout -b <lane>/<task-id>-<slug> --no-track origin/main` (for example `m/t7.3-demomart-adapter`). Never work on `main`, and never commit to another agent's branch.
+2. **One checkout per agent.** If another agent may be using the main checkout (check `git worktree list` and `git status`), don't switch its branch. Create your own worktree instead: `git worktree add ../HackGt13-<slug> -b <branch> --no-track origin/main`.
+3. **Commit only your own files.** Stage paths explicitly (`git add <paths>`), never `git add -A` in a shared checkout.
+4. **Verify before a PR.** Run the CI steps: `pnpm exec biome ci .`, `pnpm typecheck`, `pnpm test`, `pnpm build`, plus `pnpm db:lint`, `pnpm db:test`, `pnpm db:types:check` and `pnpm db:test:integration` when migrations change.
+5. **Small PR to `main`, merged only when CI is green.** Squash-merge. PR bodies are a few bullets plus one "Verified:" line. Never push to `main` or force-push a shared branch.
+6. **Clean up after merge.** Delete the branch and remove the worktree (`git worktree remove <path>`).
+7. **The local Supabase stack is shared.** `supabase db reset` wipes it for every agent. Prefer `supabase migration up --include-all`, and only reset when no one else is running DB tests.
 
 ### Lanes
 
