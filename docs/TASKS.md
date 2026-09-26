@@ -340,22 +340,26 @@ Implementation notes: [PHASE8.md](PHASE8.md).
 
 ## Phase 9: `packages/ai` (M)
 
-- [ ] **T9.1 Model router**
-  - [ ] AI SDK 7 (`ai`, `@ai-sdk/openai`, `@ai-sdk/openai-compatible`); `generateText`/`streamText` with `output: Output.object()` (never `generateObject`).
-  - [ ] Providers from env: `AI_PROVIDER=openai` (`OPENAI_MODEL_PRIMARY` for A1, A2, A4; `OPENAI_MODEL_FAST` for A3, A5; `OPENAI_REASONING_EFFORT`) and `AI_FALLBACK_PROVIDER=meta` (`META_BASE_URL`, `META_MODEL_*`). Fallback fires after retries on 429/5xx/timeout.
-  - [ ] Log every call to `ai_calls` (provider, model, tokens, estimated cost, fell_back); `pnpm ai:cost` prints spend so far.
-  - [ ] Smoke script `pnpm ai:smoke`: `GET /v1/models` + one `Output.object()` call per provider, so bad keys or renamed models fail before the demo.
-  - [ ] Stable system prompt + pack ontology prefix so OpenAI's automatic prompt caching applies; 12 s timeout; 2 retries with jitter; a circuit breaker; a global `AI_ENABLED` flag plus a per-session "AI off" toggle.
-- [ ] **T9.2 A1: brief → requirements** — depends on T3.1, T4.7
-  - [ ] Output: `RequirementDraft[]` + `Question[]`; fields must exist in the pack ontology (unknown fields are dropped and logged).
-  - [ ] **Quote check against the brief**: a `user_stated` item without a matching span is downgraded to `ai_inferred`.
-  - [ ] Stream partial output to the UI.
+Implementation notes: [PHASE9.md](PHASE9.md).
+
+- [x] **T9.1 Model router**
+  - [x] AI SDK 7 (`ai`, `@ai-sdk/openai`, `@ai-sdk/openai-compatible`); `generateText`/`streamText` with `output: Output.object()` (never `generateObject`).
+  - [x] Providers from env: `AI_PROVIDER=openai` (`OPENAI_MODEL_PRIMARY` for A1, A2, A4; `OPENAI_MODEL_FAST` for A3, A5; `OPENAI_REASONING_EFFORT`) and `AI_FALLBACK_PROVIDER=meta` (`META_BASE_URL`, `META_MODEL_*`). Fallback fires after retries on 429/5xx/timeout.
+  - [x] Log every call to `ai_calls` (provider, model, tokens, estimated cost, fell_back); `pnpm ai:cost` prints spend so far.
+  - [x] Smoke script `pnpm ai:smoke`: `GET /v1/models` + one `Output.object()` call per provider, so bad keys or renamed models fail before the demo.
+  - [x] Stable system prompt + pack ontology prefix so OpenAI's automatic prompt caching applies; 12 s timeout; 2 retries with jitter; a circuit breaker; a global `AI_ENABLED` flag plus a per-session "AI off" toggle.
+- [x] **T9.2 A1: brief → requirements** — depends on T3.1, T4.7
+  - [x] Output: `RequirementDraft[]` + `Question[]`; fields must exist in the pack ontology (unknown fields are dropped and logged).
+  - [x] **Quote check against the brief**: a `user_stated` item without a matching span is downgraded to `ai_inferred`.
+  - [x] Stream partial output to the UI (`streamRequirements`; the UI wiring lands with the workspace).
   - ✅ The home-office brief produces the requirement set expected by the eval (T9.6).
-- [ ] **T9.3 A2: roles and candidate queries**: merge with the pack role template; extra roles are tagged `ai_inferred`
-- [ ] **T9.4 A4: refinement commands** → `RequirementPatch[]`, shown as a requirement diff and applied only when the user confirms
-- [ ] **T9.5 A5: explanations**: input is report/diff JSON only; numbers are interpolated from the JSON; labeled "AI summary"
-- [ ] **T9.6 AI eval set**: 20 briefs (8 home office, 6 apparel, 6 travel) with the expected requirements; `pnpm eval:ai` reports field-level precision and recall. Target ≥ 0.9 on hard requirements. Run on `gpt-6-luna` during development (≈ $0.01 per full pass); run once on `gpt-6-sol` and once on `muse-spark-1.3` before G4 to confirm both demo and fallback models pass.
-- [ ] **T9.7 Injection tests**: listing text with instructions produces no behavior change; the extraction output schema is still valid
+- [x] **T9.3 A2: roles and candidate queries**: merge with the pack role template; extra roles are tagged `ai_inferred`
+- [x] **T9.4 A4: refinement commands** → `RequirementPatch[]`, shown as a requirement diff and applied only when the user confirms
+- [x] **T9.5 A5: explanations**: input is report/diff JSON only; numbers are interpolated from the JSON; labeled "AI summary"
+- [x] **T9.6 AI eval set**: 20 briefs (8 home office, 6 apparel, 6 travel) with the expected requirements; `pnpm eval:ai` reports field-level precision and recall. Target ≥ 0.9 on hard requirements. Run on `gpt-6-luna` during development (≈ $0.01 per full pass); run once on `gpt-6-sol` and once on `muse-spark-1.3` before G4 to confirm both demo and fallback models pass.
+  - [x] `gpt-6-luna` and `gpt-6-sol` pass.
+  - [ ] `muse-spark-1.3` run (needs `META_MODEL_API_KEY`).
+- [x] **T9.7 Injection tests**: listing text with instructions produces no behavior change; the extraction output schema is still valid
 
 ---
 

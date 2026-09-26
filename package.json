@@ -27,7 +27,10 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "test:realtime": "pnpm --filter @proofcart/web test:realtime",
     "test:catalog": "node scripts/catalog-smoke.mjs",
-    "test:acp-contract": "node scripts/demomart-contract.mjs"
+    "test:acp-contract": "node scripts/demomart-contract.mjs",
+    "ai:smoke": "pnpm --filter @proofcart/ai ai:smoke",
+    "ai:cost": "pnpm --filter @proofcart/ai ai:cost",
+    "eval:ai": "pnpm --filter @proofcart/ai eval:ai"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

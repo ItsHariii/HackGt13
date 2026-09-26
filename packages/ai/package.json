@@ -4,12 +4,32 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./supabase": "./src/supabase.ts",
+    "./evals": "./src/evals/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "ai:smoke": "jiti src/cli/smoke.ts",
+    "ai:cost": "jiti src/cli/cost.ts",
+    "eval:ai": "jiti src/cli/eval.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.78",
+    "@ai-sdk/openai-compatible": "^3.0.57",
+    "@proofcart/contracts": "workspace:*",
+    "@proofcart/platform": "workspace:*",
+    "@proofcart/proof-engine": "workspace:*",
+    "@supabase/supabase-js": "2.117.2",
+    "ai": "^7.0.116",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@proofcart/evidence": "workspace:*",
+    "@proofcart/rule-packs": "workspace:*",
+    "jiti": "^2.7.0"
   }
 }
