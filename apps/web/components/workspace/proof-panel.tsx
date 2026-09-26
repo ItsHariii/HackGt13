@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { ProofView, Tick } from "@/lib/workspace";
+import { ProofInspector } from "./proof-inspector";
 import { StatusIcon } from "./status-icon";
 
 const TICK: Record<Tick, string> = {
@@ -40,8 +41,9 @@ export function ProofPanel({
           >
             Proof
           </h2>
-          <span className="text-meta text-muted">
+          <span className="flex items-center gap-2 text-meta text-muted">
             Deterministic engine · no AI
+            <ProofInspector planId={planId} />
           </span>
         </div>
         <p
