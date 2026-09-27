@@ -52,6 +52,9 @@ export function productJsonLd(
     name: variant.title,
     description,
     url: opts.url,
+    ...(product.imagePath
+      ? { image: new URL(product.imagePath, opts.url).href }
+      : {}),
     sku: variant.sku,
     mpn: variant.mpn,
     gtin14: variant.gtin,

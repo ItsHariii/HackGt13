@@ -49,6 +49,23 @@ const BRANDS = [
   "Volt",
 ];
 
+/** Fixture SKUs that GreatHub also stocks, by its product slug (supabase/seed.sql). */
+const GREATHUB_SLUG: Record<string, string> = {
+  "BL-CD-465": "birchline-compact-desk-46",
+  "KS-MESH-TASK": "kestrel-mesh-task-chair",
+  "LOOP-C100-2M": "loop-usb-c-cable-100w",
+  "M27Q-USBC": "halden-m27q-usbc",
+  "PICA-1080": "pica-1080p-webcam",
+  U2727: "vireo-u2727",
+};
+
+/** GreatHub's photo of the same product, when GreatHub stocks it and is configured. */
+function greathubPhoto(sku: string): string | null {
+  const slug = GREATHUB_SLUG[sku];
+  const base = process.env.GREATHUB_BASE_URL?.replace(/\/$/, "");
+  return slug && base ? `${base}/products/${slug}.webp` : null;
+}
+
 function source(
   id: string,
   sourceType: SourceRecord["sourceType"],
@@ -97,7 +114,7 @@ function product(line: Line, category: string): CatalogProduct {
     upid: null,
     category,
     roles: [line.role],
-    imageUrl: null,
+    imageUrl: greathubPhoto(offer.sku),
     attributes: {},
     refs: [
       { source: "greathub", externalId: offer.sku, url: offer.url ?? null },

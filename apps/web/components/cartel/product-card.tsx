@@ -15,6 +15,8 @@ export type ProductCardData = {
   source: string;
   tier: CheckoutTier;
   href?: string | undefined;
+  /** The seller's product photo; the striped placeholder shows without one. */
+  imageUrl?: string | null | undefined;
 };
 
 /** A search result (Search design): name, price, fact with receipt, source, tier. */
@@ -33,14 +35,27 @@ export function ProductCard({
       aria-labelledby={`${id}-name`}
       className="relative flex flex-col overflow-hidden rounded-card border border-rule bg-paper-raised text-graphite shadow-[2px_2px_0_-1px_#f4eedf,2px_2px_0_0_var(--color-rule),0_14px_24px_-20px_rgb(43_42_40/.4)] dark:shadow-none"
     >
-      <div
-        aria-hidden="true"
-        className="flex h-[168px] items-center justify-center border-rule border-b bg-[repeating-linear-gradient(135deg,#f3eee2_0_10px,#ece5d6_10px_20px)] sm:h-[300px] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_10px,#223556_10px_20px)]"
-      >
-        <span className="rounded-[4px] bg-paper px-2 py-[3px] font-mono text-[12px] text-muted">
-          product photo
-        </span>
-      </div>
+      {product.imageUrl ? (
+        <div className="h-[168px] overflow-hidden border-rule border-b bg-paper sm:h-[300px]">
+          {/* biome-ignore lint/performance/noImgElement: merchant image hosts vary per catalog source; next/image would need each one configured. */}
+          <img
+            src={product.imageUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="size-full object-cover"
+          />
+        </div>
+      ) : (
+        <div
+          aria-hidden="true"
+          className="flex h-[168px] items-center justify-center border-rule border-b bg-[repeating-linear-gradient(135deg,#f3eee2_0_10px,#ece5d6_10px_20px)] sm:h-[300px] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_10px,#223556_10px_20px)]"
+        >
+          <span className="rounded-[4px] bg-paper px-2 py-[3px] font-mono text-[12px] text-muted">
+            product photo
+          </span>
+        </div>
+      )}
       {onCompare && (
         <label className="absolute top-3 left-3 z-10 flex h-[30px] items-center gap-[7px] rounded-[6px] border border-rule bg-paper-raised pr-2.5 pl-2 font-medium text-[13px]">
           <input

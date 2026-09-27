@@ -42,6 +42,11 @@ export async function proxy(request: NextRequest) {
     payments:
       path === "/settings/payment" || path.startsWith("/settings/payment/"),
     camera: path.startsWith("/orders/"),
+    // GreatHub serves its own product photos; the catalog links to them.
+    imageOrigins: [
+      process.env.GREATHUB_BASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+    ],
   });
   for (const [name, value] of Object.entries(secure))
     response.headers.set(name, value);

@@ -35,6 +35,7 @@
     "eval:ai": "pnpm --filter @cartel/ai eval:ai",
     "ai:warm": "pnpm --filter @cartel/ai ai:warm",
     "demo:reset": "node scripts/demo-reset.mjs",
+    "photos": "node scripts/product-photos.mjs",
     "demo:check": "node scripts/demo-check.mjs"
   },
   "devDependencies": {

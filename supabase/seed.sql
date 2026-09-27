@@ -748,6 +748,32 @@ join greathub.listings l on l.variant_id = v.id
 join greathub.offers o on o.listing_id = l.id
 join greathub.policies pol on pol.id = o.return_policy_id;
 
+-- BEGIN GENERATED (scripts/product-photos.mjs) --
+-- 48 Unsplash stock photos served by GreatHub (apps/greathub/public/products).
+-- The catalog links to GreatHub's copy, with the same origin rule as product links above.
+update greathub.products set image_path = '/products/' || slug || '.webp'
+where slug in (
+  'aster-ballet-flat', 'aster-block-heel', 'aster-leather-loafer', 'aster-strappy-sandal',
+  'atlas-international-carry-on', 'birchline-compact-desk-46', 'birchline-standard-desk-48', 'fieldnote-squeeze-bottles-4-oz',
+  'fieldnote-travel-bottles-3-4-oz', 'galloon-classic-party-decoration-kit', 'galloon-dinosaur-party-decoration-kit', 'galloon-foil-number-balloon',
+  'galloon-happy-birthday-banner', 'galloon-latex-free-foil-balloon-bouquet', 'galloon-rainbow-party-decoration-kit', 'halden-h24f',
+  'halden-m27q-usbc', 'halden-q27', 'hearthbake-classic-birthday-cake-quarter-sheet', 'hearthbake-confetti-sprinkle-cake-quarter-sheet',
+  'hearthbake-flourless-chocolate-torte', 'hearthbake-free-from-celebration-cake-6-round', 'hearthbake-free-from-celebration-cake-8-round', 'hearthbake-free-from-celebration-cake-half-sheet',
+  'hearthbake-free-from-celebration-cake-quarter-sheet', 'hearthbake-gluten-free-vanilla-cupcakes-12-pack', 'hearthbake-gluten-free-vanilla-cupcakes-24-pack', 'hearthbake-rainbow-birthday-cake-8-round',
+  'hearthbake-space-birthday-cake-quarter-sheet', 'hearthbake-superhero-birthday-cake-8-round', 'hearthbake-tiered-unicorn-showpiece-cake', 'hearthbake-vanilla-cupcakes-12-pack',
+  'hearthbake-vanilla-cupcakes-24-pack', 'kestrel-basic-task-chair', 'kestrel-ergo-pro-chair', 'loop-usb-c-cable-240w',
+  'loop-usb-c-cable-60w', 'marlow-heather-wrap-dress', 'marlow-navy-midi-dress', 'marlow-navy-sheath-dress',
+  'marlow-navy-wrap-dress', 'vireo-p3223', 'vireo-u2727', 'volt-10k-power-bank',
+  'volt-20k-power-bank', 'volt-26800-power-bank', 'volt-30k-power-bank', 'volt-universal-travel-adapter'
+);
+update public.products p
+set image_url = coalesce(nullif(current_setting('app.greathub_origin', true), ''), 'http://localhost:3001')
+  || gp.image_path
+from seed_catalog s
+join greathub.products gp on gp.slug = s.slug
+where p.source = 'greathub' and p.external_id = s.sku and gp.image_path is not null;
+-- END GENERATED (scripts/product-photos.mjs) --
+
 -- Kits (SDD §11.5, §16.1) ------------------------------------------------------------------------
 insert into public.kits (slug, title, pack, description, hero_figure, sort_order) values
   ('starter-home-office', 'Starter home office', 'home-office',

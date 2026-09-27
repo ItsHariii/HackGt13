@@ -106,28 +106,44 @@ export default async function ProductPage({
 
           <div className="grid items-start gap-12 pt-5 lg:grid-cols-2">
             <div className="flex flex-col gap-3.5 rounded-card border border-rule bg-paper-raised p-5 shadow-stack">
-              <div
-                role="img"
-                aria-label={`No photo for ${view.title}`}
-                className="flex h-[300px] items-center justify-center rounded-sheet bg-[repeating-linear-gradient(135deg,#f3eee2_0_12px,#ece5d6_12px_24px)] sm:h-[540px] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_12px,#223556_12px_24px)]"
-              >
-                <span className="rounded-[4px] bg-paper px-2.5 py-1 font-mono text-[13px] text-muted">
-                  product photo · front
-                </span>
-              </div>
-              <div
-                aria-hidden="true"
-                className="hidden grid-cols-5 gap-2.5 sm:grid"
-              >
-                {["front", "side", "ports", "stand", "in box"].map((v, i) => (
-                  <span
-                    key={v}
-                    className={`flex h-[88px] items-center justify-center rounded-sheet bg-[repeating-linear-gradient(135deg,#f3eee2_0_6px,#ece5d6_6px_12px)] font-mono text-[11px] text-muted dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_6px,#223556_6px_12px)] ${i === 0 ? "border-2 border-graphite" : "border border-rule"}`}
+              {product.imageUrl ? (
+                <div className="flex h-[300px] items-center justify-center overflow-hidden rounded-sheet bg-paper sm:h-[540px]">
+                  {/* biome-ignore lint/performance/noImgElement: merchant image hosts vary per catalog source; next/image would need each one configured. */}
+                  <img
+                    src={product.imageUrl}
+                    alt={view.title}
+                    decoding="async"
+                    className="size-full object-cover"
+                  />
+                </div>
+              ) : (
+                <>
+                  <div
+                    role="img"
+                    aria-label={`No photo for ${view.title}`}
+                    className="flex h-[300px] items-center justify-center rounded-sheet bg-[repeating-linear-gradient(135deg,#f3eee2_0_12px,#ece5d6_12px_24px)] sm:h-[540px] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_12px,#223556_12px_24px)]"
                   >
-                    {v}
-                  </span>
-                ))}
-              </div>
+                    <span className="rounded-[4px] bg-paper px-2.5 py-1 font-mono text-[13px] text-muted">
+                      product photo · front
+                    </span>
+                  </div>
+                  <div
+                    aria-hidden="true"
+                    className="hidden grid-cols-5 gap-2.5 sm:grid"
+                  >
+                    {["front", "side", "ports", "stand", "in box"].map(
+                      (v, i) => (
+                        <span
+                          key={v}
+                          className={`flex h-[88px] items-center justify-center rounded-sheet bg-[repeating-linear-gradient(135deg,#f3eee2_0_6px,#ece5d6_6px_12px)] font-mono text-[11px] text-muted dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_6px,#223556_6px_12px)] ${i === 0 ? "border-2 border-graphite" : "border border-rule"}`}
+                        >
+                          {v}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex flex-col gap-7">

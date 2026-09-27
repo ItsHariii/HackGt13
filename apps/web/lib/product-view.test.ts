@@ -35,4 +35,15 @@ describe("product page", () => {
     const card = productCard(found[0] as never, [homeOffice], DEMO_NOW);
     expect(card).toMatchObject({ price: "$309.00", tier: "full" });
   });
+  it("cards carry the product photo when there is one", () => {
+    const p = demoProduct("dm_vireo_u2727e");
+    if (!p) throw new Error("missing");
+    const photo = "https://greathub.example/products/vireo-u2727.webp";
+    expect(
+      productCard({ ...p, imageUrl: photo }, [homeOffice], DEMO_NOW).imageUrl,
+    ).toBe(photo);
+    expect(
+      productCard({ ...p, imageUrl: null }, [homeOffice], DEMO_NOW).imageUrl,
+    ).toBeNull();
+  });
 });

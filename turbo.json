@@ -44,5 +44,6 @@
     "CARTEL_*",
     "GREATHUB_*",
     "LOG_LEVEL"
-  ]
+  ],
+  "globalPassThroughEnv": ["UNSPLASH_ACCESS_KEY"]
 }
