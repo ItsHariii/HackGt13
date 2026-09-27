@@ -10,6 +10,7 @@ import { ArrowRight, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import {
   type FormEvent,
+  useEffect,
   useId,
   useMemo,
   useRef,
@@ -18,7 +19,10 @@ import {
 } from "react";
 import { saveRequirements } from "@/app/plans/[id]/requirements/actions";
 import { RequirementChip } from "@/components/cartel/requirement-chip";
+import { AiOff } from "@/components/states/edge-states";
 import { Button } from "@/components/ui/button";
+import type { DraftLine } from "@/lib/brief-draft";
+import { splitLines } from "@/lib/figure-events";
 import {
   type FieldOption,
   fieldOptions,
@@ -36,8 +40,27 @@ export type Question = {
   text: string;
   /** The rule this question qualifies. */
   requirementId: string;
+  /** Why it's being asked (AI questions); shown under the question. */
+  why?: string;
+  /** Empty for an open AI question: the answer is a rule added by hand. */
   options: { label: string; rule: string }[];
 };
+
+type DraftState = "idle" | "reading" | "done" | "off" | "unavailable";
+
+/** An A1 question as the editor shows it. */
+function fromAiQuestion(
+  q: { field: string | null; question: string; why: string },
+  i: number,
+): Question {
+  return {
+    id: `ai_q_${i}`,
+    text: q.question,
+    requirementId: q.field ?? "",
+    why: q.why,
+    options: [],
+  };
+}
 
 type Group = "said" | "assumed" | "default";
 
@@ -63,8 +86,9 @@ export function RequirementsEditor({
   brief,
   packIds,
   initial,
-  questions = [],
+  questions: givenQuestions = [],
   mode,
+  draftUrl,
 }: {
   planId: string;
   brief: string;
@@ -73,17 +97,31 @@ export function RequirementsEditor({
   questions?: Question[];
   /** Demo plans keep edits in the page; stored plans save a new set. */
   mode: "demo" | "stored";
+  /** A1 stream for a saved plan with no rules yet (`/api/plans/[id]/draft`). */
+  draftUrl?: string;
 }) {
+  const [packList, setPackList] = useState(packIds);
   const packs = useMemo(
-    () => packIds.flatMap((p) => (PACKS[p] ? [PACKS[p]] : [])),
-    [packIds],
+    () => packList.flatMap((p) => (PACKS[p] ? [PACKS[p]] : [])),
+    [packList],
   );
   const options = useMemo(() => fieldOptions(packs), [packs]);
   const [rules, setRules] = useState(initial);
+  const [aiQuestions, setAiQuestions] = useState<Question[]>([]);
+  const questions = useMemo(
+    () => [...givenQuestions, ...aiQuestions],
+    [givenQuestions, aiQuestions],
+  );
+  const [draft, setDraft] = useState<DraftState>(
+    draftUrl && initial.length === 0 ? "reading" : "idle",
+  );
+  const touched = useRef(false);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [hover, setHover] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
-  const [builderOpen, setBuilderOpen] = useState(initial.length === 0);
+  const [builderOpen, setBuilderOpen] = useState(
+    initial.length === 0 && !draftUrl,
+  );
   const [status, setStatus] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, startSave] = useTransition();
@@ -95,7 +133,65 @@ export function RequirementsEditor({
     return r?.provenance.kind === "user_stated" ? r.provenance.span : null;
   })();
 
+  useEffect(() => {
+    if (!draftUrl || initial.length > 0) return;
+    const abort = new AbortController();
+    const apply = (reqs: Requirement[]) => {
+      // Once the shopper edits, drafts only add rules they don't have yet.
+      setRules((rs) =>
+        touched.current
+          ? [...rs, ...reqs.filter((r) => !rs.some((x) => x.id === r.id))]
+          : reqs,
+      );
+    };
+    const handle = (line: DraftLine) => {
+      if (line.type === "error") {
+        setDraft(line.reason);
+        setBuilderOpen(true);
+        return;
+      }
+      apply(line.requirements);
+      setAiQuestions(line.questions.map(fromAiQuestion));
+      if (line.type === "done") {
+        if (line.pack && PACKS[line.pack])
+          setPackList((p) => (p.length ? p : [line.pack as string]));
+        setDraft("done");
+        setStatus(
+          `Read your brief: ${line.requirements.length} rules, ${line.questions.length} questions.`,
+        );
+      }
+    };
+    (async () => {
+      try {
+        const res = await fetch(draftUrl, {
+          method: "POST",
+          signal: abort.signal,
+        });
+        if (!res.ok || !res.body) throw new Error(`draft ${res.status}`);
+        const reader = res.body
+          .pipeThrough(new TextDecoderStream())
+          .getReader();
+        let buffer = "";
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          const { lines, rest } = splitLines(buffer + value);
+          buffer = rest;
+          for (const l of lines) if (l.trim()) handle(JSON.parse(l));
+        }
+        if (buffer.trim()) handle(JSON.parse(buffer));
+        setDraft((d) => (d === "reading" ? "unavailable" : d));
+      } catch {
+        if (abort.signal.aborted) return;
+        setDraft("unavailable");
+        setBuilderOpen(true);
+      }
+    })();
+    return () => abort.abort();
+  }, [draftUrl, initial.length]);
+
   const update = (id: string, next: Requirement | null, message: string) => {
+    touched.current = true;
     setRules((rs) =>
       next
         ? rs.map((r) => (r.id === id ? next : r))
@@ -142,11 +238,31 @@ export function RequirementsEditor({
   return (
     <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_420px]">
       <div className="flex flex-col gap-11 pb-36">
+        {draft === "reading" && (
+          <p
+            role="status"
+            className="flex items-center gap-2.5 rounded-card border border-pencil border-dashed px-4 py-3 text-graphite-2 text-small"
+          >
+            <span
+              aria-hidden="true"
+              className="size-2 animate-pulse rounded-full bg-ink motion-reduce:animate-none"
+            />
+            Reading your brief. Rules appear as I find them; nothing is checked
+            until you confirm.
+          </p>
+        )}
+        {(draft === "off" || draft === "unavailable") && (
+          <AiOff href="#manual-builder" />
+        )}
         <Section
           variant="said"
           note="Taken from your brief"
           title="You said"
-          empty="Nothing yet. Add a rule by hand below."
+          empty={
+            draft === "reading"
+              ? "Reading your brief…"
+              : "Nothing yet. Add a rule by hand below."
+          }
           count={groups.said.length}
         >
           {groups.said.map((r) => (
@@ -259,38 +375,70 @@ export function RequirementsEditor({
                   </svg>
                   {q.text}
                 </p>
-                <div
-                  role="radiogroup"
-                  aria-label={q.text}
-                  className="grid gap-2.5 sm:grid-cols-2 sm:pl-[42px]"
-                >
-                  {q.options.map((o, i) => (
-                    // biome-ignore lint/a11y/useSemanticElements: a card-sized radio with a code preview
-                    <button
-                      key={o.label}
+                {q.why && (
+                  <p className="text-muted text-small sm:pl-[42px]">{q.why}</p>
+                )}
+                {q.options.length === 0 ? (
+                  <div className="flex flex-wrap gap-2.5 sm:pl-[42px]">
+                    <Button
                       type="button"
-                      role="radio"
-                      aria-checked={answers[q.id] === i}
+                      variant="outline"
+                      aria-pressed={answers[q.id] === 0}
                       onClick={() => {
-                        setAnswers((a) => ({ ...a, [q.id]: i }));
-                        setStatus(`Answered: ${o.label}.`);
+                        setAnswers((a) => ({ ...a, [q.id]: 0 }));
+                        setBuilderOpen(true);
+                        builder.current?.scrollIntoView({ block: "center" });
+                        setStatus("Add the rule by hand below.");
                       }}
-                      className={cn(
-                        "flex min-h-[52px] flex-col items-start gap-0.5 rounded-card border border-graphite bg-paper-sheet px-4 py-2.5 text-left",
-                        answers[q.id] === i
-                          ? "shadow-primary"
-                          : "hover:bg-paper-raised",
-                      )}
                     >
-                      <span className="font-semibold text-[15px]">
-                        {o.label}
-                      </span>
-                      <code className="font-mono text-[13px] text-muted">
-                        {o.rule}
-                      </code>
-                    </button>
-                  ))}
-                </div>
+                      Add a rule for this
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      aria-pressed={answers[q.id] === 1}
+                      onClick={() => {
+                        setAnswers((a) => ({ ...a, [q.id]: 1 }));
+                        setStatus("Skipped. No rule added.");
+                      }}
+                    >
+                      Doesn't matter
+                    </Button>
+                  </div>
+                ) : (
+                  <div
+                    role="radiogroup"
+                    aria-label={q.text}
+                    className="grid gap-2.5 sm:grid-cols-2 sm:pl-[42px]"
+                  >
+                    {q.options.map((o, i) => (
+                      // biome-ignore lint/a11y/useSemanticElements: a card-sized radio with a code preview
+                      <button
+                        key={o.label}
+                        type="button"
+                        role="radio"
+                        aria-checked={answers[q.id] === i}
+                        onClick={() => {
+                          setAnswers((a) => ({ ...a, [q.id]: i }));
+                          setStatus(`Answered: ${o.label}.`);
+                        }}
+                        className={cn(
+                          "flex min-h-[52px] flex-col items-start gap-0.5 rounded-card border border-graphite bg-paper-sheet px-4 py-2.5 text-left",
+                          answers[q.id] === i
+                            ? "shadow-primary"
+                            : "hover:bg-paper-raised",
+                        )}
+                      >
+                        <span className="font-semibold text-[15px]">
+                          {o.label}
+                        </span>
+                        <code className="font-mono text-[13px] text-muted">
+                          {o.rule}
+                        </code>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </li>
             ))}
           </Section>
@@ -338,6 +486,7 @@ export function RequirementsEditor({
               options={options}
               existing={rules.map((r) => r.id)}
               onAdd={(r) => {
+                touched.current = true;
                 setRules((rs) => [...rs, r]);
                 setStatus(`Added: ${text(r)} (You chose).`);
               }}

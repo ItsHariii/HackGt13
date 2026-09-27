@@ -87,6 +87,9 @@ importers:
       '@cartel/acp':
         specifier: workspace:*
         version: link:../../packages/acp
+      '@cartel/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@cartel/catalog':
         specifier: workspace:*
         version: link:../../packages/catalog

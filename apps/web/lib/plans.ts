@@ -70,6 +70,17 @@ export async function createStoredPlan(input: {
   return data.id;
 }
 
+/** Sets the plan's pack when the brief named one (A1); title follows the pack. */
+export async function setPlanPack(planId: string, pack: string): Promise<void> {
+  if (!UUID.test(planId) || !PACKS[pack]) throw new PlanError("invalid");
+  const { db } = await session();
+  const { error } = await db
+    .from("plans")
+    .update({ packs: [pack], title: PACKS[pack].title })
+    .eq("id", planId);
+  if (error) throw new PlanError("storage");
+}
+
 /** The plan and its latest requirement set, or null if it isn't theirs. */
 export async function loadStoredPlan(
   planId: string,

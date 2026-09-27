@@ -50,7 +50,7 @@ export default async function RequirementsPage({
             asking you.
           </h1>
         </div>
-        {stored && stored.requirements.length === 0 && (
+        {stored && stored.requirements.length === 0 && !stored.brief.trim() && (
           <AiOff href="#manual-builder" />
         )}
         {demo ? (
@@ -70,6 +70,9 @@ export default async function RequirementsPage({
               packIds={stored.packs.map((p) => p.id)}
               initial={stored.requirements}
               mode="stored"
+              {...(stored.requirements.length === 0 && stored.brief.trim()
+                ? { draftUrl: `/api/plans/${stored.id}/draft` }
+                : {})}
             />
           )
         )}
