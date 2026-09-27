@@ -61,7 +61,7 @@ SDD §7.6 and §7.7 are updated to match. With either fix reverted, those scenar
 - `bench` runs on every PR and push after `database`, even when `database` failed. It reads
   `db-report` into the two DB gates, uploads `bench-results` (JSON + JUnit) and writes a job
   summary. On pushes to `main` it runs `bench:publish`.
-- Migration `0016_bench_gates.sql` adds `bench_runs.gates` and a unique `git_sha`, so a re-run
+- Migration `0017_bench_gates.sql` adds `bench_runs.gates` and a unique `git_sha`, so a re-run
   replaces its row.
 - **Setup needed:** add the repository secrets `SUPABASE_URL` and `SUPABASE_SECRET_KEY`.
   Until they exist, `main` builds log a skip and `/bench` shows no CI run.

@@ -612,7 +612,7 @@ Implementation, commands and limits: [PHASE16.md](PHASE16.md). The bench found t
 - [x] **T16.2 Author ≥ 62 scenarios** per SDD §22.2 (identity 8, same-SKU facts 8, economics 8, terms 6, delivery 4, availability 3, recurring 3, evidence 8, derived 4, security 5, benign 5)
   - 84 scenarios, every category at or above its minimum; 84/84 as expected.
 - [x] **T16.3 CI integration**: the bench runs on every PR; results upsert into `bench_runs` from `main`; `/bench` reads them
-  - `bench` job after `database`; `bench:publish` on `main` needs the repo secrets `SUPABASE_URL` and `SUPABASE_SECRET_KEY` (skips without them). Migration `0016_bench_gates.sql`.
+  - `bench` job after `database`; `bench:publish` on `main` needs the repo secrets `SUPABASE_URL` and `SUPABASE_SECRET_KEY` (skips without them). Migration `0017_bench_gates.sql`.
 - [x] **T16.4 Guard integration suite**: one test per rejection code + idempotency + token reuse (extends T2.7)
 - [x] **T16.5 Retry fuzz**: 200 randomized execute calls with duplicated idempotency keys, timeouts and webhook replays → exactly one execution and one order per key
 - [ ] **T16.6 E2E** (Playwright, run locally or in CI)
