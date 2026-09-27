@@ -10,10 +10,10 @@ import { registrationOptions } from "@/lib/signing-service";
 /** T12.1: WebAuthn creation options for the signing passkey. */
 export async function POST(request: Request) {
   try {
-    signingOrigin(request);
+    const origin = signingOrigin(request);
     const user = await signingUser();
     return signingResponse({
-      options: await registrationOptions(signingDeps(), user),
+      options: await registrationOptions(signingDeps(origin), user),
     });
   } catch (error) {
     return signingError(error);

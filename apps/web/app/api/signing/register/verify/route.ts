@@ -11,7 +11,7 @@ import { isCredential } from "../../credential";
 /** T12.1: verify the attestation and store the signing credential. */
 export async function POST(request: Request) {
   try {
-    signingOrigin(request);
+    const origin = signingOrigin(request);
     const user = await signingUser();
     const body = await request.json().catch(() => null);
     const label = body?.label ?? null;
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     )
       throw new SigningError("invalid_request", 400);
     const result = await verifyRegistration(
-      signingDeps(),
+      signingDeps(origin),
       user.id,
       body.response,
       label?.trim() || null,
