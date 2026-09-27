@@ -3,17 +3,17 @@ import { BriefForm } from "@/components/new/brief-form";
 
 export const metadata: Metadata = { title: "Start a plan" };
 
-/** /new (TASKS T11.1; design "Brief and Requirements"). */
+/** /new (TASKS T11.1; design "Brief and Requirements", New brief frame). */
 export default function NewPlanPage() {
   return (
     <main className="dot-grid text-graphite">
-      <div className="mx-auto flex max-w-[860px] flex-col gap-8 px-5 pt-16 pb-20 sm:px-8">
-        <div className="flex flex-col gap-3">
-          <h1 className="font-semibold font-serif text-h2 tracking-heading">
+      <div className="mx-auto flex max-w-[920px] flex-col gap-7 px-5 pt-[72px] pb-24 sm:px-0">
+        <div className="flex flex-col gap-2.5">
+          <h1 className="font-semibold font-serif text-[40px] leading-[1.05] tracking-[-0.03em] sm:text-[52px]">
             What do you need?
           </h1>
-          <p className="text-body text-graphite-2">
-            Write it the way you'd tell a friend. Budget, sizes, deadlines,
+          <p className="text-[18px] text-graphite-2 leading-normal">
+            Write it the way you&apos;d tell a friend. Budget, sizes, deadlines,
             deal-breakers.
           </p>
         </div>

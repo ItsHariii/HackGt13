@@ -3,7 +3,6 @@ import { ArrowRight } from "lucide-react";
 import { useActionState, useId, useState } from "react";
 import { type CreatePlanState, createPlan } from "@/app/(site)/new/actions";
 import { Figure } from "@/components/doodle/figure";
-import { Button } from "@/components/ui/button";
 import {
   detectPack,
   PACK_TITLE,
@@ -30,9 +29,12 @@ export function BriefForm() {
 
   return (
     <form action={action} className="flex flex-col gap-6">
-      <div className="relative">
-        <label htmlFor={`${id}-brief`} className="sr-only">
-          What do you need?
+      <div className="relative mt-7">
+        <label
+          htmlFor={`${id}-brief`}
+          className="absolute -top-[30px] left-[104px] font-semibold text-[13px] text-muted uppercase tracking-[0.08em]"
+        >
+          Your brief
         </label>
         <textarea
           id={`${id}-brief`}
@@ -42,22 +44,22 @@ export function BriefForm() {
             setBrief(e.target.value);
             setTemplate(null);
           }}
-          rows={7}
+          rows={8}
           aria-describedby={`${id}-count ${id}-error`}
           aria-invalid={over || !!state.error}
           placeholder="Build my home office for under $1,000…"
-          className="notebook block w-full resize-y rounded-sheet border border-graphite bg-paper-sheet py-[9px] pr-5 pl-16 font-serif text-[19px] text-graphite leading-[40px] outline-none placeholder:text-muted"
+          className="block min-h-[360px] w-full resize-y rounded-card border border-rule bg-paper-raised bg-[linear-gradient(90deg,transparent_79px,rgb(200_53_46/.4)_79px,rgb(200_53_46/.4)_80px,transparent_80px),repeating-linear-gradient(180deg,transparent_0,transparent_39px,#d9e1ee_39px,#d9e1ee_40px)] bg-local bg-[position:0_0,0_24px] pt-[30px] pr-12 pb-12 pl-[104px] font-sans text-[18px] text-graphite leading-[40px] shadow-[3px_3px_0_-1px_#f4eedf,3px_3px_0_0_var(--color-rule),6px_6px_0_-1px_#f4eedf,6px_6px_0_0_var(--color-rule),0_24px_40px_-28px_rgb(43_42_40/.45)] outline-none placeholder:text-muted focus-visible:outline-[2.5px] focus-visible:outline-ink focus-visible:outline-offset-[6px] sm:text-[22px] dark:bg-paper-sheet dark:bg-[repeating-linear-gradient(180deg,transparent_0,transparent_39px,var(--color-rule)_39px,var(--color-rule)_40px)]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-[86px] right-6 hidden sm:block"
+          className="pointer-events-none absolute -top-[75px] right-12 z-[2] hidden sm:block"
         >
-          <Figure who="scout" pose="idle" h={88} />
+          <Figure who="scout" pose="idle" h={96} />
         </div>
         <p
           id={`${id}-count`}
           className={cn(
-            "num mt-2 text-right text-small",
+            "num absolute right-6 bottom-3.5 font-mono text-[12px]",
             over ? "font-semibold text-red-pen" : "text-muted",
           )}
         >
@@ -67,7 +69,7 @@ export function BriefForm() {
       </div>
 
       <fieldset className="flex flex-col gap-2.5">
-        <legend className="pb-2 font-semibold text-meta text-muted uppercase tracking-label">
+        <legend className="pb-3 font-semibold text-[13px] text-muted uppercase tracking-[0.08em]">
           Or start from a template
         </legend>
         <div className="flex flex-wrap gap-2">
@@ -82,12 +84,27 @@ export function BriefForm() {
                 setOverride(null);
               }}
               className={cn(
-                "inline-flex h-10 items-center rounded-pill border px-4 font-semibold text-ui",
+                "inline-flex h-10 items-center gap-2 rounded-pill border px-4 text-[15px]",
                 template === t.id
-                  ? "border-graphite bg-graphite text-paper-raised"
-                  : "border-rule bg-paper-raised text-graphite hover:border-graphite",
+                  ? "border-graphite bg-graphite font-semibold text-paper-raised"
+                  : "border-rule bg-paper-raised font-medium text-graphite hover:border-graphite",
               )}
             >
+              {template === t.id && (
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M2.5 6.2l2.3 2.3 4.7-5" />
+                </svg>
+              )}
               {t.label}
             </button>
           ))}
@@ -143,15 +160,19 @@ export function BriefForm() {
         {state.error}
       </p>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 border-rule border-t pt-5">
-        <p className="max-w-[46ch] text-graphite-2 text-ui">
-          Next you'll see the rules I pulled from this.{" "}
-          <strong>Nothing is bought until you sign a contract.</strong>
+      <div className="mt-5 flex flex-wrap items-center gap-5 border-rule border-t pt-6">
+        <p className="flex-1 text-[14px] text-muted leading-normal">
+          Next you&apos;ll see the rules I pulled from this. Nothing is bought
+          until you sign a contract.
         </p>
-        <Button type="submit" disabled={pending || over || !brief.trim()}>
+        <button
+          type="submit"
+          disabled={pending || over || !brief.trim()}
+          className="inline-flex h-14 items-center gap-2.5 rounded-card bg-graphite px-[30px] font-semibold text-[17px] text-paper-raised shadow-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
           {pending ? "Reading your brief…" : "Build my plan"}
           <ArrowRight size={16} aria-hidden="true" />
-        </Button>
+        </button>
       </div>
     </form>
   );
