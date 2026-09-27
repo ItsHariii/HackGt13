@@ -34,8 +34,10 @@ Pages served from fixtures carry a "Demo plan" or "Demo data" tag. Times the fix
 
 ## Still open
 
-- Drafting a contract version from a saved plan. Until then only versions created elsewhere can be signed here; demo contracts are fixtures and can't be signed.
-- Streaming proof rows and guard steps: the Inspector and stepper react to outcomes, not per-row or per-step events.
-- The refinement command bar (A4) and solving saved plans into baskets.
-- Scan delivery (T15), the 62-scenario bench suite (Phase 16).
-- Evidence drawer conflicts side by side (T11.4); conflicts show on the product page.
+Done since (2026-09-27): drafting a contract from a saved plan, solving saved plans
+into Plans A–C, the A4 command bar, proof-row and guard-step streaming, and
+evidence conflicts side by side. Scan delivery (T15) and the bench suite (Phase 16,
+84 scenarios) were already done.
+
+- The OS passkey prompt and the Sign-blocked state still need a design pass.
+- A5 "AI summary" cards use templates only.

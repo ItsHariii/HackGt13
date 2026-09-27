@@ -323,11 +323,12 @@ GreatHub is designed as a GitHub parody set in a harbor ("Dock", "Starfish", "Ba
 - [x] **T7.2 JSON-LD extractor**: parse `application/ld+json`; map fields using the pack's `jsonLd` paths; unit-parse; produce `Fact`s with state set by authority (merchant JSON-LD → `source_stated`; checkout API price → `verified`)
 - [x] **T7.3 GreatHub adapter**: a TAP-signed client (`packages/tap`) + ACP client (`packages/acp`); `refreshOffer`, `refreshSpecs`, `getCheckout`
 - [x] **T7.4 CPSC adapter**: `GET https://www.saferproducts.gov/RestWebServices/Recall?format=json&ProductName=…`, matched by brand and model; fact `recall.active` with state `verified`; label "No recall found as of {t}"
-- [ ] **T7.5 Shopify adapter (UCP)** — depends on T0.6 going "go"
+- [x] **T7.5 Shopify adapter (UCP)** — depends on T0.6 going "go"
   - [x] MCP client for `catalog.shopify.com/api/ucp/mcp`: `search_catalog`, `lookup_catalog`, `get_product`; requests reference Cartel's agent profile.
   - [x] Map products (UPID, title, images, shop), variants (options, availability, price) and attributes onto `products`, `offers`, `facts` (state `source_stated`, source "Shopify Catalog").
   - [x] Back off on rate limits; results cached through `search_queries`. *(Responses are cached as `sources` snapshots; the `search_queries` row is written by T7B.3.)*
   - ✅ "navy linen shirt" returns ≥ 10 real products with price, variants and at least one fiber fact where the listing provides it.
+  - [x] Authenticated calls with Dev Dashboard credentials (`SHOPIFY_CLIENT_ID` / `SHOPIFY_CLIENT_SECRET`, 60-minute token renewed early; `shopify-auth.ts`). Live on production with the public agent profile; keyless calls still work at the lowest tier.
 - [x] **T7.6 Quote-grounded extraction (A3)** — depends on T9.1
   - [x] Normalize the source text (whitespace/Unicode only); verify the quote exists at an index; the parsed value must equal the claimed value; store `quote` and `span`; cap at `source_stated`.
   - ✅ Tests: an invented quote is rejected; a misread number is rejected; a valid quote is stored with the correct span.
@@ -337,7 +338,7 @@ GreatHub is designed as a GitHub parody set in a harbor ("Dock", "Starfish", "Ba
   - ✅ "27 inch 4K USB-C monitor" returns real monitors with GTIN, brand and model; offers render as "Seen at {merchant} · last seen {date}" and never feed price rules.
 - [x] **T7.10 Icecat enrichment**: on product upsert with a GTIN, fetch the manufacturer spec sheet from `live.icecat.biz/api`; write facts with source type `manufacturer`; conflicts with seller specs set the `conflict` flag
   - ✅ At least one UPCitemdb monitor (matched by GTIN) shows a manufacturer-sourced spec row, and a seeded conflict renders as **Sources disagree**.
-- [ ] **T7.11 Open Food Facts adapter** *(stretch, grocery pack)*: `api/v2/product/{barcode}.json` with a descriptive User-Agent; allergens and ingredients as facts
+- [x] **T7.11 Open Food Facts adapter** *(stretch, grocery pack)*: `api/v2/product/{barcode}.json` with a descriptive User-Agent; allergens and ingredients as facts
 - [ ] **T7.12 eBay adapter** *(optional)*: only if partner access is granted; otherwise skip entirely
 
 Implementation notes, verification and open items: [PHASE7.md](PHASE7.md). T7.5 stays open until the live "navy linen shirt" check runs against a deployed agent profile.
@@ -394,7 +395,7 @@ Implementation notes: [PHASE9.md](PHASE9.md).
 - [x] **T9.5 A5: explanations**: input is report/diff JSON only; numbers are interpolated from the JSON; labeled "AI summary"
 - [x] **T9.6 AI eval set**: 20 briefs (8 home office, 6 apparel, 6 travel) with the expected requirements; `pnpm eval:ai` reports field-level precision and recall. Target ≥ 0.9 on hard requirements. Run on `gpt-6-luna` during development (≈ $0.01 per full pass); run once on `gpt-6-sol` and once on `muse-spark-1.3` before G4 to confirm both demo and fallback models pass.
   - [x] `gpt-6-luna` and `gpt-6-sol` pass.
-  - [ ] `muse-spark-1.3` run (needs `META_MODEL_API_KEY`).
+  - [ ] `muse-spark-1.3` run. Ran 2026-09-27 (after sending `response_format: json_schema`): hard-requirement P 98.8% / R 100%, pack 100%, but the injection set is 3/4 (`fake-closing-tag` changes a fact) and each A1 call takes 35–50 s, far over the 12 s timeout. Accurate, but not a usable fallback as configured; see PHASE9.md.
 - [x] **T9.7 Injection tests**: listing text with instructions produces no behavior change; the extraction output schema is still valid
 
 ---
@@ -472,22 +473,23 @@ Implementation notes: [PHASE11.md](PHASE11.md). The flagship plan (`/plans/flags
   - [x] Three groups: **You said** (the quote shown on hover), **I assumed, confirm?**, **Needs your answer** (question cards).
   - [x] Edit value and unit, toggle hard/preference, delete, add. **Manual builder form** (the "AI off" path). Saved plans store a new requirement set; the demo plan keeps edits on the page.
   - ✅ With the AI off, the user can build the flagship requirement set entirely by form. (`lib/manual-rule.test.ts`)
-- [ ] **T11.3 Workspace** `/plans/[id]`
+- [x] **T11.3 Workspace** `/plans/[id]`
   - Design (Workspace + Blueprint): header with the stepper Brief ✓ · Rules ✓ · 3 Plans · 4 Contract; requirements rail with strength tags and provenance chips (You said / I assumed → confirmed / Default / I assumed + Confirm / ? Can't check · Waived by you); plan tabs "Plan A · Balanced / B · Cheapest / C · Better chair"; plan sheet with role, item, spec, merchant pill and price, totals with a dashed "~ Estimate" tax, the "Full Cartel checkout" badge, and "Review contract" disabled until every hard rule is checked; PROOF panel ("Deterministic engine · no AI") with the n-of-12 headline, a 12-tick bar, the stamping Inspector while streaming, and a command bar "Ask Cartel… e.g. 'Make it $100 cheaper without changing the monitor'" (⌘K).
-  - [ ] Left: requirements (compact). Center: the plan (items, delivered total, plan switcher A/B/C). Right: the Proof panel, **streaming rows via Realtime**. (Panes done; rows don't stream yet, and saved plans show a "no plans yet" state until solving stored plans is wired. Plans A–C live on Compare.)
-  - [ ] Command bar: a refinement → `RequirementPatch` preview → confirm → re-solve → changed items highlighted. (Needs the A4 refine call wired into the web app.)
-- [ ] **T11.4 Evidence drawer** (intercepting route)
+  - [x] Left: requirements (compact). Center: the plan (items, delivered total, plan switcher A/B/C). Right: the Proof panel, **streaming rows via Realtime**. Saved plans are solved into Plans A–C (`lib/plan-solve.ts`); the Proof panel counts new results live and refreshes to the new report.
+  - [x] Command bar: a refinement → `RequirementPatch` preview → confirm → re-solve → changed items highlighted (`refine-bar.tsx`).
+- [x] **T11.4 Evidence drawer** (intercepting route): conflicts side by side, freshness and the recorded facts as rendered JSON (no iframe, CSP unchanged)
   - Design: verdict box ("Pass · 90 W ≥ 65 W"), SOURCE SNAPSHOT with the highlighted quote, a provenance table (Claimed by, Source, Retrieved, Extractor, Extracted `field = value`), the "Untrusted text" note, "Open source page" and the snapshot hash.: the source snapshot in a sandboxed iframe or rendered JSON, with the quote highlighted; provenance (source type, URL, retrieved-at, extractor); freshness; conflicts side by side; an **"Untrusted text"** badge for listing prose
 - [x] **T11.5 Compare** `/plans/[id]/compare`: a requirement-first table (rows = requirements, columns = plans); tradeoff line per plan; the **minimal conflict banner** with one-click relax actions
-- [ ] **T11.6 Contract** `/plans/[id]/contract`
+- [x] **T11.6 Contract** `/plans/[id]/contract`
   - Design (Contract v2 is current for paper; Contract Blueprint for dark): a §1–§8 section rail (Intent, Approved items, Hard rules, Waivers, Economics, Autonomy, Standing mandate, Expires); a formal white sheet with a contract number (`CT-HO-…`) and hash pill; the waiver line "? Can't check — Chair comfort… I accept this"; a boxed MAXIMUM TOTAL; the Strict / Balanced / Flexible autonomy table (price drops, price rises within max, seller change, rule fails); the Notary in the right gutter once signed; bottom bar "Touch ID signs this exact version. Any change creates v8." → after signing "Armed: waiting for the monitor to reach $320." with Cancel mandate. The OS passkey prompt is a placeholder, not designed.
   - [x] **Not designed yet:** the blocked state (Sign disabled because a hard rule fails or an unknown isn't waived). Built as a red-pen note beside the disabled Sign button listing each reason; needs a design pass.
   - [x] Exact SKUs, merchant, seller, economics with max total, the autonomy preset selector (with the table from SDD §7.6 shown), waivers (the user must tick each `unknown` hard requirement), the mandate builder (trigger + not-after), `HashPill`.
-  - [x] **Sign with passkey** (T12). Saved versions in `awaiting_signature` mount `SignContract`; the Notary stamps after the server verifies. Their terms are read-only on screen, since the passkey signs the stored body. Drafting new versions from a saved plan is still open.
+  - [x] **Sign with passkey** (T12). Saved versions in `awaiting_signature` mount `SignContract`; the Notary stamps after the server verifies. Their terms are read-only on screen, since the passkey signs the stored body.
+  - [x] Drafting from a saved plan: `/plans/[id]/contract/new` (address, autonomy, waivers) → a real GreatHub checkout → proof → `srv_draft_contract_version` → bound approval → `awaiting_signature`.
   - ✅ The Sign button stays disabled until every hard requirement is `pass` or waived. (`signReady` in `lib/flagship.test.ts`)
-- [ ] **T11.7 Checkout guard** `/plans/[id]/checkout`: a `GuardStepper` (Refresh cart → Re-fetch specs → Re-prove → Diff → Guard → Pay → Order), each step streaming with timing
+- [x] **T11.7 Checkout guard** `/plans/[id]/checkout`: a `GuardStepper` (Refresh cart → Re-fetch specs → Re-prove → Diff → Guard → Pay → Order), each step streaming with timing
   - [x] Stepper on the demo plan's two guard runs and on the real checkout panel, from each run's outcome.
-  - [ ] Per-step streaming with timings (needs the execute route to stream steps).
+  - [x] Per-step streaming with timings (NDJSON from the execute route on `Accept: application/x-ndjson`).
 - [x] **T11.8 Purchase paused** `/plans/[id]/diff/[diffId]`
   - Design (Purchase Paused + Blueprint + mobile): the red PURCHASE PAUSED stamp, the GreatHub checkout card with a disabled Pay behind the Guard's velvet rope, the 4-layer table whose last layer is **"Cartel re-check"**, the approved-vs-current table with a red-pen circle on the failing value, a dashed "AI summary" card ("Written by AI. The tables are the record."), and the compliant alternative with "Review revised contract". The v{n} → v{n+1} ContractDiff lives on the revised-contract screen (Revised and Receipt), not here.
   - [x] Headline "PURCHASE PAUSED · NO PAYMENT WAS MADE".
@@ -500,7 +502,7 @@ Implementation notes: [PHASE11.md](PHASE11.md). The flagship plan (`/plans/flags
   - Design (Revised and Receipt): revised contract v8 with the git-style ContractDiff, bracket notes and "Sign v8 with passkey"; the paid receipt printing from a slot (header "CARTEL · RECEIPT"), Paid → Confirmed → Shipped stepper, Download Evidence Pack, Scan delivery, and the Scout + Inspector high-five.: purchase record, rail and transaction ID, contract hash, proof at purchase, return-policy snapshot, order timeline, **Download Evidence Pack**, **Scan delivery** (Scan delivery is disabled until T15; the demo Evidence Pack is JSON with ledger payload text verbatim.)
 - [x] **T11.10 Ledger** `/ledger/[planId]`: a timeline of events with actor badges (YOU, SYS, AI dashed, MER) and hash pills; a **Verify chain** button → "✓ Chain intact · n entries" or the broken seq; a blocked execution row is red with "✗ Blocked · no payment"
 - [x] **T11.11 Mandates** `/mandates`: active, fired, blocked and expired; next check; cancel (Phase 14's page with arm and cancel, plus the demo plan's blocked mandate.)
-- [ ] **T11.12 Bench** `/bench`: the latest CI run ("62 / 62 caught · 0 false blocks"), a Gremlin-vs-Guard strip of three attack cards, per-category rows (Identity … Security caught, Benign allowed), a scenario list with expected vs actual, **Run live**
+- [x] **T11.12 Bench** `/bench`: the latest CI run ("62 / 62 caught · 0 false blocks"), a Gremlin-vs-Guard strip of three attack cards, per-category rows (Identity … Security caught, Benign allowed), a scenario list with expected vs actual, **Run live**
   - [x] Gremlin-vs-Guard strip and **Run live**: five live attacks through the real consent diff, expected vs actual, counter from `useBenchProgress`.
   - [x] Latest CI run, release gates and per-category rows from `bench_runs` (Phase 16).
 - [x] **T11.13 Settings**: `/settings/payment` (Microform card entry; shows brand, last 4 and expiry) and `/settings/signing` (register or remove the signing passkey)
@@ -558,7 +560,7 @@ Implementation and verification limits: [PHASE13.md](PHASE13.md). Local migratio
 - [x] **T13.5 Execute route** `POST /api/checkout/[versionId]/execute` (requires `Idempotency-Key`)
   - [x] ACP GET → re-fetch specs → `evaluate` → `consentDiff` → insert snapshot and diff → if `reapprove`/`block`, transition to `invalidated` + ledger + return 409 with the diff ID.
   - [x] Otherwise `begin_execution` → mint grant → ACP `complete` (tag `agent-payer-auth`) → `complete_execution` → ledger → broadcast.
-  - [ ] Full browser flagship signing-to-payment acceptance (depends on Phase 12). Separately verified: real sandbox authorization, merchant contract suite, and checkout-service flagship trap returning `classification: block`.
+  - [x] Full browser signing-to-payment acceptance: `apps/web/e2e/checkout.spec.ts` drafts, passkey-signs and pays a saved plan (Simulated rail), and pauses the price-raise trap. Separately verified: real sandbox authorization, merchant contract suite, and checkout-service flagship trap returning `classification: block`.
 - [x] **T13.6 Webhook receiver** `/api/webhooks/greathub`: verify HMAC and timestamp (5 min tolerance); dedupe on `(provider, event_id)`; update the order; ledger
 - [x] **T13.7 Declines and retries**: map sandbox declines to a clear UI state; a retry needs a user click and a **new** idempotency key; never retry automatically after a timeout. Reconcile first with ACP GET.
 - [x] **T13.8 Multi-merchant status**: a plan-level `MerchantStatusTable` for plans spanning merchants (paid / failed / not attempted) with honest copy; no auto-rollback claims
@@ -616,9 +618,10 @@ Implementation, commands and limits: [PHASE16.md](PHASE16.md). The bench found t
   - `bench` job after `database`; `bench:publish` on `main` needs the repo secrets `SUPABASE_URL` and `SUPABASE_SECRET_KEY` (skips without them). Migration `0017_bench_gates.sql`.
 - [x] **T16.4 Guard integration suite**: one test per rejection code + idempotency + token reuse (extends T2.7)
 - [x] **T16.5 Retry fuzz**: 200 randomized execute calls with duplicated idempotency keys, timeouts and webhook replays → exactly one execution and one order per key
-- [ ] **T16.6 E2E** (Playwright, run locally or in CI)
-  - [ ] Happy path: brief (AI off, form) → sign (virtual authenticator) → pay (Simulated rail in CI) → order. Blocked: no UI flow drafts a signable contract from a saved plan yet (PHASE11.md "Still open").
-  - [ ] Trap path: sign → mutate → execute → paused → re-sign → pay. Same blocker.
+- [x] **T16.6 E2E** (Playwright, run locally or in CI): `pnpm --filter @cartel/web e2e`, CI job `e2e`
+  - [x] Happy path: kit (AI off) → Find plans → draft → sign (virtual authenticator) → pay (Simulated rail) → order. Found and fixed a 503 when signing any stored contract.
+  - [x] Trap path: sign → GreatHub price raise → execute → paused, no payment.
+  - [x] Axe on the saved-plan workspace, compare and the draft form: no critical or serious violations.
   - [x] Keyboard-only run of the trap path. The screens only, on the demo plan (`test:keyboard`); signing and paying can't run there.
   - [x] `@axe-core/playwright`: 0 critical or serious violations on every route. `test:a11y`, 0 violations of any impact, 70 page/theme/viewport runs; run locally, not yet in CI.
 - [x] **T16.7 Release gates** (SDD §22.2) are recorded on `/bench`
