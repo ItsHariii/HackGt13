@@ -3,6 +3,7 @@
 // 10 minutes of going on stage (the search cache lasts 10 minutes).
 //
 //   1. GreatHub: restore the seeded catalog (Chaos Panel "Reset").
+//   1b. Point GreatHub catalog links (product refs and offers) at GREATHUB_PUBLIC_ORIGIN.
 //   2. Delete the demo user's plans. Their enrolled card and signing passkey stay; the
 //      script fails if either count changes. Ledger events stay too (append-only).
 //   3. Warm the AI prompt cache (`pnpm ai:warm`).
@@ -54,6 +55,63 @@ if (!config.greathub || !config.chaosToken) {
     else r.fail("GreatHub reset", `HTTP ${res.status} ${body.error ?? ""}`);
   } catch (error) {
     r.fail("GreatHub reset", message(error));
+  }
+}
+
+// 1b. GreatHub catalog links ---------------------------------------------------------------
+// The seed writes http://localhost:3001 links unless app.greathub_origin was set; a hosted
+// catalog must link to the public GreatHub, not the developer's laptop.
+const publicOrigin = (
+  process.env.GREATHUB_PUBLIC_ORIGIN ?? config.greathub
+)?.replace(/\/$/, "");
+async function rebaseLinks(db, table) {
+  const { data, error } = await db
+    .from(table)
+    .select("id,url")
+    .eq("source", "greathub")
+    .not("url", "is", null);
+  if (error) throw new Error(`${table}: ${error.message}`);
+  const stale = data.filter((row) => {
+    try {
+      return new URL(row.url).origin !== publicOrigin;
+    } catch {
+      return false;
+    }
+  });
+  if (!dryRun)
+    for (const row of stale) {
+      const url = new URL(row.url);
+      const next = `${publicOrigin}${url.pathname}${url.search}`;
+      const { error: up } = await db
+        .from(table)
+        .update({ url: next })
+        .eq("id", row.id);
+      if (up) throw new Error(`${table} ${row.id}: ${up.message}`);
+    }
+  return stale.length;
+}
+if (!publicOrigin || !config.supabaseUrl || !config.secretKey) {
+  r.skip("GreatHub links", "needs GREATHUB_PUBLIC_ORIGIN and Supabase keys");
+} else {
+  try {
+    const db = adminClient(config.supabaseUrl, config.secretKey);
+    const refs = await rebaseLinks(db, "product_external_refs");
+    const offers = await rebaseLinks(db, "offers");
+    const verb = dryRun ? "would point" : "pointed";
+    if (refs + offers === 0)
+      r.ok("GreatHub links", `already on ${publicOrigin}`);
+    else if (dryRun)
+      r.skip(
+        "GreatHub links",
+        `${verb} ${refs} refs, ${offers} offers at ${publicOrigin}`,
+      );
+    else
+      r.ok(
+        "GreatHub links",
+        `${verb} ${refs} refs, ${offers} offers at ${publicOrigin}`,
+      );
+  } catch (error) {
+    r.fail("GreatHub links", message(error));
   }
 }
 
