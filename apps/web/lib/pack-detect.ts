@@ -5,13 +5,14 @@
  * always change it; it only picks the default rules offered.
  */
 
-export type PackId = "home-office" | "apparel" | "travel" | "grocery";
+export type PackId = "home-office" | "apparel" | "travel" | "grocery" | "party";
 
 export const PACK_TITLE: Record<PackId, string> = {
   "home-office": "Home office",
   apparel: "Apparel",
   travel: "Travel",
   grocery: "Grocery",
+  party: "Party",
 };
 
 const KEYWORDS: Record<PackId, readonly string[]> = {
@@ -67,6 +68,17 @@ const KEYWORDS: Record<PackId, readonly string[]> = {
     "food",
     "ingredient",
   ],
+  party: [
+    "party",
+    "birthday",
+    "cake",
+    "cupcake",
+    "balloon",
+    "decoration",
+    "plates",
+    "guests",
+    "celebrat",
+  ],
 };
 
 /** The best-matching pack, or null when nothing matches (or it's a tie). */
@@ -115,6 +127,13 @@ export const TEMPLATES: readonly BriefTemplate[] = [
     pack: "travel",
     brief:
       "Pack me a carry-on kit for a flight to London: a bag that fits the overhead bin, a power bank the airline allows, travel bottles under 100 ml and a UK plug adapter.",
+  },
+  {
+    id: "birthday-party",
+    label: "Birthday party",
+    pack: "party",
+    brief:
+      "A dinosaur birthday party for 12 kids on Saturday Oct 10, under $150. One guest can't have nuts and another is gluten-free, so the cake has to be safe for both. Plates and cups for everyone.",
   },
   {
     id: "linen-shirt",

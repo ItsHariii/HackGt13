@@ -32,6 +32,8 @@ const TOPIC: Record<Department, string> = {
   home_office: "home-office",
   apparel: "apparel",
   travel: "travel",
+  grocery: "grocery",
+  party: "party",
 };
 
 function matches(p: ProductView, q: string) {

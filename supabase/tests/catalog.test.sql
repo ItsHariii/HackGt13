@@ -1,7 +1,7 @@
 -- T2.2, T2.13, T2.16: catalog integrity, the canonical demo dataset and typo-tolerant search.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(17);
+select plan(18);
 
 select ok(public.is_valid_gtin('00812345000016'), 'GS1 check digit accepted');
 select ok(not public.is_valid_gtin('00812345000017'), 'Wrong check digit rejected');
@@ -10,9 +10,13 @@ select throws_ok(
   '23514', null, 'Catalog rejects an invalid GTIN'
 );
 
-select is((select count(*)::int from greathub.products), 60, 'About 60 GreatHub products');
+select is((select count(*)::int from greathub.products), 151, '151 GreatHub products (60 curated, 91 generated)');
 select is(
   (select count(*)::int from greathub.products p where department = 'home_office'), 25, '25 home office products'
+);
+select is(
+  (select count(*)::int from greathub.products p where department in ('party', 'grocery')), 91,
+  '91 party and grocery products from scripts/catalog-gen.mjs'
 );
 select is(
   (select count(*)::int from greathub.variants v join greathub.products p on p.id = v.product_id
@@ -23,7 +27,8 @@ select is(
 );
 select is(
   (select count(*)::int from greathub.products
-   where brand not in ('Birchline', 'Kestrel', 'Vireo', 'Halden', 'Loop', 'Pica', 'Marlow', 'Aster', 'Fieldnote', 'Atlas', 'Volt')),
+   where brand not in ('Birchline', 'Kestrel', 'Vireo', 'Halden', 'Loop', 'Pica', 'Marlow', 'Aster', 'Fieldnote', 'Atlas', 'Volt',
+     'Hearthbake', 'Pipit', 'Fernway', 'Brightfold', 'Galloon', 'Grainhouse')),
   0,
   'Fictional brands only'
 );

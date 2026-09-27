@@ -16,4 +16,12 @@ describe("detectPack", () => {
     expect(detectPack("something nice for my mother")).toBeNull();
     expect(detectPack("a desk and a dress")).toBeNull();
   });
+  it("reads a party brief with food words as a party, not groceries", () => {
+    expect(
+      detectPack(
+        "Birthday party for my 8 year old, about 12 kids. One of them is gluten-free.",
+      ),
+    ).toBe("party");
+    expect(detectPack("gluten-free snacks for the week")).toBe("grocery");
+  });
 });

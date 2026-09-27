@@ -2,6 +2,8 @@ export const DEPARTMENTS = {
   home_office: "Home office",
   apparel: "Apparel",
   travel: "Travel",
+  grocery: "Grocery",
+  party: "Party",
 } as const;
 
 export const AVAILABILITY_LABEL = {
