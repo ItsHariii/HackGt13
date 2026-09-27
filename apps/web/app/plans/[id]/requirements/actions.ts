@@ -20,5 +20,5 @@ export async function saveRequirements(
             : "The rules couldn't be saved. Try again.",
     };
   }
-  redirect(`/plans/${planId}`);
+  redirect(`/plans/${planId}?solve=1`);
 }

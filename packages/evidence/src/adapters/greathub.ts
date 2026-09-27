@@ -189,6 +189,25 @@ export function createGreatHubAdapter(opts: GreatHubOptions) {
     },
 
     /**
+     * Quotes a whole basket through a checkout session that is created, read
+     * and canceled: verified prices, shipping and tax for a plan before the
+     * shopper commits to it. Cancelation is best effort.
+     */
+    async quoteBasket(
+      items: readonly { id: string; quantity: number }[],
+    ): Promise<CheckoutRead> {
+      const { source, data } = await acp((c) =>
+        c.createSession({ items: items.map((i) => ({ ...i })) }),
+      );
+      await acp((c) => c.cancelSession(data.id)).catch(() => undefined);
+      return {
+        source,
+        session: data,
+        lines: checkoutLines(data, source.fetchedAt),
+      };
+    },
+
+    /**
      * Prices one item through a checkout session that is created, read and
      * canceled. The session is the evidence; cancelation is best effort.
      */

@@ -20,7 +20,7 @@ export function Workspace({
   /** Evidence rendered in place, for the full-page evidence route. */
   drawer?: ReactNode;
 }) {
-  const plan = view.plans[0];
+  const plan = view.plans[view.activePlan ?? 0] ?? view.plans[0];
   const passCount = view.proof.ticks.filter((t) => t === "pass").length;
   return (
     <div
@@ -62,6 +62,8 @@ export function Workspace({
                 plans={view.plans}
                 canReviewContract={view.canReviewContract}
                 ctaNote={view.ctaNote}
+                {...(view.planHrefs ? { hrefs: view.planHrefs } : {})}
+                initial={view.activePlan ?? 0}
               />
             }
             proof={

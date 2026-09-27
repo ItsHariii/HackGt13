@@ -263,6 +263,31 @@ describe("GreatHub adapter", () => {
     expect(res.line?.offer.priceMinor).toBe(31900);
   });
 
+  it("quotes a whole basket through a throwaway session, then cancels it", async () => {
+    const dm = greathub((req) => {
+      if (req.url.pathname === "/acp/checkout_sessions")
+        return json(vireoSession({ price: 31900 }), { status: 201 });
+      if (req.url.pathname.endsWith("/cancel"))
+        return json({ ...vireoSession(), status: "canceled" });
+      return json({}, { status: 404 });
+    });
+    const read = await createGreatHubAdapter({
+      baseUrl: BASE,
+      store: memoryStore().store,
+      fetch: dm.fetch,
+      signer,
+    }).quoteBasket([{ id: "M27Q-USBC", quantity: 2 }]);
+    expect(dm.verified).toEqual([
+      "POST /acp/checkout_sessions agent-browser-auth",
+      "POST /acp/checkout_sessions/cs_123/cancel agent-browser-auth",
+    ]);
+    expect(JSON.parse(dm.calls[0]?.body ?? "{}")).toEqual({
+      items: [{ id: "M27Q-USBC", quantity: 2 }],
+    });
+    expect(read.source.sourceType).toBe("acp_checkout");
+    expect(read.lines[0]?.offer.priceMinor).toBe(31900);
+  });
+
   it("turns an ACP error into a source error, after snapshotting it", async () => {
     const { store, sources } = memoryStore();
     const dm = greathub(() =>

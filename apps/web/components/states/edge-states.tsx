@@ -65,7 +65,7 @@ export function StateCard({
 
 const action =
   "inline-flex min-h-11 items-center rounded-card border border-graphite bg-paper-raised px-4 font-semibold text-ui text-graphite hover:bg-paper";
-const primary =
+export const primary =
   "inline-flex min-h-11 items-center rounded-card bg-graphite px-4 font-semibold text-paper-raised text-ui shadow-primary";
 
 /** 1 · Empty plan: the Scout sits on the basket. */
@@ -173,10 +173,16 @@ export function NotSolvedYet({
   planId,
   title,
   ruleCount,
+  stale = false,
+  solve,
 }: {
   planId: string;
   title: string;
   ruleCount: number;
+  /** The rules changed since the last solve. */
+  stale?: boolean;
+  /** The "Find plans" control, when the plan can be solved. */
+  solve?: ReactNode;
 }) {
   return (
     <StateCard
@@ -185,12 +191,18 @@ export function NotSolvedYet({
       title={
         ruleCount === 0
           ? "No rules yet."
-          : `${ruleCount} rules saved. No plans yet.`
+          : stale
+            ? "Your rules changed. Find plans again."
+            : `${ruleCount} rules saved. No plans yet.`
       }
       headingLevel="h1"
       actions={
         <>
-          <Link href={`/plans/${planId}/requirements`} className={primary}>
+          {solve}
+          <Link
+            href={`/plans/${planId}/requirements`}
+            className={solve ? action : primary}
+          >
             {ruleCount === 0 ? "Add rules" : "Edit rules"}
           </Link>
           <Link href="/search" className={action}>
@@ -201,7 +213,7 @@ export function NotSolvedYet({
     >
       {ruleCount === 0
         ? "Add the rules this plan must meet, by hand or from your brief."
-        : "Your rules are saved. Solving saved plans into baskets isn't connected in this build yet; the Home office demo plan shows the full flow."}
+        : "Find plans checks GreatHub's catalog against every rule, prices each basket through GreatHub's own checkout, and proves it. Nothing is bought."}
     </StateCard>
   );
 }
