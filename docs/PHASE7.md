@@ -52,5 +52,5 @@ Other pieces:
 - **T7.5 live check.** Shopify fetches the agent profile on every call and rejects anything it can't reach (`profile_unreachable`) or whose version isn't `2026-08-25` (`version_unsupported`); both were observed. The adapter follows the UCP 2026-08-25 schemas, but the "navy linen shirt ≥ 10 products" acceptance needs `SHOPIFY_AGENT_PROFILE_URL` pointing at a deployed Cartel. T0.6 go/no-go is still open.
 - **GreatHub end to end.** The adapter codes against the Phase 6 contract (`/p/{slug}`, ACP item ID = SKU per `0101_greathub_ops.sql`). Tests use a mock that verifies signatures. Re-run against the real storefront when T6.1 and T6.3 land.
 - **Queue worker secret.** `INTERNAL_QUEUE_HMAC_SECRET` must be set (and equal to Vault `worker_hmac_secret`) before the route does anything.
-- **Seed mismatch.** Seed products use the role `toiletry_bottle`, but the travel pack's role is `toiletry`, so those products get no travel-pack fields until one side is renamed.
+- **Seed mismatch (fixed).** Seed products used the role `toiletry_bottle` while the travel pack's role is `toiletry`; the seed now uses pack roles, and `packages/rule-packs/src/seed.test.ts` checks every seed role and kit rule against the packs.
 - **Skipped.** T7.11 Open Food Facts (stretch; no grocery pack) and T7.12 eBay (no partner access).

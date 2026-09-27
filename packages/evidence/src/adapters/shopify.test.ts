@@ -68,7 +68,7 @@ describe("normalizeUcpProduct", () => {
       upid: SHIRT.id,
       gtin: "00812345000108",
       category: "Apparel > Shirts",
-      roles: ["shirt"],
+      roles: ["top"],
       imageUrl: "https://cdn.example/shirt.jpg",
     });
   });

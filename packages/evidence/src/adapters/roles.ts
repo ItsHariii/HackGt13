@@ -16,9 +16,10 @@ const RULES: [RegExp, string][] = [
   [/\b(?:travel |plug |power )adapters?\b/i, "adapter"],
   [/\b(?:carry-?on|luggage|suitcases?|backpacks?|duffel)\b/i, "bag"],
   [/\bdress(?:es)?\b/i, "dress"],
-  [/\bshirts?\b|\bblouses?\b/i, "shirt"],
-  [/\b(?:trousers|pants|chinos)\b/i, "trousers"],
-  [/\bjackets?\b|\bblazers?\b/i, "jacket"],
+  // Apparel pack roles: a shirt fills `top`, trousers `bottom`, a jacket `outerwear`.
+  [/\bshirts?\b|\bblouses?\b|\bt-?shirts?\b|\bsweaters?\b/i, "top"],
+  [/\b(?:trousers|pants|chinos|jeans|skirts?|shorts)\b/i, "bottom"],
+  [/\bjackets?\b|\bblazers?\b|\bcoats?\b|\bcardigans?\b/i, "outerwear"],
   [/\bshoes?\b|\bsneakers?\b|\bheels?\b|\bboots?\b/i, "shoes"],
 ];
 
