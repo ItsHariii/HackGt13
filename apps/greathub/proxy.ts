@@ -1,6 +1,7 @@
 import { requestId } from "@cartel/platform/request-id";
 import { securityHeaders } from "@cartel/platform/security-headers";
 import { type NextRequest, NextResponse } from "next/server";
+import { parseView, VIEW_COOKIE } from "./lib/shelf";
 export function proxy(request: NextRequest) {
   const id = requestId(request.headers.get("x-request-id"));
   const headers = new Headers(request.headers);
@@ -14,6 +15,14 @@ export function proxy(request: NextRequest) {
   });
   for (const [name, value] of Object.entries(secure))
     response.headers.set(name, value);
+  // Remember the catalog view (list or full) chosen on the home page.
+  const view = parseView(request.nextUrl.searchParams.get("view"));
+  if (view && request.nextUrl.pathname === "/")
+    response.cookies.set(VIEW_COOKIE, view, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
   return response;
 }
 export const config = {

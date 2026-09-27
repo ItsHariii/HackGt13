@@ -109,6 +109,30 @@ export const Dock = (p: IconProps) => (
   </Icon>
 );
 
+/** Catalog view toggle: the commit-row list. */
+export const ListRows = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M9 6h11M9 12h11M9 18h11" />
+    <circle cx="4.5" cy="6" r="1" />
+    <circle cx="4.5" cy="12" r="1" />
+    <circle cx="4.5" cy="18" r="1" />
+  </Icon>
+);
+
+/** Catalog view toggle: full-width cards, one porthole each. */
+export const Portholes = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="3" width="8" height="8" rx="1.5" />
+    <rect x="13" y="3" width="8" height="8" rx="1.5" />
+    <rect x="3" y="13" width="8" height="8" rx="1.5" />
+    <rect x="13" y="13" width="8" height="8" rx="1.5" />
+    <circle cx="7" cy="7" r="1.6" />
+    <circle cx="17" cy="7" r="1.6" />
+    <circle cx="7" cy="17" r="1.6" />
+    <circle cx="17" cy="17" r="1.6" />
+  </Icon>
+);
+
 export const Search = (p: IconProps) => (
   <Icon {...p} strokeWidth="2">
     <circle cx="11" cy="11" r="7" />
