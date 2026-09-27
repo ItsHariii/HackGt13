@@ -30,6 +30,30 @@ async function flagship(waived = true) {
 }
 
 describe("buildWorkspace (flagship v7)", () => {
+  it("puts each line's product photo on the plan, when there is one", async () => {
+    const v7 = await flagshipV7();
+    const [first, ...rest] = v7.snapshot.offers;
+    if (!first) throw new Error("no offers");
+    const photo = "https://greathub.example/products/desk.webp";
+    const view = buildWorkspace({
+      planId: "flagship",
+      title: "Home office",
+      path: "/plans/flagship",
+      planLabel: "Plan A · Balanced",
+      requirements: v7.contract.requirements,
+      checkout: v7.snapshot,
+      report: v7.report,
+      packs: FLAGSHIP_PACKS,
+      waivers: v7.contract.waivers,
+      images: new Map([[first.productId, photo]]),
+    });
+    const items = view.plans[0]?.items ?? [];
+    expect(items.find((i) => i.title === first.title)?.imageUrl).toBe(photo);
+    expect(
+      items.filter((i) => rest.some((o) => o.title === i.title && i.imageUrl)),
+    ).toEqual([]);
+  });
+
   it("shows the basket and totals the engine proved", async () => {
     const { view } = await flagship();
     const [plan] = view.plans;

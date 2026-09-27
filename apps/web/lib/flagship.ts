@@ -39,6 +39,7 @@ import {
   contractDiffLines,
   formatStamp,
 } from "./contract-view";
+import { demoProduct } from "./demo-catalog";
 import { chain, type LedgerRecord } from "./ledger";
 import { ruleText } from "./workspace";
 
@@ -181,6 +182,8 @@ export type PausedView = {
   announcement: string;
   alternative: {
     title: string;
+    /** The replacement's photo; the page shows a placeholder without one. */
+    imageUrl: string | null;
     spec: string;
     evidence: EvidenceLevel;
     price: string;
@@ -322,6 +325,9 @@ export async function flagshipPaused(): Promise<PausedView> {
     announcement: `Purchase paused. No payment was made. ${label} ${after} is below ${target}.`,
     alternative: {
       title: altItem?.title ?? "",
+      imageUrl: altOffer
+        ? (demoProduct(altOffer.productId)?.imageUrl ?? null)
+        : null,
       spec: altFact
         ? `${label} ${formatValue(altFact.value, def)}`
         : (altItem?.sku ?? ""),

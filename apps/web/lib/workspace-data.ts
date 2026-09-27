@@ -1,5 +1,6 @@
 import "server-only";
 import { FLAGSHIP_PACKS, flagshipV7 } from "@cartel/rule-packs/fixtures";
+import { productImages } from "./product-images";
 import { loadStoredSolve } from "./stored-workspace";
 import { buildWorkspace, type WorkspaceView } from "./workspace";
 
@@ -21,6 +22,9 @@ export async function loadWorkspace(
     return solve?.kind === "solved" ? solve.view : null;
   }
   const v7 = await flagshipV7();
+  const images = await productImages(
+    v7.snapshot.offers.map((o) => o.productId),
+  );
   return buildWorkspace({
     planId,
     title: "Home office",
@@ -31,5 +35,6 @@ export async function loadWorkspace(
     report: v7.report,
     packs: FLAGSHIP_PACKS,
     waivers: v7.contract.waivers,
+    images,
   });
 }
