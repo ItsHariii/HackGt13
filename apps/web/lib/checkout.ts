@@ -62,12 +62,15 @@ export async function loadCheckout(
     tier === "full"
       ? process.env.GREATHUB_BASE_URL
       : contract.merchants[0]?.origin;
-  if (
+  // A hand-off store is either allowlisted here or, in handoff.ts, the store
+  // the Shopify Catalog itself lists for every item. Either way HTTPS only.
+  const allowlisted =
     tier === "handoff" &&
-    !(process.env.SHOPIFY_HANDOFF_ORIGINS ?? "")
+    (process.env.SHOPIFY_HANDOFF_ORIGINS ?? "")
       .split(",")
-      .includes(baseUrl ?? "")
-  )
+      .map((o) => o.trim())
+      .includes(baseUrl ?? "");
+  if (tier === "handoff" && !baseUrl?.startsWith("https://"))
     throw new CheckoutError("merchant_not_configured", 503);
   if (
     !baseUrl ||
@@ -123,7 +126,7 @@ export async function loadCheckout(
     sessionId: snapshot.acp_session_id,
     merchantId: snapshot.merchant_id,
   };
-  return { db, version, context, baseUrl };
+  return { db, version, context, baseUrl, allowlisted };
 }
 export async function runCheckout(
   versionId: string,

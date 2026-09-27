@@ -30,7 +30,8 @@ export type UcpCheckout = z.infer<typeof UcpCheckout>;
 export interface HandoffOptions {
   origin: string;
   agentProfile: string;
-  accessToken: string;
+  /** A static token, or a source that renews it (Dev Dashboard credentials). */
+  accessToken: string | (() => Promise<string>);
   fetch?: typeof fetch;
 }
 /** Calls only cart/create/read operations. No complete_checkout tool exists here. */
@@ -61,6 +62,10 @@ export class ShopifyHandoffClient {
     // Server-configured allowlisted origin only, including discovery and redirects.
     if (!endpoint || new URL(endpoint).origin !== this.options.origin)
       throw new Error("ucp_endpoint_rejected");
+    const token =
+      typeof this.options.accessToken === "string"
+        ? this.options.accessToken
+        : await this.options.accessToken();
     const call = async (name: string, args: object) => {
       const response = await f(endpoint, {
         method: "POST",
@@ -69,7 +74,7 @@ export class ShopifyHandoffClient {
         signal: AbortSignal.timeout(15000),
         headers: {
           "content-type": "application/json",
-          Authorization: `Bearer ${this.options.accessToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           jsonrpc: "2.0",

@@ -6,6 +6,7 @@ export * from "./adapters/icecat";
 export * from "./adapters/openfoodfacts";
 export * from "./adapters/roles";
 export * from "./adapters/shopify";
+export * from "./adapters/shopify-auth";
 export * from "./adapters/upcitemdb";
 export * from "./checkout";
 export * from "./claims";

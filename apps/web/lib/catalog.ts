@@ -27,6 +27,7 @@ import {
 } from "@cartel/evidence";
 import { supabaseEvidenceStore } from "@cartel/evidence/supabase";
 import { ALL_PACKS, sources } from "./evidence";
+import { shopifyToken } from "./shopify-auth";
 import { createAdminClient } from "./supabase/admin";
 import { createClient } from "./supabase/server";
 
@@ -100,9 +101,11 @@ export function shopify(signal: AbortSignal) {
       "not_configured",
       "public HTTPS agent profile required",
     );
+  const token = shopifyToken();
   return createShopifyCatalog({
     store: transientSnapshotStore(),
     agentProfileUrl: profile,
+    ...(token ? { accessToken: token } : {}),
     cacheTtlMs: 0,
     timeoutMs: 2400,
     maxRetries: 0,

@@ -1,28 +1,18 @@
 import "server-only";
-import { normalizeProduct } from "@cartel/catalog";
-import {
-  contractHash,
-  type Fact,
-  hashJson,
-  type Offer,
-  reportHash,
-} from "@cartel/contracts";
+import { contractHash, hashJson, reportHash } from "@cartel/contracts";
 import type { Json } from "@cartel/contracts/db";
-import { toDrafts } from "@cartel/evidence";
 import { ShopifyHandoffClient } from "@cartel/payments";
-import {
-  type CheckoutState,
-  consentDiff,
-  fieldDef,
-} from "@cartel/proof-engine";
+import { consentDiff } from "@cartel/proof-engine";
 import { shopify } from "./catalog";
 import { loadCheckout } from "./checkout";
 import { CheckoutError } from "./checkout-service";
 import { ALL_PACKS, sources } from "./evidence";
+import { shopifyToken } from "./shopify-auth";
+import { catalogListsStore, shopifyCheckoutState } from "./shopify-state";
 
 /** Checkout totals are authoritative; catalog facts stay source_stated. */
 export async function handoffCheckout(versionId: string, owner: string) {
-  const { db, version, context } = await loadCheckout(
+  const { db, version, context, allowlisted } = await loadCheckout(
     versionId,
     owner,
     "handoff",
@@ -50,9 +40,15 @@ export async function handoffCheckout(versionId: string, owner: string) {
     throw new CheckoutError("approval_hash_mismatch");
   const origin = contract.merchants[0]?.origin;
   const profile = process.env.SHOPIFY_AGENT_PROFILE_URL;
-  const token = process.env.SHOPIFY_ACCESS_TOKEN;
+  const token = shopifyToken();
   if (!origin || !profile || !token || !sources().has("shopify"))
     throw new CheckoutError("handoff_not_configured", 503);
+  // The store must be the one the Shopify Catalog lists for every item,
+  // unless it is explicitly allowlisted (SHOPIFY_HANDOFF_ORIGINS).
+  const catalog = shopify(AbortSignal.timeout(15000));
+  const catalogRead = await catalog.lookup(contract.items.map((i) => i.sku));
+  if (!allowlisted && !catalogListsStore(catalogRead, contract.items, origin))
+    throw new CheckoutError("merchant_not_configured", 503);
   const client = new ShopifyHandoffClient({
     origin,
     agentProfile: profile,
@@ -63,101 +59,17 @@ export async function handoffCheckout(versionId: string, owner: string) {
     throw new CheckoutError("checkout_currency_mismatch");
   const now = new Date().toISOString();
   const sourceId = crypto.randomUUID();
-  const catalog = shopify(AbortSignal.timeout(15000));
-  const catalogRead = await catalog.lookup(
-    checkout.line_items.map((line) => line.item.id),
-  );
-  const products = catalogRead.products.map((p) =>
-    normalizeProduct(p, ALL_PACKS),
-  );
-  const offers: Offer[] = [];
-  const facts: Fact[] = [];
-  const lines: CheckoutState["basket"]["lines"] = [];
-  for (const [i, line] of checkout.line_items.entries()) {
-    const signed =
-      contract.items.find((item) => item.sku === line.item.id) ??
-      contract.items[i];
-    const product = products.find((p) =>
-      p.offers.some((o) => o.externalId === line.item.id),
-    );
-    const catalogOffer = product?.offers.find(
-      (o) => o.externalId === line.item.id,
-    );
-    const subtotal = line.totals.find((t) => t.type === "subtotal")?.amount;
-    const price =
-      line.item.price ??
-      (subtotal !== undefined && subtotal % line.quantity === 0
-        ? subtotal / line.quantity
-        : undefined);
-    if (!signed || !product || !catalogOffer || price === undefined)
-      throw new CheckoutError("handoff_evidence_missing");
-    const id = line.item.id;
-    const productId = product.externalId;
-    const sellerId = catalogOffer.sellerId ?? catalogOffer.merchantId;
-    offers.push({
-      id,
-      productId,
-      merchant: contract.merchants[0]?.id ?? "",
-      sellerId,
-      sku: id,
-      title: product.title,
-      ...(product.gtin ? { gtin: product.gtin } : {}),
-      price: { amountMinor: price, currency: checkout.currency },
-      availability: "unknown",
-      tier: "handoff",
-      // UCP core does not assert return terms. Conservative envelope; missing facts remain unknown.
-      terms: { finalSale: true, returnWindowDays: 0, returnFeeMinor: 0 },
-    });
-    lines.push({ role: signed.role, offerId: id, qty: line.quantity });
-    facts.push(
-      ...toDrafts(
-        product.facts.filter((c) => !c.offerKey || c.offerKey === id),
-        (c) => ({
-          kind: c.offerKey ? "offer" : "product",
-          id: c.offerKey ? id : productId,
-        }),
-        catalogRead.source,
-        (field) => fieldDef(field, ALL_PACKS),
-      ).map((f, n) => ({ ...f, id: `${id}:${n}`, conflict: false })),
-    );
-    facts.push({
-      id: `price:${id}`,
-      subjectKind: "offer",
-      subjectId: id,
-      field: "offer.price",
-      value: { amountMinor: price, currency: checkout.currency },
-      state: "verified",
-      conflict: false,
-      sourceId,
-      extractor: "ucp_checkout",
-      retrievedAt: now,
-    });
-  }
-  const amount = (type: string) => {
-    const totals = checkout.totals.filter((t) => t.type === type);
-    if (totals.length !== 1) throw new CheckoutError("handoff_totals_missing");
-    return { amountMinor: totals[0]?.amount ?? 0, currency: checkout.currency };
-  };
-  const live: CheckoutState = {
-    basket: { id: contract.planId, lines },
-    offers,
-    facts,
-    sources: {
-      [sourceId]: { authority: "merchant_checkout" },
-      [catalogRead.source.id]: { authority: "catalog" },
+  const live = shopifyCheckoutState(
+    {
+      planId: contract.planId,
+      merchantId: contract.merchants[0]?.id ?? "",
+      items: contract.items,
     },
-    quotes: [
-      {
-        merchant: contract.merchants[0]?.id ?? "",
-        shipping: amount("fulfillment"),
-        tax: amount("tax"),
-        total: amount("total"),
-        state: "verified",
-        factId: sourceId,
-        retrievedAt: now,
-      },
-    ],
-  };
+    checkout,
+    catalogRead,
+    now,
+    sourceId,
+  );
   const { diff, reproof } = await consentDiff(
     context.approved,
     live,

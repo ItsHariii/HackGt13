@@ -104,9 +104,22 @@ unresolved until an order/webhook arrives or the processor is reconciled manuall
 
 ## Shopify constraints
 
-Set `SHOPIFY_AGENT_PROFILE_URL`, `SHOPIFY_ACCESS_TOKEN`, and a comma-separated
-`SHOPIFY_HANDOFF_ORIGINS` allowlist. All merchant origins, discovery endpoints and
-returned checkout URLs must stay on an explicitly configured HTTPS origin.
+Set `SHOPIFY_AGENT_PROFILE_URL` (Cartel's public `/.well-known/ucp`) and the Dev
+Dashboard credentials `SHOPIFY_CLIENT_ID` / `SHOPIFY_CLIENT_SECRET` (Catalogs → "Get
+an API key", free and self-serve). They are exchanged at runtime for a 60-minute
+bearer token (`packages/evidence/src/adapters/shopify-auth.ts`), renewed five minutes
+early; a static `SHOPIFY_ACCESS_TOKEN` still works for local testing. That token
+tier can create carts and checkouts and returns a `continue_url`; `complete_checkout`
+is granted by Shopify case by case and Cartel never calls it.
+
+A hand-off store is either listed in `SHOPIFY_HANDOFF_ORIGINS` or is the HTTPS origin
+the Shopify Catalog itself lists for every item in the contract (checked on each
+hand-off). Discovery endpoints and returned checkout URLs must stay on that origin.
+
+"Buy from this store" on a Shopify product page drafts a one-item hand-off contract
+(`lib/shopify-draft.ts`): the shopper's maximum is its hard rule, the store's own
+checkout is proved with the same builder the hand-off re-check uses
+(`lib/shopify-state.ts`), and after signing the checkout page hands off.
 Redirects are not followed. The published agent profile declares cart and checkout
 capabilities as well as catalog.
 
