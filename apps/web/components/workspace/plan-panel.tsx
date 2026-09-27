@@ -28,6 +28,7 @@ export function PlanPanel({
   ctaNote,
   hrefs,
   initial = 0,
+  contractHref,
 }: {
   planId: string;
   plans: PlanView[];
@@ -36,6 +37,7 @@ export function PlanPanel({
   /** Saved plans: each tab opens its own proof, so switching navigates. */
   hrefs?: string[];
   initial?: number;
+  contractHref?: string;
 }) {
   const router = useRouter();
   const [active, setActiveState] = useState(initial);
@@ -167,7 +169,7 @@ export function PlanPanel({
           <p className="flex-1 text-muted text-small">{ctaNote}</p>
           {canReviewContract ? (
             <Link
-              href={`/plans/${planId}/contract`}
+              href={contractHref ?? `/plans/${planId}/contract`}
               className="inline-flex h-11 items-center rounded-card bg-graphite px-5 font-semibold text-[15px] text-paper-raised shadow-primary hover:opacity-90"
             >
               Review contract

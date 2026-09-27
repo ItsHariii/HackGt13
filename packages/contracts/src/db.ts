@@ -1799,6 +1799,17 @@ export type Database = {
         Args: { p_challenge: string; p_user: string };
         Returns: boolean;
       };
+      srv_draft_contract_version: {
+        Args: {
+          p_basket: string;
+          p_body: Json;
+          p_hash: string;
+          p_plan: string;
+          p_report: Json;
+          p_set: string;
+        };
+        Returns: string;
+      };
       srv_fork_kit: {
         Args: {
           p_hash: string;
