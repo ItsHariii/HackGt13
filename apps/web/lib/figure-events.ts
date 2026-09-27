@@ -9,6 +9,7 @@ import type { SearchChunk, SearchStatus } from "@cartel/catalog";
 export type ProofResultEvent = {
   id: string;
   reportId: string;
+  /** The requirement key (the engine's requirementId), as proof rows carry it. */
   requirementId: string;
   scope: string;
   verdict: "pass" | "fail" | "unknown";
