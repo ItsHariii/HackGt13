@@ -45,6 +45,35 @@ describe("A4 buildPatches", () => {
     ]);
   });
 
+  it("accepts a target written as the typed JSON value, but only of the field's kind", () => {
+    const { patches, rejected } = buildPatches(
+      {
+        patches: [
+          proposal({
+            op: "replace",
+            requirementId: "r_budget",
+            value: '{"amountMinor":90000,"currency":"USD"}',
+          }),
+          proposal({
+            op: "replace",
+            requirementId: "r_desk_width",
+            value: '{"amountMinor":90000,"currency":"USD"}',
+          }),
+        ],
+        unhandled: [],
+      },
+      OPTIONS,
+    );
+    expect(patches).toEqual([
+      {
+        op: "replace",
+        requirementId: "r_budget",
+        set: { target: { amountMinor: 90_000, currency: "USD" } },
+      },
+    ]);
+    expect(rejected.map((r) => r.reason)).toEqual(["unparseable"]);
+  });
+
   it("adds through the A1 checks, so an added rule is an unconfirmed assumption", () => {
     const { patches } = buildPatches(
       {

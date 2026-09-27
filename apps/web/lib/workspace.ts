@@ -52,6 +52,8 @@ export type ItemView = {
   spec: string;
   merchant: string;
   price: string;
+  /** Differs from the same plan before the last refinement. */
+  changed?: boolean;
 };
 
 export type Tier = Offer["tier"];

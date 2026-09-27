@@ -5,6 +5,7 @@ import type { WorkspaceView } from "@/lib/workspace";
 import { CommandBar } from "./command-bar";
 import { PlanPanel } from "./plan-panel";
 import { ProofPanel } from "./proof-panel";
+import { RefineBar } from "./refine-bar";
 import { RequirementsRail } from "./requirements-rail";
 import { WorkspaceHeader } from "./workspace-header";
 import { WorkspaceTabs } from "./workspace-tabs";
@@ -81,7 +82,7 @@ export function Workspace({
         </main>
       </PullToRefresh>
       <div className="shrink-0 px-4 pt-4 pb-5 sm:px-6">
-        <CommandBar />
+        {view.planHrefs ? <RefineBar planId={view.planId} /> : <CommandBar />}
       </div>
       {plan && (
         <div className="sticky bottom-0 z-10 flex items-center gap-3 border-graphite border-t bg-paper-raised px-4 py-3 xl:hidden">

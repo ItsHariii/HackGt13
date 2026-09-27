@@ -28,6 +28,9 @@ function build(provider: ProviderConfig, model: string): LanguageModel {
     name: provider.id,
     baseURL: provider.baseUrl ?? "",
     apiKey: provider.apiKey,
+    // Meta's endpoint takes `response_format: json_schema`; without this the
+    // SDK only asks for "some JSON" and the output rarely fits the schema.
+    supportsStructuredOutputs: true,
   });
   return meta.chatModel(model);
 }

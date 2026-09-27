@@ -1,4 +1,10 @@
-import { CORE_FIELDS, type FieldDef, type Pack } from "@cartel/proof-engine";
+import type { Value } from "@cartel/contracts";
+import {
+  CORE_FIELDS,
+  type FieldDef,
+  formatValue,
+  type Pack,
+} from "@cartel/proof-engine";
 
 /*
  * The field list the model is allowed to name. It is rendered once per pack
@@ -161,4 +167,16 @@ export function ontologyFor(packs: readonly Pack[]): Ontology {
   const built = buildOntology(packs);
   cache.set(packs, built);
   return built;
+}
+
+/**
+ * A requirement's target as a person writes it ("$1,000.00", "48 in"), for
+ * prompts. A JSON target teaches the model to answer in JSON, which the
+ * text parser can't read.
+ */
+export function targetText(
+  r: { field: string; target: Value },
+  packs: readonly Pack[],
+): string {
+  return formatValue(r.target, ontologyFor(packs).get(r.field));
 }
