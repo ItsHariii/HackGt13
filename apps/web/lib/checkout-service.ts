@@ -37,7 +37,26 @@ export interface CheckoutContext {
   sessionId: string;
   merchantId: string;
 }
+/** The guard's steps, in order (TASKS T11.7). */
+export const GUARD_STEPS = [
+  "cart",
+  "specs",
+  "prove",
+  "diff",
+  "guard",
+  "pay",
+  "order",
+] as const;
+export type GuardStepName = (typeof GUARD_STEPS)[number];
+export type StepListener = (
+  step: GuardStepName,
+  ms: number,
+  detail?: string,
+) => void;
+
 export interface CheckoutDeps {
+  /** Called as each guard step finishes, with how long it took. */
+  onStep?: StepListener;
   packs: readonly Pack[];
   rail: PaymentRail;
   now: () => string;
@@ -113,7 +132,16 @@ export async function executeCheckout(
   if (existing) return reconcile(existing, deps);
   if (Date.parse(contract.expiresAt) <= Date.parse(deps.now()))
     throw new CheckoutError("contract_expired");
+  const step = deps.onStep ?? (() => {});
+  let mark = performance.now();
+  const lap = () => {
+    const now = performance.now();
+    const ms = Math.round(now - mark);
+    mark = now;
+    return ms;
+  };
   const fresh = await deps.refresh(context);
+  mark = performance.now();
   const ref = fresh.session.x_cartel?.contract;
   if (
     !ref ||
@@ -129,6 +157,7 @@ export async function executeCheckout(
     deps.packs,
     deps.now(),
   );
+  step("prove", lap());
   // Even an unchanged unknown/failure is not authorization. Waivers are exact.
   const unsafe = reproof.results.find(
     (r) =>
@@ -151,8 +180,16 @@ export async function executeCheckout(
     if (concurrent) return reconcile(concurrent, deps);
     throw error;
   }
-  if (diff.classification === "block" || diff.classification === "reapprove")
+  step(
+    "diff",
+    lap(),
+    `${diff.changes.length} change${diff.changes.length === 1 ? "" : "s"}`,
+  );
+  if (diff.classification === "block" || diff.classification === "reapprove") {
+    step("guard", lap(), diff.classification);
     return { status: "paused", classification: diff.classification, diffId };
+  }
+  step("guard", lap(), diff.classification);
   const execution = await deps.begin(context, key, diffId);
   if (execution.status !== "started") return reconcile(execution, deps);
   let payment: Awaited<ReturnType<PaymentRail["credentialFor"]>>;
@@ -178,8 +215,10 @@ export async function executeCheckout(
   }
   if (!result.ok)
     return { status: "reconcile_required", executionId: execution.id };
+  step("pay", lap(), result.data.status);
   if (result.data.status === "completed" && result.data.order) {
     await deps.finish(execution, "authorized", result.data);
+    step("order", lap(), result.data.order.id);
     return {
       status: "paid",
       executionId: execution.id,

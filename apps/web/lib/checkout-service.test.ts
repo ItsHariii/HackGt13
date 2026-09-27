@@ -113,6 +113,33 @@ describe("guarded checkout", () => {
     expect(deps.begin).not.toHaveBeenCalled();
     expect(deps.complete).not.toHaveBeenCalled();
   });
+  it("reports each guard step as it finishes, and stops at the guard when blocked", async () => {
+    const paid = await setup();
+    const steps: string[] = [];
+    paid.deps.onStep = (step, ms, detail) => {
+      expect(ms).toBeGreaterThanOrEqual(0);
+      steps.push(detail ? `${step}:${detail}` : step);
+    };
+    await executeCheckout(paid.context, "test-key-0101", paid.deps);
+    expect(steps.map((s) => s.split(":")[0])).toEqual([
+      "prove",
+      "diff",
+      "guard",
+      "pay",
+      "order",
+    ]);
+    const trap = await setup();
+    trap.deps.now = () => FLAGSHIP_T_TRAP;
+    trap.deps.refresh = vi.fn(async () => ({
+      session: trap.session,
+      state: flagshipStates.dealTrap(),
+    }));
+    const blocked: string[] = [];
+    trap.deps.onStep = (step, _ms, detail) => blocked.push(`${step}:${detail}`);
+    await executeCheckout(trap.context, "test-key-0102", trap.deps);
+    expect(blocked.at(-1)).toBe("guard:block");
+    expect(blocked.some((s) => s.startsWith("pay"))).toBe(false);
+  });
   it("timeout stays unresolved; replay reads ACP and never sends a second payment", async () => {
     const { context, deps, execution } = await setup();
     deps.complete = vi.fn(async () => {
