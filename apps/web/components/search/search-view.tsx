@@ -26,6 +26,7 @@ import { searchAnnouncement } from "@/lib/figure-events";
 import { MERCHANT_NAME, productCard } from "@/lib/product-view";
 import { trays, useTrays } from "@/lib/tray-store";
 import { ruleText } from "@/lib/workspace";
+import { SourceStrip } from "./source-strip";
 
 const PACK_LIST = Object.values(PACKS);
 
@@ -87,7 +88,6 @@ export function SearchView({
   const active = Object.values(selected).reduce((n, v) => n + v.length, 0);
   const cards = filtered.map((p) => productCard(p, PACK_LIST, now));
   const loading = !demo && live.loading;
-  const doneCount = live.sources.filter((s) => s.state !== "searching").length;
 
   const toggle = (field: string, value: Value, on: boolean) =>
     setSelected((s) => {
@@ -159,30 +159,36 @@ export function SearchView({
         </form>
       </search>
       {query && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span aria-hidden="true">
-            <Figure
-              who="scout"
-              pose={loading ? `run${(doneCount % 4) + 1}` : "sit"}
-              h={44}
-            />
-          </span>
-          {demo ? (
-            <SourcePill
-              name="Demo catalog"
-              state="done"
-              count={demo.products.length}
-            />
-          ) : (
-            live.sources.map((s) => (
-              <SourcePill
-                key={s.source}
-                name={MERCHANT_NAME[s.source] ?? s.source}
-                state={s.state}
-                count={s.count}
-              />
-            ))
-          )}
+        <div>
+          <SourceStrip
+            loading={loading}
+            waitingFor={
+              loading
+                ? (live.sources.find((x) => x.state === "searching")?.source ??
+                  null)
+                : null
+            }
+          >
+            {demo ? (
+              <span data-source="demo">
+                <SourcePill
+                  name="Demo catalog"
+                  state="done"
+                  count={demo.products.length}
+                />
+              </span>
+            ) : (
+              live.sources.map((s) => (
+                <span key={s.source} data-source={s.source}>
+                  <SourcePill
+                    name={MERCHANT_NAME[s.source] ?? s.source}
+                    state={s.state}
+                    count={s.count}
+                  />
+                </span>
+              ))
+            )}
+          </SourceStrip>
           <p aria-live="polite" className="sr-only">
             {demo
               ? `Demo catalog: ${demo.products.length} results.`

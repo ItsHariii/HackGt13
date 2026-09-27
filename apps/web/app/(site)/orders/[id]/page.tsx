@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GuardStepper } from "@/components/cartel/guard-stepper";
 import { HashPill } from "@/components/cartel/hash-pill";
-import { Figure } from "@/components/doodle/figure";
+import { HighFive } from "@/components/doodle/moments";
 import { DeliveryCheck } from "@/components/orders/delivery-check";
 import { Receipt } from "@/components/orders/receipt";
 import { DemoNote } from "@/components/plan/plan-header";
@@ -50,9 +50,7 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
         <div className="mx-auto grid max-w-[1180px] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[420px_minmax(0,1fr)]">
           <Receipt order={order} />
           <div className="flex flex-col gap-6">
-            <div aria-hidden="true">
-              <Figure who="pair" pose="highfive" h={120} />
-            </div>
+            <HighFive h={120} />
             <p className="flex flex-wrap items-center gap-2 font-semibold text-meta text-muted uppercase tracking-label">
               {order.title} · Order {order.id} <DemoNote />
             </p>
