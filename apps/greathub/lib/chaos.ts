@@ -222,6 +222,24 @@ export const SCENARIOS: Scenario[] = [
     ],
   },
   {
+    id: "halden-deal-trap",
+    label: "Deal trap: Halden",
+    story:
+      "Halden M27Q-USBC drops $309 → $299 and, on the same SKU, USB-C power drops 65 W → 15 W. Use it when the plan picked the Halden; re-proof blocks.",
+    steps: [
+      {
+        mutation: "price_drop",
+        sku: "M27Q-USBC",
+        params: { priceMinor: 29900 },
+      },
+      {
+        mutation: "spec_edit",
+        sku: "M27Q-USBC",
+        params: { name: "USB-C power delivery", value: "15 W" },
+      },
+    ],
+  },
+  {
     id: "webcam-minus-4",
     label: "Webcam −$4",
     story:

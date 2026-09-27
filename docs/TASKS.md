@@ -282,7 +282,7 @@ Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the merchant-
 - [x] **T6.9 Order webhooks out**: `order_created` / `order_updated` → Cartel, HMAC `X-Signature` + timestamp; outbox with retries (1s, 5s, 30s)
 - [x] **T6.10 Chaos Panel** `/chaos` (admin token)
   - [x] One button per mutation from SDD §16, each with a parameter form (for example, the new PD watts).
-  - [x] **Scenario scripts**: "Flagship deal trap" (Vireo `U2727`: price $329 → $319 **and** USB-C power 90 → 15 W on the same SKU), "Webcam −$4", "Final-sale trap", "Seller rotation", "Injection listing".
+  - [x] **Scenario scripts**: "Flagship deal trap" (Vireo `U2727`: price $329 → $319 **and** USB-C power 90 → 15 W on the same SKU), "Deal trap: Halden" (`M27Q-USBC`: $309 → $299 and 65 → 15 W, for live plans whose solver picked the Halden), "Webcam −$4", "Final-sale trap", "Seller rotation", "Injection listing".
   - [x] The Gull appears next to each mutation in the Catch history (T6B.8; replaces the Gremlin here): the Gull's avatar marks each catch and the Gull holds the flagship card's price tag.
   - [x] **Reset** restores the seed state; **Run mandate tick now** calls Cartel's worker.
   - [x] Mutation log shown live.
