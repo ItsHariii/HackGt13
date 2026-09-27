@@ -31,7 +31,8 @@ export function StateCard({
   return (
     <section
       className={cn(
-        "sheet flex flex-col items-start gap-3 p-5 text-graphite sm:flex-row sm:items-center sm:gap-5",
+        "flex flex-col items-start gap-3 rounded-card border bg-paper-raised p-6 text-graphite sm:flex-row sm:items-center sm:gap-5",
+        tone === "plain" && "border-rule shadow-stack-1",
         tone === "fail" && "border-red-pen",
         tone === "dashed" && "border-pencil border-dashed",
         className,
@@ -42,17 +43,21 @@ export function StateCard({
           {figure}
         </div>
       )}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         {eyebrow && (
-          <p className="font-semibold text-meta text-muted uppercase tracking-label">
+          <p className="font-mono text-[12px] text-muted uppercase">
             {eyebrow}
           </p>
         )}
-        <H className="font-semibold font-serif text-h4 tracking-heading">
+        <H className="font-semibold font-serif text-[24px] leading-[1.2] tracking-[-0.02em]">
           {title}
         </H>
-        {children && <div className="text-graphite-2 text-ui">{children}</div>}
-        {actions && <div className="flex flex-wrap gap-2 pt-1">{actions}</div>}
+        {children && (
+          <div className="text-[15px] text-graphite-2 leading-[1.45]">
+            {children}
+          </div>
+        )}
+        {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
     </section>
   );
