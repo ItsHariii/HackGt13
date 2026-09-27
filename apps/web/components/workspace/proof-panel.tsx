@@ -90,7 +90,7 @@ export function ProofPanel({
                   scroll={false}
                   aria-current={active ? "true" : undefined}
                   className={cn(
-                    "relative grid grid-cols-[22px_minmax(0,1fr)_auto] items-center gap-3 border-rule-soft border-b py-[13px] pr-[18px] pl-[60px] text-graphite no-underline hover:bg-paper",
+                    "relative grid grid-cols-[22px_minmax(0,1fr)_minmax(0,auto)] items-center gap-3 border-rule-soft border-b py-[13px] pr-[18px] pl-[60px] text-graphite no-underline hover:bg-paper",
                     active && "bg-ink/[0.06] hover:bg-ink/[0.08]",
                     r.kind === "fail" && "bg-red-pen-wash",
                   )}
@@ -127,10 +127,10 @@ export function ProofRowBody({ row }: { row: ProofRowView }) {
           {row.status}
         </span>
       </span>
-      <span className="flex flex-col items-end gap-1">
+      <span className="flex min-w-0 max-w-[16rem] flex-col items-end gap-1">
         <span
           className={cn(
-            "font-mono text-[14px]",
+            "max-w-full truncate font-mono text-[14px]",
             row.kind === "est" || row.kind === "cant"
               ? "text-muted"
               : row.kind === "fail"
@@ -141,8 +141,9 @@ export function ProofRowBody({ row }: { row: ProofRowView }) {
           {row.value}
         </span>
         <span
+          title={row.evidence}
           className={cn(
-            "rounded-[4px] border px-1.5 py-px font-semibold text-meta",
+            "max-w-full truncate rounded-[4px] border px-1.5 py-px font-semibold text-meta",
             row.evidenceTone === "ink"
               ? "border-ink text-ink"
               : "border-pencil border-dashed text-muted",

@@ -206,7 +206,7 @@ function Row({
     <li data-requirement-id={requirementId}>
       <div
         className={cn(
-          "relative grid grid-cols-[22px_minmax(0,1fr)_auto] items-center gap-3 border-rule-soft border-b py-[13px] pr-[18px] pl-[60px] text-graphite",
+          "relative grid grid-cols-[22px_minmax(0,1fr)_minmax(0,auto)] items-center gap-3 border-rule-soft border-b py-[13px] pr-[18px] pl-[60px] text-graphite",
           fail && "bg-red-pen-wash",
         )}
       >

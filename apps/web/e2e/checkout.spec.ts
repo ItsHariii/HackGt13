@@ -33,10 +33,19 @@ test("kit → plans → contract → passkey → paid order", async ({ page }) =
   await sign(page);
   await pay(page, planId);
   await expect(
-    page.getByText("Payment authorized. Your order is recorded."),
+    page.getByText("Payment authorized. Printing your receipt…"),
   ).toBeVisible();
   // Each guard step reported its own result.
   await expect(page.getByText(/ready_for_payment · \d+/)).toBeVisible();
+  // The checkout opens the order's printed receipt.
+  await page.waitForURL(/\/orders\/[0-9a-f-]{36}\?paid=1$/);
+  const receipt = page.getByRole("region", { name: "Receipt" });
+  await expect(receipt.getByText("PAID", { exact: true })).toBeVisible();
+  await expect(receipt.getByText("TOTAL", { exact: true })).toBeVisible();
+  const orderPath = new URL(page.url()).pathname;
+  // The profile lists it and links back to the same receipt.
+  await page.goto("/profile");
+  await expect(page.locator(`a[href="${orderPath}"]`).first()).toBeVisible();
   await page.goto(`/ledger/${planId}`);
   await expect(
     page.getByText(/payment\.authorized|Payment authorized/i).first(),

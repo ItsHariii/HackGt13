@@ -2,6 +2,7 @@ import { type Fact, Offer } from "@cartel/contracts";
 import type { CheckoutRead, SpecRefresh } from "@cartel/evidence";
 import { toDrafts } from "@cartel/evidence";
 import { type CheckoutState, fieldDef, type Pack } from "@cartel/proof-engine";
+import { merchantName, sourceNameFor } from "./merchant-names";
 
 /**
  * What a checkout read is proved for: a signed contract, or a plan's basket
@@ -97,11 +98,11 @@ export function checkoutState(
           conflict: false,
         })),
       );
+      const authority =
+        source.sourceType === "acp_checkout" ? "merchant_checkout" : "merchant";
       sources[source.id] = {
-        authority:
-          source.sourceType === "acp_checkout"
-            ? "merchant_checkout"
-            : "merchant",
+        authority,
+        name: sourceNameFor(authority, merchantName(merchant.id)),
       };
     }
   });

@@ -6,9 +6,10 @@ const LINKS = [
   { href: "/explore", label: "Explore" },
   { href: "/workspace", label: "Plans" },
   { href: "/trust", label: "Trust" },
+  { href: "/profile", label: "Profile" },
 ];
 
-/** Site header (Brief and Requirements design): seal, Explore · Plans · Trust. */
+/** Site header (Brief and Requirements design): seal, Explore · Plans · Trust · Profile. */
 export function Nav() {
   return (
     <header className="border-graphite border-b-[3px] border-double bg-paper">

@@ -35,7 +35,7 @@ export function Receipt({ order }: { order: OrderView }) {
           </div>
           <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-[7px] tabular-nums">
             {order.lines.map((l) => (
-              <div key={l.label} className="contents">
+              <div key={`${l.label}·${l.amount}`} className="contents">
                 <dt className="truncate">{l.label}</dt>
                 <dd className="text-right">{l.amount}</dd>
               </div>

@@ -24,7 +24,7 @@ export async function GET(
       db
         .from("contract_versions")
         .select(
-          "id,version,status,body,payment_executions(id,status,created_at)",
+          "id,version,status,body,payment_executions(id,status,created_at,orders(id))",
         )
         .eq("plan_id", id)
         .order("version", { ascending: false }),
@@ -44,9 +44,14 @@ export async function GET(
         const execution = [...v.payment_executions].sort((a, b) =>
           b.created_at.localeCompare(a.created_at),
         )[0];
+        const order = execution?.orders;
+        const orderId = Array.isArray(order) ? order[0]?.id : order?.id;
         return [
           {
             merchant: m.id,
+            ...(execution?.status === "authorized" && orderId
+              ? { receiptUrl: `/orders/${orderId}` }
+              : {}),
             versionId: v.id,
             contractStatus: v.status,
             status:

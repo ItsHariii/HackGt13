@@ -1,3 +1,4 @@
+import Link from "next/link";
 export type MerchantStatus = {
   merchant: string;
   status: string;
@@ -5,6 +6,8 @@ export type MerchantStatus = {
   contractStatus: string;
   executable: boolean;
   handoff?: boolean;
+  /** The order's receipt page, once paid. */
+  receiptUrl?: string;
 };
 const labels: Record<string, string> = {
   paid: "Paid",
@@ -37,7 +40,17 @@ export function MerchantStatusTable({
             {merchants.map((m) => (
               <tr key={m.merchant} className="border-t border-border">
                 <th className="py-4 pr-4 font-normal">{m.merchant}</th>
-                <td className="py-4">{labels[m.status] ?? m.status}</td>
+                <td className="py-4">
+                  {labels[m.status] ?? m.status}
+                  {m.receiptUrl && (
+                    <Link
+                      href={m.receiptUrl}
+                      className="ml-3 text-ink underline"
+                    >
+                      View receipt
+                    </Link>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
