@@ -29,57 +29,75 @@ const ACTOR: Record<
   sys: {
     label: "SYS",
     name: "Cartel engine",
-    tone: "border-graphite bg-graphite text-paper-raised",
+    tone: "border-graphite bg-graphite text-paper-sheet",
   },
   ai: {
     label: "AI",
-    name: "AI",
-    tone: "border-pencil border-dashed text-muted",
+    name: "AI (pencil)",
+    tone: "border-graphite border-dashed bg-paper-sheet text-muted",
   },
   mer: {
     label: "MER",
     name: "Merchant or payment network",
-    tone: "border-ink text-ink",
+    tone: "border-graphite bg-paper-sheet text-ink",
   },
 };
 
 /** Every step of a plan, in order, each carrying its hash (Ledger design). */
 export function LedgerTimeline({ entries }: { entries: LedgerEntry[] }) {
   return (
-    <ol className="flex flex-col">
-      {entries.map((e) => {
+    <ol className="flex flex-col rounded-sheet border border-graphite bg-paper-sheet">
+      {entries.map((e, i) => {
         const a = ACTOR[e.actor];
         return (
           <li
             key={e.seq}
             className={cn(
-              "grid grid-cols-[64px_48px_minmax(0,1fr)] gap-x-3 gap-y-1 border-rule-soft border-b px-3 py-3 text-graphite sm:grid-cols-[72px_52px_minmax(0,1fr)_auto]",
+              "grid grid-cols-[72px_36px_minmax(0,1fr)] items-center gap-x-4 gap-y-2 px-4 py-3.5 text-graphite sm:grid-cols-[104px_44px_minmax(0,1fr)_auto] sm:px-[22px]",
+              i > 0 && "border-rule-soft border-t",
               e.blocked &&
                 "bg-red-pen-wash shadow-[inset_3px_0_0_var(--color-red-pen)]",
             )}
           >
-            <time className="num pt-0.5 text-muted text-small">{e.time}</time>
+            <time className="font-mono text-[13px] text-muted">{e.time}</time>
             <span
               title={a.name}
               className={cn(
-                "inline-flex h-6 w-fit items-center rounded-[4px] border px-1.5 font-mono font-semibold text-[11px]",
+                "flex size-9 items-center justify-center rounded-full border font-mono font-semibold text-[11px]",
                 a.tone,
               )}
             >
               {a.label}
               <span className="sr-only"> ({a.name})</span>
             </span>
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <code className="num font-semibold text-small">{e.type}</code>
-              <p className="text-small">{e.description}</p>
-              {e.extra}
-              {e.blocked && (
-                <p className="font-semibold text-red-pen text-small">
-                  <span aria-hidden="true">✗ </span>Blocked · no payment
-                </p>
-              )}
+            <div className="flex min-w-0 flex-col gap-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <code
+                  className={cn(
+                    "font-mono font-semibold text-[14px]",
+                    e.blocked && "text-red-pen",
+                  )}
+                >
+                  {e.type}
+                </code>
+                <span className="text-[12px] text-muted">{a.name}</span>
+                {e.blocked && (
+                  <span className="inline-flex h-[22px] items-center gap-1 rounded-[4px] border border-red-pen px-[7px] font-semibold text-[12px] text-red-pen">
+                    <span aria-hidden="true">✗</span> Blocked · no payment
+                  </span>
+                )}
+              </div>
+              <p
+                className={cn(
+                  "text-[14.5px] leading-[1.45]",
+                  e.actor === "ai" && "text-muted",
+                )}
+              >
+                {e.description}
+              </p>
             </div>
-            <div className="col-start-3 sm:col-start-auto">
+            <div className="col-start-3 flex items-center justify-end gap-2.5 sm:col-start-auto">
+              {e.extra}
               <HashPill hash={e.hash} />
             </div>
           </li>
@@ -91,19 +109,10 @@ export function LedgerTimeline({ entries }: { entries: LedgerEntry[] }) {
 
 export function LedgerLegend() {
   return (
-    <ul className="flex flex-wrap gap-x-4 gap-y-2 text-muted text-small">
+    <ul className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-muted">
       {(Object.keys(ACTOR) as LedgerActor[]).map((k) => (
-        <li key={k} className="flex items-center gap-1.5">
-          <span
-            aria-hidden="true"
-            className={cn(
-              "inline-flex h-5 items-center rounded-[4px] border px-1 font-mono font-semibold text-[10px]",
-              ACTOR[k].tone,
-            )}
-          >
-            {ACTOR[k].label}
-          </span>
-          {ACTOR[k].name}
+        <li key={k}>
+          <span className="font-mono">{ACTOR[k].label}</span> {ACTOR[k].name}
         </li>
       ))}
     </ul>

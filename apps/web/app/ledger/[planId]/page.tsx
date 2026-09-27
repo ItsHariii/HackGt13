@@ -69,13 +69,13 @@ export default async function LedgerPage({
         back={{ href: `/plans/${planId}`, label: title }}
         demo={demo}
       />
-      <main className="mx-auto flex max-w-[1080px] flex-col gap-6 px-5 py-10 sm:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-semibold font-serif text-h2 tracking-heading">
+      <main className="mx-auto flex max-w-[1040px] flex-col gap-8 px-5 pt-14 pb-20 sm:px-10">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="flex flex-1 flex-col gap-2">
+            <h1 className="font-semibold font-serif text-[44px] tracking-[-0.03em]">
               Ledger
             </h1>
-            <p className="max-w-[60ch] text-body text-graphite-2">
+            <p className="text-[17px] text-graphite-2">
               Every step of this plan, in order. Each entry includes the hash of
               the one before it. Times are UTC.
             </p>
@@ -85,12 +85,10 @@ export default async function LedgerPage({
         {entries.length === 0 ? (
           <p className="sheet p-5 text-muted">No ledger entries yet.</p>
         ) : (
-          <div className="sheet overflow-hidden">
+          <>
             <LedgerTimeline entries={entries} />
-            <div className="p-3">
-              <LedgerLegend />
-            </div>
-          </div>
+            <LedgerLegend />
+          </>
         )}
       </main>
     </div>
@@ -100,7 +98,7 @@ export default async function LedgerPage({
 /** Auto-accepted change (SDD §17.9): the Inspector's thumbs-up; the entry's text says it. */
 function AutoAcceptedThumb() {
   return (
-    <span aria-hidden="true" className="block pt-1">
+    <span aria-hidden="true" className="block">
       <Figure who="inspector" pose="thumbs" h={48} />
     </span>
   );

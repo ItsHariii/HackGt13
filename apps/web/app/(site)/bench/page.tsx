@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LiveBench } from "@/components/bench/live-bench";
+import { Figure } from "@/components/doodle/figure";
 import { StatusMark } from "@/components/paper/status-mark";
 import { StateCard } from "@/components/states/edge-states";
 import { LIVE_CASES } from "@/lib/bench-live";
@@ -10,6 +11,25 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "ProofBench" };
+
+/** Gremlin vs. Guard (ProofBench design): three of the attacks the suite runs. */
+const STRIP = [
+  {
+    pose: "swap",
+    trick: "Gremlin swaps a price tag on the same SKU",
+    caught: "Blocked · cart hash mismatch",
+  },
+  {
+    pose: "edit",
+    trick: "Gremlin edits USB-C power 90 W → 15 W",
+    caught: "Blocked · rule ≥ 65 W fails",
+  },
+  {
+    pose: "idle",
+    trick: "Gremlin hides “ignore your rules” in the listing text",
+    caught: "Blocked · untrusted text ignored",
+  },
+] as const;
 
 async function latestRun() {
   const db = await createClient();
@@ -82,22 +102,57 @@ export default async function BenchPage() {
   ).length;
   return (
     <main className="dot-grid min-h-[70vh] text-graphite">
-      <div className="mx-auto flex max-w-[1180px] flex-col gap-10 px-5 py-12 sm:px-8">
-        <div className="flex flex-col gap-2">
-          <p className="font-semibold text-meta text-muted uppercase tracking-label">
+      <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-5 pt-14 pb-20 sm:px-10">
+        <div className="flex flex-col gap-3">
+          <h1 className="font-semibold font-serif text-[44px] tracking-[-0.03em]">
             ProofBench
-          </p>
-          <h1 className="font-semibold font-serif text-h2 tracking-heading">
-            {run
-              ? `${caught} of ${material.length} caught · ${falseBlocks} false ${falseBlocks === 1 ? "block" : "blocks"}`
-              : "Scripted attacks against GreatHub"}
           </h1>
-          <p className="max-w-[62ch] text-body text-graphite-2">
+          {run ? (
+            <p className="flex flex-wrap items-baseline gap-x-[18px] gap-y-1">
+              <span className="font-mono font-semibold text-[52px] leading-none tracking-[-0.04em] sm:text-[72px]">
+                {caught} / {material.length}
+              </span>
+              <span className="font-semibold font-serif text-[30px]">
+                caught
+              </span>
+              <span className="text-[22px] text-graphite-2">
+                · <span className="font-mono">{falseBlocks}</span> false{" "}
+                {falseBlocks === 1 ? "block" : "blocks"}
+              </span>
+            </p>
+          ) : (
+            <p className="font-semibold font-serif text-[30px]">
+              Scripted attacks against GreatHub
+            </p>
+          )}
+          <p className="text-[14px] text-muted">
             {run
-              ? `${run.passed} of ${run.total} scenarios as expected in the last CI run, ${formatStamp(run.created_at)} · commit ${run.git_sha.slice(0, 7)}.`
+              ? `Scripted attacks against GreatHub. ${run.passed} of ${run.total} scenarios as expected in the last CI run, ${formatStamp(run.created_at)} · commit ${run.git_sha.slice(0, 7)}.`
               : "Every attack changes something about a checkout after you signed. The guard must stop the ones that break your contract and let the harmless ones through."}
           </p>
         </div>
+
+        <ul className="grid gap-5 md:grid-cols-3">
+          {STRIP.map((s) => (
+            <li
+              key={s.trick}
+              className="flex flex-col gap-3 rounded-card border border-rule bg-paper-raised px-5 pt-[18px] pb-4 shadow-stack-1"
+            >
+              <div
+                aria-hidden="true"
+                className="flex h-[130px] items-end justify-between border-rule border-b px-2.5 pb-1"
+              >
+                <Figure who="gremlin" pose={s.pose} h={110} />
+                <Figure who="guard" pose="block" h={110} />
+              </div>
+              <span className="font-semibold text-[15px]">{s.trick}</span>
+              <span className="flex items-center gap-1.5 text-[13.5px]">
+                <StatusMark status="fail" hideLabel size={14} label="Blocked" />
+                {s.caught}
+              </span>
+            </li>
+          ))}
+        </ul>
 
         <LiveBench cases={LIVE_CASES} />
 
@@ -138,46 +193,72 @@ export default async function BenchPage() {
               </section>
             )}
 
-            <table className="sheet-formal w-full border-collapse text-left text-small">
-              <caption className="pb-2 text-left font-semibold font-serif text-h4">
+            <table className="w-full rounded-sheet border border-graphite bg-paper-sheet text-left">
+              <caption className="pb-3 text-left font-semibold font-serif text-[22px]">
                 Latest CI run by category
               </caption>
-              <thead className="text-meta text-muted uppercase tracking-label">
-                <tr className="border-rule border-b">
-                  <th scope="col" className="px-3 py-2 font-semibold">
-                    Category
+              <thead>
+                <tr className="border-graphite border-b font-semibold text-[11.5px] text-muted tracking-[0.08em] [&>th]:px-[22px] [&>th]:py-2.5">
+                  <th scope="col" className="w-[200px] font-semibold">
+                    CATEGORY
                   </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-2 text-right font-semibold"
-                  >
-                    As expected
+                  <th scope="col" className="font-semibold">
+                    CASES
                   </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-2 text-right font-semibold"
-                  >
-                    Material stopped
+                  <th scope="col" className="w-[90px] text-right font-semibold">
+                    RESULT
+                  </th>
+                  <th scope="col" className="w-[150px] font-semibold">
+                    OUTCOME
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {[...byCategory].map(([k, v]) => (
-                  <tr
-                    key={k}
-                    className="border-rule-soft border-b last:border-0"
-                  >
-                    <th scope="row" className="px-3 py-2.5 font-semibold">
-                      {k}
-                    </th>
-                    <td className="num px-3 py-2.5 text-right">
-                      {v.passed} / {v.total}
-                    </td>
-                    <td className="num px-3 py-2.5 text-right">
-                      {v.material === 0 ? "—" : `${v.stopped} / ${v.material}`}
-                    </td>
-                  </tr>
-                ))}
+                {[...byCategory].map(([k, v]) => {
+                  const benign = v.material === 0;
+                  const ok = v.passed === v.total;
+                  return (
+                    <tr
+                      key={k}
+                      className="border-rule-soft border-t [&>*]:px-[22px] [&>*]:py-3"
+                    >
+                      <th scope="row" className="font-medium text-[15px]">
+                        {k}
+                      </th>
+                      <td>
+                        <span
+                          aria-hidden="true"
+                          className="flex flex-wrap gap-[3px]"
+                        >
+                          {Array.from({ length: v.total }, (_, i) => (
+                            <span
+                              // biome-ignore lint/suspicious/noArrayIndexKey: one cell per case
+                              key={i}
+                              className={`h-3.5 w-[22px] rounded-[2px] ${
+                                i < v.passed
+                                  ? benign
+                                    ? "bg-ink"
+                                    : "bg-green-check"
+                                  : "bg-red-pen"
+                              }`}
+                            />
+                          ))}
+                        </span>
+                      </td>
+                      <td className="text-right font-mono text-[14px]">
+                        {v.passed}/{v.total}
+                      </td>
+                      <td>
+                        <StatusMark
+                          status={ok ? "pass" : "fail"}
+                          size={14}
+                          className={`text-[13.5px] ${ok && benign ? "text-ink" : ""}`}
+                          label={!ok ? "Missed" : benign ? "Allowed" : "Caught"}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 

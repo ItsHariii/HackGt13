@@ -5,7 +5,6 @@ import {
   TIER,
 } from "@/components/cartel/checkout-tier-badge";
 import { Figure } from "@/components/doodle/figure";
-import { Certainty } from "@/components/site/certainty";
 import { SectionHeading } from "@/components/site/section-heading";
 
 export const metadata: Metadata = {
@@ -98,50 +97,52 @@ const TIERS: CheckoutTier[] = ["full", "handoff", "proof"];
 export default function TrustPage() {
   return (
     <main className="dot-grid text-graphite">
-      <div className="mx-auto flex max-w-[1200px] flex-col gap-20 px-5 py-16 sm:px-10">
-        <header className="flex max-w-[720px] flex-col gap-4">
-          <h1 className="font-semibold font-serif text-[44px] leading-tight tracking-heading sm:text-h1">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-14 px-5 pt-16 pb-20 sm:px-10">
+        <header className="flex max-w-[760px] flex-col gap-3">
+          <h1 className="font-semibold font-serif text-[44px] leading-[1.05] tracking-[-0.035em] sm:text-[56px]">
             How Cartel works
           </h1>
-          <p className="text-body text-graphite-2">
+          <p className="text-[19px] text-graphite-2 leading-normal">
             Four parts, each with its own limits. No single part can both decide
             and pay.
           </p>
         </header>
 
-        <section aria-labelledby="domains" className="flex flex-col gap-6">
+        <section aria-labelledby="domains">
           <h2 id="domains" className="sr-only">
             The four parts
           </h2>
-          <ol className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <ol className="grid gap-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)_32px_minmax(0,1fr)_32px_minmax(0,1fr)] xl:gap-0">
             {DOMAINS.map((d, i) => (
-              <li key={d.name} className="relative flex">
+              <li key={d.name} className="contents">
                 <article
                   aria-labelledby={`d-${d.name}`}
-                  className="sheet flex flex-1 flex-col gap-4 p-5"
+                  className="flex flex-col gap-3.5 rounded-card border border-rule bg-paper-raised px-5 py-[22px] shadow-stack-1 xl:min-h-[520px]"
                 >
-                  <Figure who={d.who} h={120} className="self-center" />
-                  <header>
+                  <div className="flex h-[150px] items-end border-rule border-b pb-1.5">
+                    <Figure who={d.who} h={136} />
+                  </div>
+                  <header className="flex flex-col gap-0.5">
                     <h3
                       id={`d-${d.name}`}
-                      className={`font-semibold font-serif text-h3 ${d.tone}`}
+                      className="font-semibold font-serif text-[26px] tracking-[-0.02em]"
                     >
                       {d.name}
                     </h3>
-                    <p className="font-semibold text-graphite-2 text-meta uppercase tracking-label">
+                    <p className={`font-semibold text-[14px] ${d.tone}`}>
                       {d.tag}
                     </p>
                   </header>
-                  <div>
-                    <p className="pb-1 font-semibold text-meta tracking-label">
+                  <div className="flex flex-col gap-1.5">
+                    <p className="font-bold text-[11.5px] text-green-check tracking-[0.1em]">
                       CAN
                     </p>
-                    <ul className="flex flex-col gap-1.5 text-small">
+                    <ul className="flex flex-col gap-1.5 text-[14.5px] leading-[1.4]">
                       {d.can.map((c) => (
                         <li key={c} className="flex gap-2">
                           <Check
                             size={15}
-                            strokeWidth={2.6}
+                            strokeWidth={3}
                             aria-hidden="true"
                             className="mt-0.5 shrink-0 text-green-check"
                           />
@@ -150,16 +151,16 @@ export default function TrustPage() {
                       ))}
                     </ul>
                   </div>
-                  <div>
-                    <p className="pb-1 font-semibold text-meta tracking-label">
-                      CAN'T
+                  <div className="flex flex-col gap-1.5">
+                    <p className="font-bold text-[11.5px] text-red-pen tracking-[0.1em]">
+                      CAN&apos;T
                     </p>
-                    <ul className="flex flex-col gap-1.5 text-small">
+                    <ul className="flex flex-col gap-1.5 text-[14.5px] leading-[1.4]">
                       {d.cant.map((c) => (
                         <li key={c} className="flex gap-2">
                           <X
                             size={15}
-                            strokeWidth={2.6}
+                            strokeWidth={3}
                             aria-hidden="true"
                             className="mt-0.5 shrink-0 text-red-pen"
                           />
@@ -170,15 +171,80 @@ export default function TrustPage() {
                   </div>
                 </article>
                 {i < DOMAINS.length - 1 && (
-                  <ArrowRight
-                    size={18}
+                  <span
                     aria-hidden="true"
-                    className="absolute top-1/2 -right-[19px] z-10 hidden -translate-y-1/2 text-muted xl:block"
-                  />
+                    className="hidden h-[220px] items-center justify-center xl:flex"
+                  >
+                    <ArrowRight size={22} strokeWidth={2} />
+                  </span>
                 )}
               </li>
             ))}
           </ol>
+        </section>
+
+        <section className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+          <div className="flex flex-col gap-4 rounded-card border border-rule bg-paper-raised p-6">
+            <h2
+              id="certainty"
+              className="font-semibold font-serif text-[26px] tracking-[-0.02em]"
+            >
+              Pencil, ink, stamp
+            </h2>
+            <ul className="grid gap-4 sm:grid-cols-3">
+              <li className="flex flex-col gap-2">
+                <span className="self-start rounded-[5px] border border-pencil border-dashed px-2 py-[3px] font-semibold text-[13px] text-muted">
+                  I assumed
+                </span>
+                <span className="text-[14px] text-graphite-2 leading-[1.45]">
+                  Pencil: assumed or estimated. Doesn&apos;t count until you
+                  confirm.
+                </span>
+              </li>
+              <li className="flex flex-col gap-2">
+                <span className="self-start rounded-[5px] border border-ink px-2 py-[3px] font-semibold text-[13px] text-ink">
+                  Manufacturer says
+                </span>
+                <span className="text-[14px] text-graphite-2 leading-[1.45]">
+                  Ink: a named source states it, with a time.
+                </span>
+              </li>
+              <li className="flex flex-col gap-2">
+                <span className="-rotate-[4deg] self-start rounded-[3px] border-[2.5px] border-red-pen px-[9px] py-0.5 font-mono font-semibold text-[14px] text-red-pen tracking-[0.14em] [filter:url(#stamp)]">
+                  SIGNED v7
+                </span>
+                <span className="text-[14px] text-graphite-2 leading-[1.45]">
+                  Stamp: committed with your passkey.
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col gap-3 rounded-card border border-rule bg-paper-raised p-6">
+            <h2
+              id="tiers"
+              className="font-semibold font-serif text-[26px] tracking-[-0.02em]"
+            >
+              Checkout tiers
+            </h2>
+            <dl className="grid grid-cols-[auto_1fr] items-center gap-x-3.5 gap-y-2.5 text-[14px] leading-[1.4]">
+              {TIERS.map((t) => (
+                <div key={t} className="contents">
+                  <dt
+                    className={`inline-flex h-[26px] items-center justify-self-start whitespace-nowrap rounded-[5px] px-[9px] font-semibold text-[12.5px] ${
+                      t === "full"
+                        ? "bg-graphite text-paper-raised"
+                        : t === "handoff"
+                          ? "border border-graphite"
+                          : "border border-graphite border-dashed"
+                    }`}
+                  >
+                    {TIER[t].label}
+                  </dt>
+                  <dd>{TIER[t].blurb}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </section>
 
         <section
@@ -187,23 +253,25 @@ export default function TrustPage() {
         >
           <SectionHeading id="ai" title="What the AI does, and doesn't">
             The AI helps in five bounded places. It is never on the path from
-            facts to verdict to signature to payment. If it's unavailable,
+            facts to verdict to signature to payment. If it&apos;s unavailable,
             Cartel still proves, signs, guards and pays.
           </SectionHeading>
           <div className="grid gap-5 sm:grid-cols-2">
-            <div className="sheet p-5">
-              <h3 className="pb-2 font-semibold font-serif text-h4">It does</h3>
-              <ul className="flex list-disc flex-col gap-2 pl-5 text-small">
+            <div className="rounded-card border border-rule bg-paper-raised p-5">
+              <h3 className="pb-2 font-semibold font-serif text-[22px]">
+                It does
+              </h3>
+              <ul className="flex list-disc flex-col gap-2 pl-5 text-[14px]">
                 {AI.does.map((t) => (
                   <li key={t}>{t}</li>
                 ))}
               </ul>
             </div>
-            <div className="sheet p-5">
-              <h3 className="pb-2 font-semibold font-serif text-h4">
-                It doesn't
+            <div className="rounded-card border border-rule bg-paper-raised p-5">
+              <h3 className="pb-2 font-semibold font-serif text-[22px]">
+                It doesn&apos;t
               </h3>
-              <ul className="flex list-disc flex-col gap-2 pl-5 text-small">
+              <ul className="flex list-disc flex-col gap-2 pl-5 text-[14px]">
                 {AI.doesnt.map((t) => (
                   <li key={t}>{t}</li>
                 ))}
@@ -212,41 +280,24 @@ export default function TrustPage() {
           </div>
         </section>
 
-        <section aria-labelledby="certainty" className="flex flex-col gap-8">
-          <SectionHeading id="certainty" title="Pencil, ink, stamp">
-            How sure Cartel is shows in how each thing is drawn.
-          </SectionHeading>
-          <Certainty />
-        </section>
-
-        <section aria-labelledby="tiers" className="flex flex-col gap-8">
-          <SectionHeading id="tiers" title="Checkout tiers">
-            How far Cartel can take a purchase depends on the store.
-          </SectionHeading>
-          <ul className="grid gap-5 md:grid-cols-3">
-            {TIERS.map((t) => {
-              const Icon = TIER[t].icon;
-              return (
-                <li key={t} className="sheet flex flex-col gap-2 p-5">
-                  <h3 className="flex items-center gap-2 font-sans font-semibold text-ui tracking-normal">
-                    <Icon size={16} aria-hidden="true" /> {TIER[t].label}
-                  </h3>
-                  <p className="text-graphite-2 text-small">{TIER[t].blurb}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-
-        <section aria-labelledby="standards" className="flex flex-col gap-6">
-          <SectionHeading id="standards" title="Standards used" />
-          <dl className="sheet-formal grid sm:grid-cols-[180px_1fr]">
-            {STANDARDS.map(([name, body]) => (
+        <section aria-labelledby="standards" className="flex flex-col gap-4">
+          <h2
+            id="standards"
+            className="font-semibold font-serif text-[26px] tracking-[-0.02em]"
+          >
+            Standards used
+          </h2>
+          <dl className="grid rounded-sheet border border-graphite bg-paper-sheet sm:grid-cols-[180px_1fr]">
+            {STANDARDS.map(([name, body], i) => (
               <div key={name} className="contents">
-                <dt className="border-rule-soft border-b px-5 pt-3 font-mono font-semibold text-small sm:py-3">
+                <dt
+                  className={`px-5 pt-3 font-mono font-semibold text-[14px] sm:py-3 ${i > 0 ? "sm:border-rule-soft sm:border-t" : ""}`}
+                >
                   {name}
                 </dt>
-                <dd className="border-rule-soft border-b px-5 pb-3 text-small sm:py-3">
+                <dd
+                  className={`px-5 pb-3 text-[14px] sm:py-3 ${i > 0 ? "border-rule-soft border-t sm:border-t" : ""}`}
+                >
                   {body}
                 </dd>
               </div>
@@ -254,18 +305,23 @@ export default function TrustPage() {
           </dl>
         </section>
 
-        <section aria-labelledby="honesty" className="flex flex-col gap-4">
-          <SectionHeading id="honesty" title="Honesty notes" />
-          <ul className="flex list-disc flex-col gap-2 pl-5 text-body text-graphite-2">
-            <li>GreatHub is a test merchant. Nothing ships.</li>
-            <li>
-              Payments run in the Visa Acceptance sandbox. No real money moves.
-            </li>
-            <li>
-              Fit, comfort, authenticity and delivery can't be guaranteed. They
-              show as “Can't check” or “Estimate”, never as a pass.
-            </li>
-          </ul>
+        <section
+          aria-labelledby="honesty"
+          className="flex flex-col gap-2.5 rounded-sheet border border-graphite bg-paper-sheet px-6 py-[22px]"
+        >
+          <h2 id="honesty" className="font-semibold font-serif text-[22px]">
+            Honesty notes
+          </h2>
+          <p className="text-[15px] leading-normal">
+            GreatHub is a test merchant. Nothing ships.
+          </p>
+          <p className="text-[15px] leading-normal">
+            Payments run in the Visa Acceptance sandbox. No real money moves.
+          </p>
+          <p className="text-[15px] leading-normal">
+            Fit, comfort, authenticity and delivery can&apos;t be guaranteed.
+            They show as “Can&apos;t check” or “Estimate”, never as a pass.
+          </p>
         </section>
       </div>
     </main>
