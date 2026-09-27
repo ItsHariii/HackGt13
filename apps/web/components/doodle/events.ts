@@ -158,7 +158,11 @@ const ROW_MS = 150;
  * motion). `start` begins a solve (or retries one). Leaving the page doesn't
  * cancel it: the server finishes and stores the plans either way.
  */
-export function useSolveStream(planId: string): {
+export function useSolveStream(
+  planId: string,
+  /** The plan whose proof rows stream (else the first). */
+  focus?: string,
+): {
   run: SolveRun;
   running: boolean;
   start: () => void;
@@ -171,7 +175,8 @@ export function useSolveStream(planId: string): {
     setRunning(true);
     const apply = (line: SolveLine) => setRun((r) => applySolveLine(r, line));
     (async () => {
-      const res = await fetch(`/api/plans/${planId}/solve`, {
+      const query = focus ? `?plan=${encodeURIComponent(focus)}` : "";
+      const res = await fetch(`/api/plans/${planId}/solve${query}`, {
         method: "POST",
         headers: { Accept: "application/x-ndjson" },
       });
@@ -208,7 +213,7 @@ export function useSolveStream(planId: string): {
     })()
       .catch(() => apply({ phase: "error", code: "storage" }))
       .finally(() => setRunning(false));
-  }, [planId]);
+  }, [planId, focus]);
 
   // Rows queue and land one per tick, however fast they arrived.
   const queued = run.proof !== null && !allRevealed(run);
