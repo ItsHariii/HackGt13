@@ -107,9 +107,10 @@ export function supabaseSigningStore(): SigningStore {
     async loadVersion(userId, versionId) {
       const { data, error } = await db
         .from("contract_versions")
-        .select("body,body_hash,plans!inner(user_id)")
+        // contract_versions reaches plans through contracts (composite FK).
+        .select("body,body_hash,contracts!inner(plans!inner(user_id))")
         .eq("id", versionId)
-        .eq("plans.user_id", userId)
+        .eq("contracts.plans.user_id", userId)
         .maybeSingle();
       if (error) dbError(error);
       return data ? { body: data.body, bodyHash: data.body_hash } : null;

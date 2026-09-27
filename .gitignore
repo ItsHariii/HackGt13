@@ -28,3 +28,7 @@ env.local
 
 # graphify knowledge-graph cache (local tooling)
 graphify-out/
+
+# Playwright
+apps/web/test-results/
+apps/web/playwright-report/
