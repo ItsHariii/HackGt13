@@ -119,6 +119,8 @@ export type WorkspaceView = {
   /** Saved plans with Plans A–C: where each tab leads, and which is open. */
   planHrefs?: string[];
   activePlan?: number;
+  /** Where "Review contract" leads; defaults to the plan's contract page. */
+  contractHref?: string;
 };
 
 export type WorkspaceInput = {

@@ -115,6 +115,11 @@ export async function loadStoredSolve(
     solved.findIndex((s) => s.label === wanted),
   );
   const view = views[active] as WorkspaceView;
+  const label = solved[active]?.label ?? "A";
+  // A hard rule nothing could check can still be accepted as a waiver when
+  // drafting; only a failing one keeps the contract closed.
+  const failing = view.proof.rows.some((r) => r.hard && r.kind === "fail");
+  const open = view.proof.rows.some((r) => r.hard && r.kind === "cant");
   return {
     kind: "solved",
     plan,
@@ -135,6 +140,13 @@ export async function loadStoredSolve(
       })),
       planHrefs: solved.map((s) => `${path}?plan=${s.label}`),
       activePlan: active,
+      contractHref: `${path}/contract/new?plan=${label}`,
+      canReviewContract: !failing,
+      ctaNote: failing
+        ? "A hard rule fails. Edit the rules or pick another plan."
+        : open
+          ? "Every hard rule passes or can be accepted as can't check. Review the exact contract next."
+          : view.ctaNote,
     },
   };
 }

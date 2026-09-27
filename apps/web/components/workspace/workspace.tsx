@@ -64,6 +64,9 @@ export function Workspace({
                 ctaNote={view.ctaNote}
                 {...(view.planHrefs ? { hrefs: view.planHrefs } : {})}
                 initial={view.activePlan ?? 0}
+                {...(view.contractHref
+                  ? { contractHref: view.contractHref }
+                  : {})}
               />
             }
             proof={
@@ -89,7 +92,7 @@ export function Workspace({
           </p>
           {view.canReviewContract && (
             <Link
-              href={`/plans/${view.planId}/contract`}
+              href={view.contractHref ?? `/plans/${view.planId}/contract`}
               className="inline-flex h-11 items-center rounded-card bg-graphite px-4 font-semibold text-[15px] text-paper-raised"
             >
               Review contract
