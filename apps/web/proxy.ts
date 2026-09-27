@@ -1,4 +1,5 @@
 import { requestId } from "@cartel/platform/request-id";
+import { securityHeaders } from "@cartel/platform/security-headers";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { getSupabaseConfig } from "@/lib/supabase/config";
@@ -33,6 +34,17 @@ export async function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "private, no-store");
   }
   response.headers.set("x-request-id", id);
+  const path = request.nextUrl.pathname;
+  const secure = securityHeaders({
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    sentryDsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    dev: process.env.NODE_ENV === "development",
+    payments:
+      path === "/settings/payment" || path.startsWith("/settings/payment/"),
+    camera: path.startsWith("/orders/"),
+  });
+  for (const [name, value] of Object.entries(secure))
+    response.headers.set(name, value);
   return response;
 }
 export const config = {

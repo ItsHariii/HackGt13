@@ -11,7 +11,7 @@ select is(
 );
 select is(
   (select array_agg(jobname::text || '@' || schedule order by jobname) from cron.job),
-  array['evidence-packs-tick@* * * * *', 'greathub-idempotency-gc@17 * * * *', 'ledger-audit@17 3 * * *', 'mandates-tick@15 seconds', 'nonce-gc@*/10 * * * *', 'offers-refresh@* * * * *'],
+  array['evidence-packs-tick@* * * * *', 'greathub-idempotency-gc@17 * * * *', 'ledger-audit@17 3 * * *', 'mandates-tick@15 seconds', 'nonce-gc@*/10 * * * *', 'offers-refresh@* * * * *', 'rate-limit-gc@41 * * * *'],
   'Cron jobs scheduled'
 );
 select is(

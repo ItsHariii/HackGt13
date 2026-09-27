@@ -88,6 +88,9 @@ function boundedFetch(signal: AbortSignal): FetchLike {
 }
 
 export function shopify(signal: AbortSignal) {
+  // The kill switch covers every Shopify call: search, product pages and hand-off (SDD §11.6).
+  if (!sources().has("shopify"))
+    throw new SourceError("shopify", "not_configured", "switched off");
   const profile = process.env.SHOPIFY_AGENT_PROFILE_URL;
   if (!profile?.startsWith("https://"))
     throw new SourceError(

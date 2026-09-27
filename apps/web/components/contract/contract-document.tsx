@@ -92,7 +92,7 @@ export function ContractDocument({
   const passing = view.rules.filter((r) => r.status === "pass").length;
 
   return (
-    <div className="grid gap-6 pb-32 lg:grid-cols-[180px_minmax(0,880px)_180px] lg:justify-center">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 pb-32 lg:grid-cols-[180px_minmax(0,880px)_180px] lg:justify-center">
       <nav aria-label="Contract sections" className="hidden lg:block">
         <p className="mb-2 font-semibold text-meta text-muted uppercase tracking-label">
           Sections
@@ -173,7 +173,7 @@ export function ContractDocument({
           <div
             // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
             tabIndex={0}
-            className="overflow-x-auto"
+            className="relative overflow-x-auto"
           >
             <table className="w-full min-w-[560px] border-collapse text-left font-sans text-small">
               <thead className="text-meta text-muted uppercase tracking-label">
@@ -368,7 +368,7 @@ export function ContractDocument({
           <div
             // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
             tabIndex={0}
-            className="overflow-x-auto"
+            className="relative overflow-x-auto"
           >
             <table className="w-full min-w-[520px] border-collapse text-left font-sans text-small">
               <thead className="text-meta text-muted uppercase tracking-label">

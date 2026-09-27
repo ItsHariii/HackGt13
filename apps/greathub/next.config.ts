@@ -1,3 +1,4 @@
+import { baselineSecurityHeaders } from "@cartel/platform/security-headers";
 import { withSentryConfig } from "@sentry/nextjs/config";
 import type { NextConfig } from "next";
 
@@ -12,19 +13,18 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Lets a second server (the ACP contract harness) run beside `next dev` without sharing `.next`.
   ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
+  // CSP and Permissions-Policy come from proxy.ts; these cover static files too.
   async headers() {
+    const baseline = baselineSecurityHeaders({
+      dev: process.env.NODE_ENV === "development",
+    });
     return [
       {
         source: "/:path*",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "X-Frame-Options", value: "DENY" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
-          },
-        ],
+        headers: Object.entries(baseline).map(([key, value]) => ({
+          key,
+          value,
+        })),
       },
     ];
   },

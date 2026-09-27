@@ -79,7 +79,7 @@ export default async function KitPage({ params }: PageProps<"/kits/[slug]">) {
             </h2>
             <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
               {products.map((p) => (
-                <li key={p.card.id} className="flex flex-col gap-2">
+                <li key={p.card.id} className="flex min-w-0 flex-col gap-2">
                   <p className="font-semibold text-meta text-muted uppercase tracking-label">
                     {p.role}
                   </p>

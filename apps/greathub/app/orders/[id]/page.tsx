@@ -109,7 +109,7 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
             <dt>Passkey signature</dt>
             <dd>
               {v?.signature?.status === "verified"
-                ? `Verified · credential ${v.signature.credentialId?.slice(0, 12)}… · signed ${v.signature.signedAt}`
+                ? `Signature verified · credential ${v.signature.credentialId?.slice(0, 12)}… · signed ${v.signature.signedAt}`
                 : "Not provided by the agent"}
             </dd>
           </div>

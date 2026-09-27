@@ -626,17 +626,29 @@ Implementation, commands and limits: [PHASE16.md](PHASE16.md). The bench found t
 
 ## Phase 17: Hardening and polish (everyone, H+24 → H+30)
 
-- [ ] **T17.1 Security headers**: CSP (allow Microform, Supabase and Sentry only where needed; AI calls are server-side and need no CSP entry), `frame-ancestors 'none'`, `Referrer-Policy`, `Permissions-Policy` (camera only on `/orders/*`)
-- [ ] **T17.2 Rate limits**: a Postgres token bucket on AI endpoints and `/api/bench/run`
-- [ ] **T17.3 Log redaction review**: grep the logs for `4111`, `authorization`, `secret`, `signature` → none present
-- [ ] **T17.4 RLS audit**: the Supabase advisor (security + performance) is clean; every table has RLS
+Migration `0106_hardening.sql`; headers in `packages/platform/src/security-headers.ts`, limits in `apps/web/lib/rate-limit.ts`. Verified: pgTAP (`hardening.test.sql`), unit tests, `supabase db advisors --local` (only `unused_index` INFO, expected on an idle local DB), axe on 62 page × theme × viewport runs, and a Playwright sweep of 22 routes at 375 px (no CSP violations, no horizontal scroll). T17.5's VoiceOver pass, T17.9's live triggers and T17.10 need a person.
+
+- [x] **T17.1 Security headers**: CSP (allow Microform, Supabase and Sentry only where needed; AI calls are server-side and need no CSP entry), `frame-ancestors 'none'`, `Referrer-Policy`, `Permissions-Policy` (camera only on `/orders/*`)
+  - Per route from `proxy.ts` in both apps; static files get the baseline (nosniff, `X-Frame-Options`, HSTS, COOP) from `next.config.ts`. Microform and Accept UI origins appear only on `/settings/payment`. Scripts keep `'unsafe-inline'` (Next's "without nonces" setup), since a nonce would make every page dynamic.
+- [x] **T17.2 Rate limits**: a Postgres token bucket on AI endpoints and `/api/bench/run`
+  - `srv_take_rate_token` (service role only) with buckets `bench_run` (the /bench `runCase` action), `search` (`/api/search`, 429 + `Retry-After`) and `ai`, which is ready for the A1–A5 routes when they land. Keyed by user, or by a hash of the IP. Fails open if the DB is down.
+- [x] **T17.3 Log redaction review**: grep the logs for `4111`, `authorization`, `secret`, `signature` → none present
+  - Added signature, signature-input, API key and private key paths (top level and nested). `logger.test.ts` logs every shape the apps use and asserts none of them leak.
+- [x] **T17.4 RLS audit**: the Supabase advisor (security + performance) is clean; every table has RLS
+  - Indexed the 9 unindexed foreign keys; server-only tables now carry an explicit restrictive deny policy. pgTAP asserts RLS + a policy on every `public`/`greathub` table and a covering index on every FK.
 - [ ] **T17.5 Accessibility pass**: keyboard through the full flow; a VoiceOver pass on the contract and paused screens; contrast check in both themes; reduced motion
-- [ ] **T17.6 Performance pass**: measure against SDD §23; fix the worst two
-- [ ] **T17.7 Copy pass**: search the UI for "guarantee", "safe", "authentic", "will fit" and bare "verified"; fix them per SDD §17.3
-- [ ] **T17.8 Mobile pass**: 375 px width, the whole flow, no horizontal scroll, sticky summary
+  - Automated part done: `scripts/a11y.mjs` (axe WCAG 2.2 AA, both themes, reduced motion, 1440 and 390 px) is clean. Wide tables scroll inside a focusable box. VoiceOver and a keyboard walk-through still need a person.
+- [x] **T17.6 Performance pass**: measure against SDD §23; fix the worst two
+  - Proof engine at 50 requirements: p50 ≈ 1.2 ms (budget 20 ms; now `rule-packs/src/perf.test.ts`). Solver is already covered by `solver/src/perf.test.ts`. Warm LCP locally (1440 px): workspace 140 ms, product 108 ms, search 120 ms, contract 104 ms. Nothing we measured was over budget. Live-source search timings need real source keys.
+- [x] **T17.7 Copy pass**: search the UI for "guarantee", "safe", "authentic", "will fit" and bare "verified"; fix them per SDD §17.3
+  - "Confirmed" chips on product cards and Compare now carry source and age. GreatHub's "Verified · credential…" now reads "Signature verified · …". The only "guaranteed" left is the Trust page's "can't be guaranteed".
+- [x] **T17.8 Mobile pass**: 375 px width, the whole flow, no horizontal scroll, sticky summary
+  - Fixed overflow on search, product, contract and kit pages: implicit `auto` grid columns, cards that couldn't shrink, the Scout's full-width wrapper, and `sr-only` header cells escaping non-positioned scroll boxes.
 - [ ] **T17.9 Empty and error states pass**: trigger each state in SDD §17.4 at least once
+  - Added "Merchant unavailable" (and the other errors raised before any payment) to checkout, which used to show "outcome unresolved". Triggering each state live is still to do.
 - [ ] **T17.10 "Does it look trustworthy?" check**: show the contract, paused and paid screens to someone outside the team for 30 seconds; if any of them reads as childish, remove figures from that screen and keep only stamps and red pen
-- [ ] **T17.11 Source terms check**: attribution and link-backs on every UPCitemdb and Shopify offer; `SOURCES_ENABLED` kill switch tested; no scraping anywhere
+- [x] **T17.11 Source terms check**: attribution and link-backs on every UPCitemdb and Shopify offer; `SOURCES_ENABLED` kill switch tested; no scraping anywhere
+  - Offers link back to the source listing. The kill switch now also covers Shopify product pages and the hand-off (`shopify()` refuses when it is off), with a test. No scraping dependencies at runtime; JSON-LD is read only from GreatHub.
 - [ ] **G4 feature freeze** (H+28): after this, only bug fixes and demo work
 
 ---

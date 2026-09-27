@@ -66,7 +66,7 @@ export default async function CompareProducts({
           <div
             // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
             tabIndex={0}
-            className="overflow-x-auto"
+            className="relative overflow-x-auto"
           >
             <table className="sheet-formal w-full min-w-[720px] border-collapse text-left text-small">
               <caption className="pb-2 text-left text-muted">
@@ -146,7 +146,14 @@ export default async function CompareProducts({
                           {s ? (
                             <span className="flex flex-wrap items-center gap-2">
                               <span className="num">{s.value}</span>
-                              <EvidenceBadge level={s.level} />
+                              <EvidenceBadge
+                                level={s.level}
+                                detail={
+                                  s.level === "confirmed"
+                                    ? `${s.source} · ${s.checked}`
+                                    : undefined
+                                }
+                              />
                             </span>
                           ) : (
                             "—"
