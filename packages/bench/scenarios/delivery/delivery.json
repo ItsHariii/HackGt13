@@ -1,0 +1,104 @@
+[
+  {
+    "id": "delivery.slip-past-deadline",
+    "name": "Chair delivery slips Sun → Wed, past Monday",
+    "category": "delivery",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "chair",
+        "set": {
+          "deliveryBy": "2026-09-30"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_delivery": "fail"
+      },
+      "bases": ["floor.delivery_past_deadline"]
+    }
+  },
+  {
+    "id": "delivery.slip-within-deadline",
+    "name": "Chair delivery slips Sun → Mon, still on time",
+    "category": "delivery",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "chair",
+        "set": {
+          "deliveryBy": "2026-09-28"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "auto",
+      "bases": ["balanced.delivery_later_within_deadline"]
+    }
+  },
+  {
+    "id": "delivery.earlier",
+    "name": "Chair arrives a day earlier",
+    "category": "delivery",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "chair",
+        "set": {
+          "deliveryBy": "2026-09-26"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "auto",
+      "bases": ["policy.delivery_earlier"]
+    }
+  },
+  {
+    "id": "delivery.slip-within-strict",
+    "name": "An on-time slip still needs re-approval under Strict",
+    "category": "delivery",
+    "world": "flagship",
+    "preset": "strict",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "chair",
+        "set": {
+          "deliveryBy": "2026-09-28"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["strict.delivery_later"]
+    }
+  },
+  {
+    "id": "delivery.exchange-buffer",
+    "name": "Dress arrives Tue Oct 6: on time, but too late to exchange a size before Friday",
+    "category": "delivery",
+    "world": "wedding",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "dress",
+        "set": {
+          "deliveryBy": "2026-10-06"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_arrival": "pass",
+        "r_exchange": "fail"
+      }
+    }
+  }
+]

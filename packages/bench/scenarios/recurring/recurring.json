@@ -1,0 +1,90 @@
+[
+  {
+    "id": "recurring.subscription-added",
+    "name": "Webcam quietly becomes a 30-day subscription",
+    "category": "recurring",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "webcam",
+        "set": {
+          "recurring": "P30D"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.recurring"]
+    }
+  },
+  {
+    "id": "recurring.subscription-flexible",
+    "name": "A new subscription needs re-approval even under Flexible",
+    "category": "recurring",
+    "world": "carry-on",
+    "preset": "flexible",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "toiletry",
+        "set": {
+          "recurring": "P90D"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.recurring"]
+    }
+  },
+  {
+    "id": "recurring.pack-shrink",
+    "name": "Shrinkflation: the bottle set drops from 3 to 2 per pack at the same price",
+    "category": "recurring",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "add_fact",
+        "role": "toiletry",
+        "field": "product.pack_size",
+        "fact": {
+          "id": "f_bottle_34_pack",
+          "value": {
+            "value": 2,
+            "unit": "count"
+          },
+          "raw": "Pack size: 2"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.pack_size"]
+    }
+  },
+  {
+    "id": "recurring.subscription-and-price",
+    "name": "Subscription added together with a price drop",
+    "category": "recurring",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "webcam",
+        "set": {
+          "recurring": "P30D"
+        }
+      },
+      {
+        "op": "price",
+        "role": "webcam",
+        "minor": 4000
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.recurring"]
+    }
+  }
+]

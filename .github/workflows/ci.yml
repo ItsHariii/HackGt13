@@ -41,6 +41,45 @@ jobs:
       - run: pnpm db:lint
       - run: pnpm db:test
       - run: pnpm db:types:check
-      - run: pnpm db:test:integration
+      # The JSON report feeds the bench job's DB release gates (TASKS T16.4, T16.5, T16.7).
+      - run: pnpm db:test:integration --reporter=default --reporter=json --outputFile.json="$GITHUB_WORKSPACE/db-report.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-report
+          path: db-report.json
+          if-no-files-found: ignore
       - if: always()
         run: pnpm db:stop
+  bench:
+    name: bench
+    needs: database
+    # Runs even when the DB job fails, so a red guard suite shows up as a red gate.
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: db-report
+      - run: pnpm bench --db-report db-report.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-results
+          path: bench-results/
+      # Only main publishes to bench_runs, which /bench reads. Needs the repository secrets
+      # SUPABASE_URL and SUPABASE_SECRET_KEY; without them the step logs a skip.
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: pnpm bench:publish
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}

@@ -1,0 +1,146 @@
+[
+  {
+    "id": "terms.final-sale-flip",
+    "name": "Dress flips to final sale at $118",
+    "category": "terms",
+    "world": "wedding",
+    "mutation": [
+      {
+        "op": "price",
+        "role": "dress",
+        "minor": 11800
+      },
+      {
+        "op": "terms",
+        "role": "dress",
+        "set": {
+          "finalSale": true,
+          "returnWindowDays": 0
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_returnable": "fail"
+      },
+      "bases": ["floor.hard_pass_to_fail"]
+    }
+  },
+  {
+    "id": "terms.return-fee-added",
+    "name": "Chair now charges a $25 return fee",
+    "category": "terms",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "terms",
+        "role": "chair",
+        "set": {
+          "returnFeeMinor": 2500
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["policy.terms_worsened"]
+    }
+  },
+  {
+    "id": "terms.window-shortened",
+    "name": "Monitor return window 30 → 14 days",
+    "category": "terms",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "terms",
+        "role": "monitor",
+        "set": {
+          "returnWindowDays": 14
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["policy.terms_worsened"]
+    }
+  },
+  {
+    "id": "terms.window-shortened-dress",
+    "name": "Dress return window 30 → 5 days",
+    "category": "terms",
+    "world": "wedding",
+    "mutation": [
+      {
+        "op": "terms",
+        "role": "dress",
+        "set": {
+          "returnWindowDays": 5
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["policy.terms_worsened"]
+    }
+  },
+  {
+    "id": "terms.flexible-fee",
+    "name": "A new return fee still needs re-approval under Flexible",
+    "category": "terms",
+    "world": "flagship",
+    "preset": "flexible",
+    "mutation": [
+      {
+        "op": "terms",
+        "role": "desk",
+        "set": {
+          "returnFeeMinor": 1500
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["policy.terms_worsened"]
+    }
+  },
+  {
+    "id": "terms.window-improved",
+    "name": "Monitor return window 30 → 60 days",
+    "category": "terms",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "terms",
+        "role": "monitor",
+        "set": {
+          "returnWindowDays": 60
+        }
+      }
+    ],
+    "expected": {
+      "classification": "auto",
+      "bases": ["policy.terms_improved"]
+    }
+  },
+  {
+    "id": "terms.improved-strict",
+    "name": "Improved return terms are automatic even under Strict",
+    "category": "terms",
+    "world": "flagship",
+    "preset": "strict",
+    "mutation": [
+      {
+        "op": "terms",
+        "role": "chair",
+        "set": {
+          "returnWindowDays": 90
+        }
+      }
+    ],
+    "expected": {
+      "classification": "auto",
+      "bases": ["policy.terms_improved"]
+    }
+  }
+]

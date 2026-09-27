@@ -1,0 +1,241 @@
+[
+  {
+    "id": "evidence.new-conflict",
+    "name": "A second listing source says the monitor delivers 15 W",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "add_fact",
+        "role": "monitor",
+        "field": "monitor.usb_c_pd_watts",
+        "fact": {
+          "id": "f_vireo_pd_feed",
+          "value": {
+            "value": 15,
+            "unit": "W"
+          },
+          "sourceId": "src_greathub_feed",
+          "raw": "PD: 15W"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "verdicts": {
+        "r_usb_pd": "unknown"
+      },
+      "bases": ["floor.hard_pass_to_unknown"]
+    }
+  },
+  {
+    "id": "evidence.manufacturer-overrides",
+    "name": "The manufacturer's datasheet says 15 W and outranks the listing",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "add_fact",
+        "role": "monitor",
+        "field": "monitor.usb_c_pd_watts",
+        "fact": {
+          "id": "f_vireo_pd_mfr",
+          "value": {
+            "value": 15,
+            "unit": "W"
+          },
+          "sourceId": "src_vireo_datasheet"
+        }
+      },
+      {
+        "op": "source",
+        "sourceId": "src_vireo_datasheet",
+        "authority": "manufacturer"
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_usb_pd": "fail"
+      }
+    }
+  },
+  {
+    "id": "evidence.stale-source",
+    "name": "The desk width reading goes stale",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "desk",
+        "field": "desk.width",
+        "set": {
+          "freshUntil": "2026-09-26T14:02:08Z"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "verdicts": {
+        "r_desk_width": "unknown"
+      },
+      "bases": ["floor.hard_pass_to_unknown"]
+    }
+  },
+  {
+    "id": "evidence.unit-ambiguity",
+    "name": "Desk width now reads \"46.5\" with no unit, so it is only inferred",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "desk",
+        "field": "desk.width",
+        "set": {
+          "state": "supported",
+          "raw": "Width: 46.5"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "verdicts": {
+        "r_desk_width": "unknown"
+      }
+    }
+  },
+  {
+    "id": "evidence.up-to-qualifier",
+    "name": "Cable rating becomes \"up to 60 W\"",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "cable",
+        "field": "cable.usb_pd_watts",
+        "set": {
+          "value": {
+            "value": 60,
+            "unit": "W",
+            "qualifier": "up_to"
+          },
+          "raw": "up to 60W"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_cable_pd": "fail"
+      }
+    }
+  },
+  {
+    "id": "evidence.approx-qualifier",
+    "name": "Screen size becomes \"approx. 27 in\", an estimate",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "monitor",
+        "field": "monitor.diagonal",
+        "set": {
+          "value": {
+            "value": 27,
+            "unit": "in",
+            "qualifier": "approx"
+          },
+          "raw": "approx. 27\""
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "verdicts": {
+        "r_monitor_size": "unknown"
+      }
+    }
+  },
+  {
+    "id": "evidence.body-vs-garment-chart",
+    "name": "The garment measurement is replaced by a body size chart (36 in + 2 in ease)",
+    "category": "evidence",
+    "world": "wedding",
+    "mutation": [
+      {
+        "op": "remove_fact",
+        "role": "dress",
+        "field": "garment.chest"
+      },
+      {
+        "op": "add_fact",
+        "role": "dress",
+        "field": "garment.body_chest",
+        "fact": {
+          "id": "f_marlow_body_chest",
+          "value": {
+            "value": 36,
+            "unit": "in"
+          },
+          "raw": "Size chart (body): chest 36 in"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_fit": "fail"
+      }
+    }
+  },
+  {
+    "id": "evidence.downgraded-extraction",
+    "name": "USB-C power is now only an unquoted estimate",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "monitor",
+        "field": "monitor.usb_c_pd_watts",
+        "set": {
+          "state": "estimated"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "verdicts": {
+        "r_usb_pd": "unknown"
+      }
+    }
+  },
+  {
+    "id": "evidence.preference-conflict",
+    "name": "Sources disagree about lumbar support, a soft preference",
+    "category": "evidence",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "add_fact",
+        "role": "chair",
+        "field": "chair.adjustable_lumbar",
+        "fact": {
+          "id": "f_chair_lumbar_feed",
+          "value": false,
+          "sourceId": "src_greathub_feed"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical",
+      "verdicts": {
+        "r_chair_lumbar": "unknown"
+      }
+    }
+  }
+]

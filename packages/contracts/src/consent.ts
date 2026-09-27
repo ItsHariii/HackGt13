@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Availability } from "./catalog";
 import {
   FieldRef,
   Hash,
@@ -88,6 +89,13 @@ const recurring = z.strictObject({
   after: z.string().nullable(),
 });
 
+const availability = z.strictObject({
+  kind: z.literal("availability"),
+  role: Role,
+  before: Availability,
+  after: Availability,
+});
+
 /** One difference between the approved contract and the live checkout. */
 export const Change = z.discriminatedUnion("kind", [
   identity,
@@ -97,6 +105,7 @@ export const Change = z.discriminatedUnion("kind", [
   delivery,
   terms,
   recurring,
+  availability,
 ]);
 export type Change = z.infer<typeof Change>;
 
@@ -108,6 +117,7 @@ export const ClassifiedChange = z.discriminatedUnion("kind", [
   delivery.extend(classification),
   terms.extend(classification),
   recurring.extend(classification),
+  availability.extend(classification),
 ]);
 export type ClassifiedChange = z.infer<typeof ClassifiedChange>;
 

@@ -1,0 +1,190 @@
+[
+  {
+    "id": "identity.sku-swap-passing",
+    "name": "Monitor swapped for another SKU that still passes every rule",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "swap",
+        "role": "monitor",
+        "to": "halden"
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.sku", "floor.gtin"],
+      "verdicts": {
+        "r_usb_pd": "pass"
+      }
+    }
+  },
+  {
+    "id": "identity.sku-swap-failing",
+    "name": "Monitor swapped for the 15 W economy variant",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "swap",
+        "role": "monitor",
+        "to": "vireo_e"
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "bases": ["floor.sku", "floor.hard_pass_to_fail"],
+      "verdicts": {
+        "r_usb_pd": "fail"
+      }
+    }
+  },
+  {
+    "id": "identity.variant-swap",
+    "name": "Dress variant changes from Navy / M to Navy / L on the same SKU",
+    "category": "identity",
+    "world": "wedding",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "dress",
+        "set": {
+          "variant": "Navy / L"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.variant"]
+    }
+  },
+  {
+    "id": "identity.gtin-change",
+    "name": "Monitor listing now carries a different GTIN",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "monitor",
+        "set": {
+          "gtin": "00812345000993"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.gtin"]
+    }
+  },
+  {
+    "id": "identity.seller-rotation",
+    "name": "Monitor moves to a different marketplace seller",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "monitor",
+        "set": {
+          "sellerId": "dm_seller_7"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.seller"]
+    }
+  },
+  {
+    "id": "identity.merchant-change",
+    "name": "Monitor is now sold by a different store",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "monitor",
+        "set": {
+          "merchant": "bytebarn"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.merchant"]
+    }
+  },
+  {
+    "id": "identity.qty-doubled",
+    "name": "Webcam quantity doubled; the total passes the signed maximum",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "qty",
+        "role": "webcam",
+        "qty": 2
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "bases": ["floor.qty", "floor.max_total"]
+    }
+  },
+  {
+    "id": "identity.line-dropped",
+    "name": "Webcam silently removed from the checkout",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "remove_line",
+        "role": "webcam"
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.sku"]
+    }
+  },
+  {
+    "id": "identity.substitutions-enabled",
+    "name": "Merchant turns on substitutions after you said not to",
+    "category": "identity",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "order",
+        "field": "order.substitutions_allowed",
+        "value": true
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_no_substitutions": "fail"
+      }
+    }
+  },
+  {
+    "id": "identity.bag-swap",
+    "name": "Carry-on swapped for a bag 10.8 in deep",
+    "category": "identity",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "swap",
+        "role": "bag",
+        "to": "atlas"
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "bases": ["floor.sku"],
+      "verdicts": {
+        "d_travel_carry_on_size": "fail"
+      }
+    }
+  }
+]

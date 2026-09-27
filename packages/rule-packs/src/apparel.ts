@@ -134,6 +134,7 @@ export const apparel = definePack({
     },
   },
   jsonLd: {
+    "product.pack_size": ["additionalProperty[name=Pack size].value"],
     "garment.chest": [
       "additionalProperty[name=Chest].value",
       "additionalProperty[name=Bust].value",

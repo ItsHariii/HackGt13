@@ -1,0 +1,197 @@
+[
+  {
+    "id": "econ.price-hike-over-max",
+    "name": "Monitor price $329 → $379: the total passes the signed $910 maximum",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "price",
+        "role": "monitor",
+        "minor": 37900
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "bases": ["floor.max_total"]
+    }
+  },
+  {
+    "id": "econ.price-drop",
+    "name": "Webcam $49 → $45 is auto-accepted under Balanced",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "price",
+        "role": "webcam",
+        "minor": 4500
+      }
+    ],
+    "expected": {
+      "classification": "auto",
+      "bases": ["balanced.total_decrease"]
+    }
+  },
+  {
+    "id": "econ.increase-within-tolerance",
+    "name": "Webcam $49 → $52: +$3.21 is within 2% and $5",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "price",
+        "role": "webcam",
+        "minor": 5200
+      }
+    ],
+    "expected": {
+      "classification": "auto",
+      "bases": ["balanced.total_increase"]
+    }
+  },
+  {
+    "id": "econ.increase-over-tolerance",
+    "name": "Webcam $49 → $59: +$10.70 is over $5",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "price",
+        "role": "webcam",
+        "minor": 5900
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["balanced.total_increase"]
+    }
+  },
+  {
+    "id": "econ.shipping-fee-added",
+    "name": "Shipping $24 → $30.95 at checkout",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "checkout",
+        "set": {
+          "shippingMinor": 3095
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["balanced.total_increase"]
+    }
+  },
+  {
+    "id": "econ.tax-within-tolerance",
+    "name": "Tax rate 7% → 7.5%: +$4.08",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "checkout",
+        "set": {
+          "taxRate": "0.075"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "auto"
+    }
+  },
+  {
+    "id": "econ.tax-outside-tolerance",
+    "name": "Tax rate 7% → 8.5%: +$12.23, still under the maximum",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "checkout",
+        "set": {
+          "taxRate": "0.085"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["balanced.total_increase"]
+    }
+  },
+  {
+    "id": "econ.shipping-over-max",
+    "name": "Shipping $24 → $40 pushes the total to $912.05",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "checkout",
+        "set": {
+          "shippingMinor": 4000
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "bases": ["floor.max_total"]
+    }
+  },
+  {
+    "id": "econ.quoted-total-mismatch",
+    "name": "The merchant's quoted total doesn't add up",
+    "category": "economics",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "checkout",
+        "set": {
+          "quotedTotalMinor": 88000
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "verdicts": {
+        "r_budget": "unknown"
+      }
+    }
+  },
+  {
+    "id": "econ.flexible-increase",
+    "name": "Webcam $49 → $59 is within Flexible's 5% and $20",
+    "category": "economics",
+    "world": "flagship",
+    "preset": "flexible",
+    "mutation": [
+      {
+        "op": "price",
+        "role": "webcam",
+        "minor": 5900
+      }
+    ],
+    "expected": {
+      "classification": "auto",
+      "bases": ["flexible.total_increase"]
+    }
+  },
+  {
+    "id": "econ.strict-decrease",
+    "name": "Strict re-approves even a price drop",
+    "category": "economics",
+    "world": "flagship",
+    "preset": "strict",
+    "mutation": [
+      {
+        "op": "price",
+        "role": "webcam",
+        "minor": 4500
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["strict.price_decrease"]
+    }
+  }
+]

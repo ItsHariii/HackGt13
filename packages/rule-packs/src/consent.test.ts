@@ -172,6 +172,61 @@ describe("Consent Diff: identity and policy floor", () => {
     expect(summary).toEqual(["recurring:reapprove:floor.recurring"]);
   });
 
+  it("an item going out of stock blocks; preorder needs re-approval; low stock is only noted", async () => {
+    const v7 = await flagshipV7();
+    const stocked = (availability: "out_of_stock" | "preorder" | "limited") => {
+      const live = flagshipStates.v7();
+      live.offers = live.offers.map((o) =>
+        o.sku === "U2727" ? { ...o, availability } : o,
+      );
+      live.facts = live.facts.map((f) =>
+        f.id === "dm_off_vireo_u2727:availability"
+          ? { ...f, value: availability }
+          : f,
+      );
+      return live;
+    };
+    const out = await diff(v7, stocked("out_of_stock"), FLAGSHIP_T7);
+    expect(out.summary).toEqual(["availability:block:floor.out_of_stock"]);
+    expect(out.d.changes[0]).toMatchObject({
+      kind: "availability",
+      role: "monitor",
+      before: "in_stock",
+      after: "out_of_stock",
+    });
+    expect((await diff(v7, stocked("preorder"), FLAGSHIP_T7)).summary).toEqual([
+      "availability:reapprove:floor.availability_preorder",
+    ]);
+    const low = await diff(v7, stocked("limited"), FLAGSHIP_T7);
+    expect(low.d.classification).toBe("identical");
+    expect(low.summary).toEqual([
+      "availability:info:policy.availability_sellable",
+    ]);
+  });
+
+  it("a pack-size change on the same SKU needs re-approval (shrinkflation)", async () => {
+    const v7 = await flagshipV7();
+    const live = flagshipStates.v7();
+    live.facts = [
+      ...live.facts,
+      {
+        id: "f_pica_pack",
+        subjectKind: "product",
+        subjectId: "dm_pica_1080",
+        field: "product.pack_size",
+        value: { value: 2, unit: "count" },
+        state: "source_stated",
+        conflict: false,
+        sourceId: "src_dm_pica_1080_jsonld",
+        extractor: "jsonld",
+        retrievedAt: FLAGSHIP_T7,
+      },
+    ];
+    const { d, summary } = await diff(v7, live, FLAGSHIP_T7);
+    expect(summary).toEqual(["fact:reapprove:floor.pack_size"]);
+    expect(d.classification).toBe("reapprove");
+  });
+
   it("a hard verdict pass → unknown needs re-approval (the fact went stale)", async () => {
     const v7 = await flagshipV7();
     const live = flagshipStates.v7();
