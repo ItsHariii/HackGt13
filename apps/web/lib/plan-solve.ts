@@ -37,8 +37,9 @@ import {
   toSolverProblem,
 } from "./plan-problem";
 import { loadStoredPlan, PlanError } from "./plans";
+import type { SolveProgress } from "./solve-progress";
 import { createAdminClient } from "./supabase/admin";
-import { ruleText } from "./workspace";
+import { buildWorkspace, ruleText } from "./workspace";
 
 /*
  * Solves a saved plan into Plans A–C (TASKS T11.3, T11.5; SDD §9):
@@ -50,6 +51,7 @@ import { ruleText } from "./workspace";
  *      prices, shipping and tax are the merchant's own, and proved;
  *   5. the run, baskets, reports and per-rule results are stored in one
  *      transaction (srv_record_plan_solve), which streams the results.
+ * `onProgress` hears each step as it happens (the live "Find plans" view).
  * Only GreatHub baskets are solved: it's the merchant Cartel can pay.
  */
 
@@ -163,7 +165,10 @@ async function aiRoles(
   }
 }
 
-export async function solveStoredPlan(planId: string): Promise<SolveOutcome> {
+export async function solveStoredPlan(
+  planId: string,
+  onProgress: (p: SolveProgress) => void = () => {},
+): Promise<SolveOutcome> {
   const started = performance.now();
   const plan = await loadStoredPlan(planId);
   if (!plan) return { status: "error", code: "not_found" };
@@ -206,20 +211,24 @@ export async function solveStoredPlan(planId: string): Promise<SolveOutcome> {
 
   // Read every candidate's spec page now: product facts are never taken from a stale cache.
   const specs = new Map<string, SpecRefresh>();
+  let read = 0;
+  onProgress({ phase: "reading", done: 0, total: rows.length });
   await pool(rows, SPEC_CONCURRENCY, async (p) => {
     const slug = p.upid?.startsWith(`${MERCHANT}:`)
       ? p.upid.slice(MERCHANT.length + 1)
       : null;
-    if (!slug) return;
-    try {
-      const spec = await adapter.refreshSpecs(
-        { slug, roles: p.roles.filter((r) => roleIds.includes(r)) },
-        packs,
-      );
-      if (spec.found) specs.set(p.id, spec);
-    } catch (err) {
-      logger.warn({ err, product: p.external_id }, "spec refresh failed");
+    if (slug) {
+      try {
+        const spec = await adapter.refreshSpecs(
+          { slug, roles: p.roles.filter((r) => roleIds.includes(r)) },
+          packs,
+        );
+        if (spec.found) specs.set(p.id, spec);
+      } catch (err) {
+        logger.warn({ err, product: p.external_id }, "spec refresh failed");
+      }
     }
+    onProgress({ phase: "reading", done: ++read, total: rows.length });
   });
 
   const sources: Record<string, SourceInfo> = {
@@ -285,6 +294,7 @@ export async function solveStoredPlan(planId: string): Promise<SolveOutcome> {
       taxRateBps: TAX_RATE_BPS,
     },
   });
+  onProgress({ phase: "solving" });
   let result: SolveResult;
   try {
     result = await solvePlans(problem, { k: 3, engine: "exhaustive" });
@@ -321,18 +331,38 @@ export async function solveStoredPlan(planId: string): Promise<SolveOutcome> {
 
   let baskets: Awaited<ReturnType<typeof proveBasket>>[] = [];
   if (result.status === "optimal") {
+    const first = result.plans[0]?.label;
+    onProgress({ phase: "quoting", labels: result.plans.map((p) => p.label) });
     try {
       baskets = await Promise.all(
-        result.plans.map((p) =>
-          proveBasket(p, {
+        result.plans.map(async (p) => {
+          const basket = await proveBasket(p, {
             planId: plan.id,
             byOffer,
             specs,
             adapter,
             requirements,
             packs,
-          }),
-        ),
+          });
+          // The first plan's rows are the ones the workspace opens on.
+          if (p.label === first)
+            onProgress({
+              phase: "proof",
+              label: p.label,
+              proof: buildWorkspace({
+                planId: plan.id,
+                title: plan.title,
+                path: `/plans/${plan.id}`,
+                planLabel: `Plan ${p.label}`,
+                requirements,
+                checkout: basket.report.checkoutState,
+                report: basket.report.report,
+                packs,
+                waivers: [],
+              }).proof,
+            });
+          return basket;
+        }),
       );
     } catch (err) {
       // No plan is stored without the merchant's own quote behind it.
@@ -341,6 +371,7 @@ export async function solveStoredPlan(planId: string): Promise<SolveOutcome> {
     }
   }
 
+  onProgress({ phase: "saving" });
   const recorded = await db.rpc("srv_record_plan_solve", {
     p_plan: plan.id,
     p_set: set.data.id,
