@@ -1,7 +1,17 @@
 import { effectiveImportance } from "@cartel/contracts";
-import { homeOffice } from "@cartel/rule-packs";
+import { grocery, homeOffice } from "@cartel/rule-packs";
 import { describe, expect, it } from "vitest";
-import { fieldOptions, manualRule, opsFor } from "./manual-rule";
+import {
+  answerRule,
+  defaultOp,
+  fieldOption,
+  fieldOptions,
+  manualRule,
+  manualRuleId,
+  opsFor,
+  sameRule,
+  targetInput,
+} from "./manual-rule";
 import { ruleText } from "./workspace";
 
 const packs = [homeOffice];
@@ -87,5 +97,84 @@ describe("manual rule builder (AI off)", () => {
     });
     expect(r.ok && r.requirement.weight).toBe(0.5);
     expect(opsFor("boolean")).toEqual(["eq"]);
+  });
+
+  it("builds list rules like 'no nuts or milk'", () => {
+    const allergens = fieldOptions([grocery]).find(
+      (o) => o.field === "food.allergens",
+    );
+    if (!allergens) throw new Error("food.allergens not offered");
+    expect(opsFor("list")).toEqual(["excludes", "contains"]);
+    const r = manualRule({
+      id: "u_food_allergens",
+      field: allergens,
+      op: "excludes",
+      value: "Nuts, milk, nuts",
+      importance: "hard",
+    });
+    if (!r.ok) throw new Error(r.error);
+    expect(r.requirement.target).toEqual(["nuts", "milk"]);
+    expect(r.requirement.role).toBe("food");
+    expect(targetInput(r.requirement)).toEqual({ value: "nuts, milk" });
+    expect(
+      manualRule({
+        id: "x",
+        field: allergens,
+        op: "excludes",
+        value: " , ",
+        importance: "hard",
+      }),
+    ).toEqual({ ok: false, error: "List at least one item." });
+  });
+
+  it("resolves fields the form doesn't list, so every known rule is editable", () => {
+    expect(fieldOption("offer.returnable", packs, "desk")).toMatchObject({
+      scope: "item",
+      role: "desk",
+      kind: "boolean",
+    });
+    // An item field with no item to attach it to can't become a rule.
+    expect(fieldOption("offer.returnable", packs)).toBeUndefined();
+    expect(fieldOption("basket.delivery_latest", [])).toMatchObject({
+      scope: "basket",
+      kind: "date",
+    });
+    expect(fieldOption("basket.missing_roles", packs)).toBeUndefined();
+    expect(fieldOption("party.vibe", packs)).toBeUndefined();
+  });
+
+  it("reads a one-value answer the way people mean it", () => {
+    expect(defaultOp("date")).toBe("lte");
+    expect(defaultOp("money")).toBe("lte");
+    expect(defaultOp("boolean")).toBe("eq");
+    expect(defaultOp("enum")).toBe("eq");
+    expect(defaultOp("list")).toBe("excludes");
+
+    const date = opt("basket.delivery_latest");
+    const first = answerRule({ field: date, value: "2026-10-10", rules: [] });
+    if (!first.ok) throw new Error(first.error);
+    expect(first.requirement).toMatchObject({
+      id: "u_basket_delivery_latest",
+      op: "lte",
+      target: "2026-10-10",
+      importance: "hard",
+      provenance: { kind: "user_selected" },
+    });
+    expect(ruleText(first.requirement, packs)).toBe(
+      "Latest delivery by Sat Oct 10",
+    );
+    expect(sameRule([first.requirement], first.requirement)).toBe(
+      first.requirement,
+    );
+    expect(
+      sameRule([first.requirement], { ...first.requirement, op: "gte" }),
+    ).toBeUndefined();
+    expect(manualRuleId(date.field, [first.requirement.id])).toBe(
+      "u_basket_delivery_latest_2",
+    );
+    expect(answerRule({ field: date, value: "", rules: [] })).toEqual({
+      ok: false,
+      error: "Enter a date.",
+    });
   });
 });
