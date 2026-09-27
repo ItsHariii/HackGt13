@@ -16,6 +16,7 @@ import type {
   NormalizedProduct,
 } from "../types";
 import { inferRoles } from "./roles";
+import type { ShopifyToken } from "./shopify-auth";
 
 /*
  * Shopify Catalog over UCP (SDD §11.2, T7.5): JSON-RPC `tools/call` against
@@ -262,6 +263,8 @@ export type ShopifyOptions = {
   store: SnapshotStore;
   /** Cartel's public UCP agent profile, e.g. https://cartel.app/.well-known/ucp. */
   agentProfileUrl: string;
+  /** Dev Dashboard bearer token (shopify-auth.ts); keyless calls get the lowest tier. */
+  accessToken?: ShopifyToken;
   endpoint?: string;
   fetch?: FetchLike;
   timeoutMs?: number;
@@ -320,6 +323,7 @@ export function createShopifyCatalog(opts: ShopifyOptions) {
         ttlMs: opts.cacheTtlMs ?? LISTING_TTL_MS,
         now,
         fetch: async () => {
+          const bearer = opts.accessToken ? await opts.accessToken() : null;
           for (let attempt = 0; ; attempt++) {
             const res = await httpRequest({
               source: LABEL,
@@ -328,6 +332,7 @@ export function createShopifyCatalog(opts: ShopifyOptions) {
               headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
+                ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}),
               },
               body: JSON.stringify({
                 jsonrpc: "2.0",

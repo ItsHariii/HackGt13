@@ -12,6 +12,7 @@ import { findProduct } from "@/lib/catalog-read";
 import { DEMO_NOW } from "@/lib/demo-catalog";
 import { ALL_PACKS } from "@/lib/evidence";
 import { productView } from "@/lib/product-view";
+import { BuyFromStore } from "./buy-from-store";
 
 export const metadata: Metadata = { title: "Product" };
 
@@ -143,6 +144,21 @@ export default async function ProductPage({
                 )}
               </div>
               <OfferPicker view={view} pass={pass} fail={fail} />
+              {id.startsWith("shopify:") && (
+                <BuyFromStore
+                  offers={product.offers
+                    .filter((o) => !o.referenceOnly && o.url)
+                    .map((o) => ({
+                      sku: o.externalId,
+                      label: `${o.merchant}${
+                        o.priceMinor === null
+                          ? ""
+                          : ` · $${(o.priceMinor / 100).toFixed(2)}`
+                      }`,
+                      priceMinor: o.priceMinor,
+                    }))}
+                />
+              )}
 
               {view.checks.length > 0 && (
                 <section aria-labelledby="checks" className="relative mt-11">
