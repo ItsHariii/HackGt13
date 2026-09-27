@@ -635,7 +635,7 @@ button:disabled {
 }
 .gh-row {
   display: grid;
-  grid-template-columns: 24px minmax(0, 1.3fr) minmax(0, 1fr) 110px 72px;
+  grid-template-columns: 44px minmax(0, 1.3fr) minmax(0, 1fr) 110px 72px;
   gap: 16px;
   align-items: center;
   padding: 12px 16px;
@@ -652,6 +652,17 @@ button:disabled {
 }
 .gh-row > svg {
   color: var(--driftwood);
+  justify-self: center;
+}
+/* The product photo in a list row: a small porthole, rimmed like the big one. */
+.gh-row-photo {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid var(--navy);
+  object-fit: cover;
+  display: block;
+  background: var(--sand);
 }
 .gh-row-name {
   font-weight: 600;
@@ -2552,7 +2563,7 @@ button:disabled {
     justify-content: space-between;
   }
   .gh-row {
-    grid-template-columns: 20px minmax(0, 1fr) auto;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
     row-gap: 4px;
   }
   .gh-row > .gh-muted {
