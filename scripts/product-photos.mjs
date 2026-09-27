@@ -106,7 +106,9 @@ const SLUG_QUERY = {
     "kids birthday party table",
   "brightfold-paper-party-pack-large-serves-32": "party plates and cups",
   "brightfold-paper-plates-cups-and-napkins-serves-16": "paper plates and cups",
-  "grainhouse-certified-gluten-free-oats": "oats in a bowl",
+  "grainhouse-certified-gluten-free-oats": "oatmeal",
+  "grainhouse-greek-yogurt-cups-4-pack": "greek yogurt bowl",
+  "grainhouse-sunflower-seed-butter": "nut butter jar",
   "grainhouse-mini-pizza-kit": "mini pizza",
   "pipit-tortilla-chips-and-salsa-cups-12-pack": "tortilla chips salsa",
   "pipit-sunflower-seed-butter-cups-12-pack": "sunflower seed butter",
@@ -144,6 +146,9 @@ const REJECTED = new Set([
   "bOoIlSsYN5g", // a shop sign
   "lMdVYh2g7LM", // a real brand's tin (SDD §16: fictional brands only)
   "gcjRweyBTJQ", // a real brand's carton
+  "y7WOG7G6bwI", // a latte, not oats
+  "k2m_KNqF-Ac", // a real brand's yogurt cup
+  "liOAS02GnfY", // a grocery aisle
 ]);
 
 /** "Sea Salt Popcorn, 12 pack" -> "sea salt popcorn"; "Gluten-Free Oats" -> "oats". */
