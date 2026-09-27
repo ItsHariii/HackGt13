@@ -85,6 +85,9 @@ export default async function PlanPage({
             planId={plan.id}
             rules={rules}
             autoStart={one(q.solve) === "1" && solve.kind !== "infeasible"}
+            openPlan={
+              /^[A-C]$/.test(one(q.plan) ?? "") ? one(q.plan) : undefined
+            }
           >
             {cards}
           </SolveStage>

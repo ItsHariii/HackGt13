@@ -29,6 +29,8 @@ export type CompareRow = {
 };
 
 export type ComparePlan = {
+  /** The solver's label ("A"), as the workspace's `?plan=` takes it. */
+  id: string;
   label: string;
   total: string;
   items: { role: string; title: string; price: string }[];
@@ -184,6 +186,7 @@ export async function buildCompare(
     status: "ok",
     rows,
     plans: plans.map((p) => ({
+      id: p.label,
       label: `Plan ${p.label}`,
       total: money(p.totals.totalMinor),
       delivery: p.deliveryLatest ? formatDate(p.deliveryLatest) : "Unknown",

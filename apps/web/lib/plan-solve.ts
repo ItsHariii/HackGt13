@@ -168,6 +168,8 @@ async function aiRoles(
 export async function solveStoredPlan(
   planId: string,
   onProgress: (p: SolveProgress) => void = () => {},
+  /** The plan whose proof streams (Compare's "Use Plan B"); else the first. */
+  focus?: string,
 ): Promise<SolveOutcome> {
   const started = performance.now();
   const plan = await loadStoredPlan(planId);
@@ -331,7 +333,9 @@ export async function solveStoredPlan(
 
   let baskets: Awaited<ReturnType<typeof proveBasket>>[] = [];
   if (result.status === "optimal") {
-    const first = result.plans[0]?.label;
+    const first = result.plans.some((p) => p.label === focus)
+      ? focus
+      : result.plans[0]?.label;
     onProgress({ phase: "quoting", labels: result.plans.map((p) => p.label) });
     try {
       baskets = await Promise.all(
@@ -344,7 +348,7 @@ export async function solveStoredPlan(
             requirements,
             packs,
           });
-          // The first plan's rows are the ones the workspace opens on.
+          // The rows of the plan the workspace opens on.
           if (p.label === first)
             onProgress({
               phase: "proof",

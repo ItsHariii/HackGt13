@@ -1,3 +1,4 @@
+import { formatDate } from "@cartel/proof-engine";
 import { Check, Minus, X } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -10,6 +11,7 @@ import { buildCompare, type CompareCell } from "@/lib/compare";
 import { FLAGSHIP, flagshipCompare } from "@/lib/flagship";
 import { loadStoredSolve } from "@/lib/stored-workspace";
 import { cn } from "@/lib/utils";
+import { choosePlan } from "./actions";
 
 export const metadata: Metadata = { title: "Compare plans" };
 
@@ -89,6 +91,14 @@ export default async function ComparePage({
       : undefined
     : 1000;
   const defaultBy = stored ? limits?.delivery?.by : "2026-09-28";
+  // Tried limits aren't the plan's rules yet: using a plan saves them first.
+  const adopt = stored !== null && (changed || stored.kind === "infeasible");
+  const tried = [
+    budget !== undefined ? `budget $${budget.toLocaleString("en-US")}` : null,
+    by ? `arrival by ${formatDate(by)}` : null,
+  ].filter(Boolean);
+  const planHref = (planId: string) =>
+    demo || planId === "A" ? `/plans/${id}` : `/plans/${id}?plan=${planId}`;
 
   return (
     <div className="dot-grid min-h-dvh text-graphite">
@@ -151,6 +161,13 @@ export default async function ComparePage({
           </form>
         </div>
 
+        {one(q.error) === "save" && (
+          <p role="alert" className="text-red-pen text-small">
+            Those limits couldn't be saved to your rules. Nothing changed. Try
+            again.
+          </p>
+        )}
+
         {view.status === "conflict" ? (
           <div role="alert">
             <StateCard
@@ -198,6 +215,46 @@ export default async function ComparePage({
                       <span className="font-semibold">Tradeoff:</span>{" "}
                       {p.tradeoff}
                     </p>
+                    {adopt ? (
+                      <form
+                        action={choosePlan.bind(null, id, {
+                          budget,
+                          by,
+                          label: p.id,
+                        })}
+                        className="flex flex-col gap-1.5 px-1"
+                      >
+                        <button
+                          type="submit"
+                          className={cn(
+                            "inline-flex min-h-11 items-center justify-center rounded-card px-4 font-semibold text-ui",
+                            i === 0
+                              ? "bg-graphite text-paper-raised shadow-primary hover:opacity-90"
+                              : "border border-graphite bg-paper-raised hover:bg-paper",
+                          )}
+                        >
+                          Use {p.label}
+                        </button>
+                        {i === 0 && tried.length > 0 && (
+                          <span className="text-muted text-meta">
+                            Saves {tried.join(" and ")} to your rules, then
+                            prices and proves it through GreatHub's checkout.
+                          </span>
+                        )}
+                      </form>
+                    ) : (
+                      <Link
+                        href={planHref(p.id)}
+                        className={cn(
+                          "mx-1 inline-flex min-h-11 items-center justify-center rounded-card px-4 font-semibold text-ui no-underline",
+                          i === 0
+                            ? "bg-graphite text-paper-raised shadow-primary hover:opacity-90"
+                            : "border border-graphite bg-paper-raised hover:bg-paper",
+                        )}
+                      >
+                        Open {p.label}
+                      </Link>
+                    )}
                   </li>
                 );
               })}

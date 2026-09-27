@@ -42,21 +42,24 @@ const SETTLE_MS = 600;
  * list: the server's steps as they happen, then Plan A's rows checked off
  * one at a time while the Inspector stamps each. Opens the workspace (or
  * Compare, when nothing fits) once the last row lands. `autoStart` runs it
- * once on arrival from the requirements page.
+ * once on arrival from the requirements page; `openPlan` picks the plan the
+ * workspace opens on (Compare's "Use Plan B").
  */
 export function SolveStage({
   planId,
   rules,
   autoStart = false,
+  openPlan,
   children,
 }: {
   planId: string;
   rules: SolveRule[];
   autoStart?: boolean;
+  openPlan?: string | undefined;
   children: ReactNode;
 }) {
   const router = useRouter();
-  const { run, running, start } = useSolveStream(planId);
+  const { run, running, start } = useSolveStream(planId, openPlan);
   const started = useRef(false);
   useEffect(() => {
     if (!autoStart || started.current) return;
@@ -69,16 +72,18 @@ export function SolveStage({
     (run.outcome === "solved" && (run.proof === null || allRevealed(run)));
   useEffect(() => {
     if (!settled) return;
+    // Open the plan whose rows were just shown (it may differ from the one asked for).
+    const label = run.label ?? openPlan;
     const href =
       run.outcome === "infeasible"
         ? `/plans/${planId}/compare`
-        : `/plans/${planId}`;
+        : `/plans/${planId}${label && label !== "A" ? `?plan=${label}` : ""}`;
     const t = setTimeout(
       () => router.replace(href),
       run.outcome === "solved" && run.proof ? SETTLE_MS : 0,
     );
     return () => clearTimeout(t);
-  }, [settled, run.outcome, run.proof, planId, router]);
+  }, [settled, run.outcome, run.proof, run.label, planId, openPlan, router]);
 
   const live = (running || run.outcome !== null) && run.error === null;
   return (
