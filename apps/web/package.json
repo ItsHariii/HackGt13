@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@cartel/acp": "workspace:*",
+    "@cartel/ai": "workspace:*",
     "@cartel/catalog": "workspace:*",
     "@cartel/contracts": "workspace:*",
     "@cartel/evidence": "workspace:*",
