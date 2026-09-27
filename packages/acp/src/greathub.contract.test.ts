@@ -387,6 +387,37 @@ describe.skipIf(!enabled)("GreatHub ACP contract", () => {
         32900,
       );
     });
+
+    it("Halden deal trap: same SKU, $299 and 15 W, on the product API and the ACP GET", async () => {
+      const session = await openSession(contractFor(), [
+        { id: "M27Q-USBC", quantity: 1 },
+      ]);
+      await admin("/api/chaos/scenarios/halden-deal-trap");
+      const started = Date.now();
+      const read = await acp.getSession(session.id);
+      expect(Date.now() - started).toBeLessThan(1000);
+      expect(read.ok && read.data.line_items[0]?.base_amount).toBe(29900);
+      const url = `${base}/api/products/M27Q-USBC`;
+      const headers = await signRequest(
+        { method: "GET", url, headers: {} },
+        { key: agent, tag: "agent-browser-auth" },
+      );
+      const facts = (await (await fetch(url, { headers })).json()) as {
+        variants: { spec: { name: string; value: string }[] }[];
+      };
+      expect(facts.variants[0]?.spec).toContainEqual({
+        name: "USB-C power delivery",
+        value: "15 W",
+      });
+      const page = await (await fetch(`${base}/p/halden-m27q-usbc`)).text();
+      expect(page).toContain('"value":"15 W"');
+      expect(page).toContain('"price":"299.00"');
+      await admin("/api/chaos/reset");
+      const restored = await acp.getSession(session.id);
+      expect(restored.ok && restored.data.line_items[0]?.base_amount).toBe(
+        30900,
+      );
+    });
   });
 
   describe("/complete (T6.7, T6.8, T6.9)", () => {
