@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { EvidenceBadge } from "@/components/cartel/evidence-badge";
 import { HashPill } from "@/components/cartel/hash-pill";
 import { LayersTable } from "@/components/cartel/layers-table";
-import { Figure } from "@/components/doodle/figure";
+import { GuardStepIn } from "@/components/doodle/moments";
 import { Mark } from "@/components/paper/mark";
 import { Stamp } from "@/components/paper/stamp";
 import { StatusMark } from "@/components/paper/status-mark";
@@ -73,9 +73,7 @@ export default async function PausedPage({
                 <span aria-hidden="true">✗ </span>Payment blocked
               </p>
             </div>
-            <div aria-hidden="true" className="shrink-0">
-              <Figure who="guard" pose="block" h={112} />
-            </div>
+            <GuardStepIn h={112} />
           </div>
         </section>
 

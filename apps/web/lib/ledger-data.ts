@@ -1,6 +1,7 @@
 import "server-only";
 import { UUID } from "./catalog";
-import { jsonbText, type LedgerRecord } from "./ledger";
+import type { LedgerRecord } from "./ledger";
+import { ledgerRecord } from "./ledger-row";
 import { createClient } from "./supabase/server";
 
 /**
@@ -27,16 +28,6 @@ export async function storedLedger(
   if (error) return null;
   return {
     title: plan.data.title,
-    records: data.map((e) => ({
-      seq: e.seq,
-      planId: e.plan_id,
-      actor: e.actor,
-      type: e.type,
-      // PostgREST returns ISO with an offset; the hash uses UTC microseconds.
-      createdAt: `${new Date(e.created_at).toISOString().slice(0, 19)}.${(e.created_at.match(/\.(\d+)/)?.[1] ?? "0").padEnd(6, "0").slice(0, 6)}Z`,
-      payloadText: jsonbText(e.payload as Record<string, unknown>),
-      prevHash: e.prev_hash,
-      hash: e.hash,
-    })),
+    records: data.map(ledgerRecord),
   };
 }

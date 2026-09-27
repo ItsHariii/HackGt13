@@ -1870,6 +1870,47 @@ export type Database = {
         };
         Returns: string;
       };
+      srv_record_delivery: {
+        Args: {
+          p_order: string;
+          p_payload: Json;
+          p_type: string;
+          p_user: string;
+        };
+        Returns: {
+          actor: string;
+          created_at: string;
+          hash: string;
+          id: number;
+          payload: NonNullable<Json>;
+          plan_id: string;
+          prev_hash: string;
+          seq: number;
+          type: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "ledger_events";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      srv_record_evidence_pack: {
+        Args: { p_order: string; p_path: string; p_sha256: string };
+        Returns: {
+          created_at: string;
+          id: string;
+          order_id: string;
+          sha256: string;
+          storage_path: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "evidence_packs";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
       srv_record_handoff: {
         Args: { p_diff: string; p_url: string; p_version: string };
         Returns: undefined;
