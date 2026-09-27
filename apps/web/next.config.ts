@@ -7,12 +7,15 @@ const nextConfig: NextConfig = {
     "@cartel/acp",
     "@cartel/contracts",
     "@cartel/evidence",
+    "@cartel/evidence-pack",
     "@cartel/platform",
     "@cartel/proof-engine",
     "@cartel/rule-packs",
     "@cartel/solver",
     "@cartel/tap",
   ],
+  // Renders Evidence Pack and dispute PDFs in Node route handlers.
+  serverExternalPackages: ["@react-pdf/renderer"],
   poweredByHeader: false,
 };
 export default withSentryConfig(nextConfig, {

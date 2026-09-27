@@ -6,7 +6,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./fixtures": "./src/fixtures/index.ts",
-    "./db": "./src/db.ts"
+    "./db": "./src/db.ts",
+    "./hash": "./src/hash.ts",
+    "./webauthn": "./src/webauthn.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

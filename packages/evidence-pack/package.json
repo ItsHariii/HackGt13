@@ -1,0 +1,26 @@
+{
+  "name": "@cartel/evidence-pack",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./delivery": "./src/delivery.ts",
+    "./ledger": "./src/ledger.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "lint": "biome check .",
+    "verify:bundle": "node scripts/bundle-verify.mjs",
+    "verify:bundle:check": "node scripts/bundle-verify.mjs --check"
+  },
+  "dependencies": {
+    "@cartel/contracts": "workspace:*",
+    "fflate": "0.8.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

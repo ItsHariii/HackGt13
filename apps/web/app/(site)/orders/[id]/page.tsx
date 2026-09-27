@@ -1,25 +1,50 @@
 import { formatMoneyText } from "@cartel/proof-engine";
-import { Download, ScanLine } from "lucide-react";
+import { Download, FileWarning } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GuardStepper } from "@/components/cartel/guard-stepper";
+import { HashPill } from "@/components/cartel/hash-pill";
 import { Figure } from "@/components/doodle/figure";
+import { DeliveryCheck } from "@/components/orders/delivery-check";
 import { Receipt } from "@/components/orders/receipt";
 import { DemoNote } from "@/components/plan/plan-header";
 import { Button } from "@/components/ui/button";
 import { UUID } from "@/lib/catalog";
 import { formatStamp } from "@/lib/contract-view";
-import { FLAGSHIP, FLAGSHIP_ORDER, flagshipOrder } from "@/lib/flagship";
-import { storedOrder } from "@/lib/orders";
+import {
+  FLAGSHIP,
+  FLAGSHIP_ORDER,
+  flagshipOrder,
+  flagshipStory,
+} from "@/lib/flagship";
+import { storedOrder, storedOrderDelivery } from "@/lib/orders";
 
 export const metadata: Metadata = { title: "Order" };
 
-/** An order (TASKS T11.9; design "Paid receipt"). */
+/** An order (TASKS T11.9; design "Paid receipt"), with post-purchase checks (T15). */
 export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
   const { id } = await params;
   if (id === FLAGSHIP_ORDER) {
-    const order = await flagshipOrder();
+    const [order, story] = await Promise.all([
+      flagshipOrder(),
+      flagshipStory(),
+    ]);
+    const items = story.v8.contract.items.map((i) => ({
+      title: i.title,
+      sku: i.sku,
+      gtin: i.gtin ?? null,
+      qty: i.qty,
+    }));
+    // Demo boxes: the monitor you approved, and the v7 monitor whose listing changed.
+    const approved = story.v8.contract.items.find((i) => i.role === "monitor");
+    const trap = story.v7.contract.items.find((i) => i.role === "monitor");
+    const samples = [
+      ...(approved?.gtin ? [{ label: "Right box", gtin: approved.gtin }] : []),
+      ...(trap?.gtin && trap.gtin !== approved?.gtin
+        ? [{ label: "Wrong box", gtin: trap.gtin }]
+        : []),
+    ];
     return (
       <main className="dot-grid text-graphite">
         <div className="mx-auto grid max-w-[1180px] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[420px_minmax(0,1fr)]">
@@ -47,19 +72,25 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
                   Pack
                 </a>
               </Button>
-              <Button
-                variant="outline"
-                disabled
-                title="Delivery scanning arrives with post-purchase checks (TASKS T15)."
-              >
-                <ScanLine size={16} aria-hidden="true" /> Scan delivery
+              <Button asChild variant="outline">
+                <Link href={`/orders/${order.id}/dispute`}>
+                  <FileWarning size={16} aria-hidden="true" /> Dispute packet
+                </Link>
               </Button>
             </div>
             <p className="text-muted text-small">
-              Scan delivery arrives with post-purchase checks. The Evidence Pack
-              holds the signed contract, the proof report and the ledger, so
-              anyone can re-verify them offline.
+              The Evidence Pack holds the signed contract, the proof report, the
+              source snapshots and the ledger, with a{" "}
+              <code className="font-mono">verify.mjs</code> that re-checks them
+              offline: unzip it and run{" "}
+              <code className="font-mono">node verify.mjs</code>.
             </p>
+            <DeliveryCheck
+              orderId={order.id}
+              items={items}
+              scans={[]}
+              samples={samples}
+            />
             <p className="flex flex-wrap gap-x-4 gap-y-1 text-small">
               <Link
                 href={`/ledger/${FLAGSHIP}`}
@@ -86,7 +117,10 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
     );
   }
   if (!UUID.test(id)) notFound();
-  const order = await storedOrder(id);
+  const [order, delivery] = await Promise.all([
+    storedOrder(id),
+    storedOrderDelivery(id),
+  ]);
   if (!order) notFound();
   return (
     <main className="dot-grid min-h-[60vh] text-graphite">
@@ -105,7 +139,39 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
           </dd>
           <dt className="text-muted">Placed</dt>
           <dd>{formatStamp(order.created_at)}</dd>
+          {delivery && (
+            <>
+              <dt className="text-muted">Contract</dt>
+              <dd className="flex flex-wrap items-center gap-2">
+                v{delivery.version} <HashPill hash={delivery.hash} />
+              </dd>
+            </>
+          )}
         </dl>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <a href={`/orders/${order.id}/evidence-pack`}>
+              <Download size={16} aria-hidden="true" /> Download Evidence Pack
+            </a>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/orders/${order.id}/dispute`}>
+              <FileWarning size={16} aria-hidden="true" /> Dispute packet
+            </Link>
+          </Button>
+        </div>
+        <p className="text-muted text-small">
+          Unzip the Evidence Pack and run{" "}
+          <code className="font-mono">node verify.mjs</code> to re-check the
+          contract hash, your passkey signature and the ledger offline.
+        </p>
+        {delivery && (
+          <DeliveryCheck
+            orderId={order.id}
+            items={delivery.items}
+            scans={delivery.scans}
+          />
+        )}
       </div>
     </main>
   );
