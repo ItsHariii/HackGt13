@@ -17,6 +17,7 @@ import { latestBySku, recentCatches } from "@/lib/harbor";
 import { productJsonLd, serializeJsonLd } from "@/lib/jsonld";
 import { AVAILABILITY_LABEL, deliveryLabel, returnLabel } from "@/lib/labels";
 import { formatMinor } from "@/lib/money";
+import { photoCredit } from "@/lib/photos";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +57,7 @@ export default async function ProductPage({
   const origin = await pageOrigin();
   const url = `${origin}/p/${product.slug}?sku=${encodeURIComponent(variant.sku)}`;
   const o = variant.offer;
+  const credit = photoCredit(product.slug);
   const jsonLd = productJsonLd(product, variant, {
     url,
     shippingFlatMinor: policies.shipping.flatMinor,
@@ -110,17 +112,43 @@ export default async function ProductPage({
             <span className="gh-rivet bottom" />
             <span className="gh-rivet left" />
             <span className="gh-rivet right" />
-            <div className="gh-porthole-glass">
-              <CategoryIcon
-                category={product.category}
-                department={product.department}
-                size={150}
-              />
-              <span className="gh-code">
-                {product.brand} · {product.category}
-              </span>
+            <div
+              className={`gh-porthole-glass${product.imagePath ? " has-photo" : ""}`}
+            >
+              {product.imagePath ? (
+                // biome-ignore lint/performance/noImgElement: fixed-size WebP from public/, no optimizer needed.
+                <img
+                  src={product.imagePath}
+                  alt={product.name}
+                  decoding="async"
+                  className="gh-glass-photo"
+                />
+              ) : (
+                <>
+                  <CategoryIcon
+                    category={product.category}
+                    department={product.department}
+                    size={150}
+                  />
+                  <span className="gh-code">
+                    {product.brand} · {product.category}
+                  </span>
+                </>
+              )}
             </div>
           </div>
+          {product.imagePath && credit ? (
+            <p className="gh-photo-credit">
+              Photo by{" "}
+              <a href={credit.profile} rel="noopener">
+                {credit.photographer}
+              </a>{" "}
+              on{" "}
+              <a href={credit.page} rel="noopener">
+                Unsplash
+              </a>
+            </p>
+          ) : null}
         </div>
 
         <div className="gh-pdp-buy">

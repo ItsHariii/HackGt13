@@ -3,7 +3,8 @@
 // 10 minutes of going on stage (the search cache lasts 10 minutes).
 //
 //   1. GreatHub: restore the seeded catalog (Chaos Panel "Reset").
-//   1b. Point GreatHub catalog links (product refs and offers) at GREATHUB_PUBLIC_ORIGIN.
+//   1b. Point GreatHub catalog links (product refs, offers, photos) at GREATHUB_PUBLIC_ORIGIN,
+//       and give products seeded before their photos existed a photo.
 //   2. Delete the demo user's plans. Their enrolled card and signing passkey stay; the
 //      script fails if either count changes. Ledger events stay too (append-only).
 //   3. Warm the AI prompt cache (`pnpm ai:warm`).
@@ -14,7 +15,7 @@
 //
 // Configuration: see scripts/demo-env.mjs.
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   adminClient,
@@ -64,52 +65,83 @@ if (!config.greathub || !config.chaosToken) {
 const publicOrigin = (
   process.env.GREATHUB_PUBLIC_ORIGIN ?? config.greathub
 )?.replace(/\/$/, "");
-async function rebaseLinks(db, table) {
+async function rebaseLinks(db, table, column = "url") {
   const { data, error } = await db
     .from(table)
-    .select("id,url")
+    .select(`id,${column}`)
     .eq("source", "greathub")
-    .not("url", "is", null);
+    .not(column, "is", null);
   if (error) throw new Error(`${table}: ${error.message}`);
   const stale = data.filter((row) => {
     try {
-      return new URL(row.url).origin !== publicOrigin;
+      return new URL(row[column]).origin !== publicOrigin;
     } catch {
       return false;
     }
   });
   if (!dryRun)
     for (const row of stale) {
-      const url = new URL(row.url);
+      const url = new URL(row[column]);
       const next = `${publicOrigin}${url.pathname}${url.search}`;
       const { error: up } = await db
         .from(table)
-        .update({ url: next })
+        .update({ [column]: next })
         .eq("id", row.id);
       if (up) throw new Error(`${table} ${row.id}: ${up.message}`);
     }
   return stale.length;
+}
+/** Photos in apps/greathub/public/products for products that don't point at one yet. */
+async function backfillPhotos(db) {
+  const file = join(root, "apps/greathub/public/products/credits.json");
+  if (!existsSync(file)) return 0;
+  const credits = JSON.parse(readFileSync(file, "utf8"));
+  const gh = db.schema("greathub");
+  const { data: rows, error } = await gh
+    .from("variants")
+    .select("sku, products(id, slug, image_path)");
+  if (error) throw new Error(`greathub.variants: ${error.message}`);
+  let filled = 0;
+  for (const { sku, products: p } of rows) {
+    if (!p || !credits[p.slug]) continue;
+    const path = `/products/${p.slug}.webp`;
+    if (p.image_path !== path) {
+      filled++;
+      if (!dryRun) {
+        const { error: up } = await gh
+          .from("products")
+          .update({ image_path: path })
+          .eq("id", p.id);
+        if (up) throw new Error(`greathub.products ${p.slug}: ${up.message}`);
+        p.image_path = path;
+      }
+    }
+    if (dryRun) continue;
+    const { error: up } = await db
+      .from("products")
+      .update({ image_url: `${publicOrigin}${path}` })
+      .eq("source", "greathub")
+      .eq("external_id", sku)
+      .is("image_url", null);
+    if (up) throw new Error(`products ${sku}: ${up.message}`);
+  }
+  return filled;
 }
 if (!publicOrigin || !config.supabaseUrl || !config.secretKey) {
   r.skip("GreatHub links", "needs GREATHUB_PUBLIC_ORIGIN and Supabase keys");
 } else {
   try {
     const db = adminClient(config.supabaseUrl, config.secretKey);
+    const photos = await backfillPhotos(db);
     const refs = await rebaseLinks(db, "product_external_refs");
     const offers = await rebaseLinks(db, "offers");
+    const images = await rebaseLinks(db, "products", "image_url");
     const verb = dryRun ? "would point" : "pointed";
-    if (refs + offers === 0)
+    const detail = `${verb} ${refs} refs, ${offers} offers, ${images} photos at ${publicOrigin}${photos ? `; ${dryRun ? "would add" : "added"} ${photos} photos` : ""}`;
+    if (refs + offers + images + photos === 0)
       r.ok("GreatHub links", `already on ${publicOrigin}`);
-    else if (dryRun)
-      r.skip(
-        "GreatHub links",
-        `${verb} ${refs} refs, ${offers} offers at ${publicOrigin}`,
-      );
-    else
-      r.ok(
-        "GreatHub links",
-        `${verb} ${refs} refs, ${offers} offers at ${publicOrigin}`,
-      );
+    else if (dryRun) r.skip("GreatHub links", detail);
+    else r.ok("GreatHub links", detail);
   } catch (error) {
     r.fail("GreatHub links", message(error));
   }

@@ -59,6 +59,8 @@ export interface ProductSummary {
   category: string;
   roles: string[];
   description: string;
+  /** Site-relative photo path, e.g. `/products/<slug>.webp`; null shows the category icon. */
+  imagePath: string | null;
 }
 
 export interface ProductView extends ProductSummary {
@@ -175,7 +177,17 @@ function toSummary(p: Row): ProductSummary {
     category: String(p.category),
     roles: (p.roles as string[]) ?? [],
     description: String(p.description),
+    imagePath: sitePath(p.image_path),
   };
+}
+
+/** Only a plain site-relative path is used as an image source. */
+function sitePath(v: unknown): string | null {
+  return typeof v === "string" &&
+    /^\/[a-z0-9/._-]+$/i.test(v) &&
+    !v.includes("..")
+    ? v
+    : null;
 }
 
 function toProduct(p: Row): ProductView {
@@ -186,7 +198,7 @@ function toProduct(p: Row): ProductView {
   return { ...toSummary(p), variants };
 }
 
-const PRODUCT_COLUMNS = `id, slug, brand, name, department, category, roles, description, variants(${VARIANT_COLUMNS})`;
+const PRODUCT_COLUMNS = `id, slug, brand, name, department, category, roles, description, image_path, variants(${VARIANT_COLUMNS})`;
 
 export async function listProducts(): Promise<ProductView[]> {
   const { data, error } = await db()

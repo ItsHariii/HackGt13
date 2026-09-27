@@ -11,6 +11,7 @@ const product: ProductSummary = {
   category: "monitors",
   roles: ["monitor"],
   description: "A monitor.",
+  imagePath: "/products/vireo-u2727.webp",
 };
 const variant: VariantView = {
   listingId: "dm_lst_u2727",
@@ -61,6 +62,7 @@ describe("productJsonLd", () => {
     const ld = productJsonLd(product, variant, opts);
     expect(ld).toMatchObject({
       "@type": "Product",
+      image: "http://localhost:3001/products/vireo-u2727.webp",
       sku: "U2727",
       gtin14: "00812345000030",
       brand: { name: "Vireo" },

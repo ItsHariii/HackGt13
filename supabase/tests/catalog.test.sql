@@ -1,7 +1,7 @@
 -- T2.2, T2.13, T2.16: catalog integrity, the canonical demo dataset and typo-tolerant search.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(18);
+select plan(20);
 
 select ok(public.is_valid_gtin('00812345000016'), 'GS1 check digit accepted');
 select ok(not public.is_valid_gtin('00812345000017'), 'Wrong check digit rejected');
@@ -93,6 +93,22 @@ select is((select count(*)::int from public.search_products('', 10)), 0, 'Empty 
 reset role;
 
 select hasnt_column('public', 'payment_instruments', 'pan', 'No PAN column on payment instruments');
+
+select ok(
+  (select count(*) from greathub.products where image_path is not null) > 0
+  and not exists (select 1 from greathub.products where image_path <> '/products/' || slug || '.webp'),
+  'GreatHub products have photos, each at /products/<slug>.webp'
+);
+select is(
+  (select count(*)::int from public.products p
+   join greathub.variants v on v.sku = p.external_id
+   join greathub.products gp on gp.id = v.product_id
+   where p.source = 'greathub'
+     and p.image_url is distinct from
+       (case when gp.image_path is null then null
+             else 'http://localhost:3001' || gp.image_path end)),
+  0, 'The catalog links each GreatHub product to its GreatHub photo, and only those'
+);
 
 select * from finish();
 rollback;

@@ -22,6 +22,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec biome ci .
+      - run: node scripts/product-photos.mjs --check
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build

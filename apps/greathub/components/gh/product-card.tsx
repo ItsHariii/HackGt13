@@ -55,12 +55,25 @@ export function ProductCard({
             <span className="gh-rivet bottom" />
             <span className="gh-rivet left" />
             <span className="gh-rivet right" />
-            <span className="gh-pcard-glass">
-              <CategoryIcon
-                category={p.category}
-                department={p.department}
-                size={56}
-              />
+            <span
+              className={`gh-pcard-glass${p.imagePath ? " has-photo" : ""}`}
+            >
+              {p.imagePath ? (
+                // biome-ignore lint/performance/noImgElement: fixed-size WebP from public/, no optimizer needed.
+                <img
+                  src={p.imagePath}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="gh-glass-photo"
+                />
+              ) : (
+                <CategoryIcon
+                  category={p.category}
+                  department={p.department}
+                  size={56}
+                />
+              )}
             </span>
           </span>
           <span className="gh-code gh-pcard-cat">{p.category}</span>

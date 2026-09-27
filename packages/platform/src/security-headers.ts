@@ -29,6 +29,8 @@ export type SecurityHeaderOptions = {
   payments?: boolean;
   /** Pages that may open the camera (delivery-match scanning). */
   camera?: boolean;
+  /** Hosts product photos load from (a merchant's own image host, the storage bucket). */
+  imageOrigins?: readonly (string | undefined)[];
 };
 
 function origin(url: string | undefined): URL | null {
@@ -52,6 +54,11 @@ export function contentSecurityPolicy(o: SecurityHeaderOptions = {}): string {
     );
   }
   if (sentry) connect.push(sentry.origin);
+  const img = ["'self'", "data:", "blob:"];
+  for (const u of o.imageOrigins ?? []) {
+    const at = origin(u);
+    if (at && !img.includes(at.origin)) img.push(at.origin);
+  }
   const script = ["'self'", "'unsafe-inline'"];
   if (o.dev) script.push("'unsafe-eval'");
   const frame: string[] = [];
@@ -64,7 +71,7 @@ export function contentSecurityPolicy(o: SecurityHeaderOptions = {}): string {
     "default-src 'self'",
     `script-src ${script.join(" ")}`,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
+    `img-src ${img.join(" ")}`,
     "font-src 'self' data:",
     `connect-src ${connect.join(" ")}`,
     `frame-src ${frame.length ? frame.join(" ") : "'none'"}`,

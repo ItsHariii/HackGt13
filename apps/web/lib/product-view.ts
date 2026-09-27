@@ -297,5 +297,6 @@ export function productCard(
     source: offer ? (MERCHANT_NAME[offer.source] ?? offer.source) : "Catalog",
     tier: offer ? uiTier(offer.tier) : "proof",
     href: `/p/${encodeURIComponent(p.id)}`,
+    imageUrl: p.imageUrl,
   };
 }

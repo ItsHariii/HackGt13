@@ -77,6 +77,23 @@ describe("security headers (T17.1)", () => {
     expect(directive(csp, "connect-src")).toBe("'self'");
   });
 
+  it("loads images only from the listed hosts, by origin", () => {
+    expect(directive(contentSecurityPolicy(), "img-src")).toBe(
+      "'self' data: blob:",
+    );
+    const csp = contentSecurityPolicy({
+      imageOrigins: [
+        "https://shop.greathub.app/products/x.webp",
+        undefined,
+        "javascript:alert(1)",
+        "https://shop.greathub.app",
+      ],
+    });
+    expect(directive(csp, "img-src")).toBe(
+      "'self' data: blob: https://shop.greathub.app",
+    );
+  });
+
   it("opens the camera only where asked", () => {
     expect(permissionsPolicy()).toContain("camera=()");
     expect(permissionsPolicy({ camera: true })).toContain("camera=(self)");
