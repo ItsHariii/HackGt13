@@ -1,0 +1,100 @@
+[
+  {
+    "id": "benign.refresh",
+    "name": "Checkout refreshed with no change",
+    "category": "benign",
+    "world": "flagship",
+    "mutation": [],
+    "expected": {
+      "classification": "identical"
+    }
+  },
+  {
+    "id": "benign.refresh-later",
+    "name": "Checkout re-read five minutes later with no change",
+    "category": "benign",
+    "world": "flagship",
+    "at": "2026-09-26T14:07:11Z",
+    "mutation": [],
+    "expected": {
+      "classification": "identical"
+    }
+  },
+  {
+    "id": "benign.title-change",
+    "name": "Cosmetic title change on the desk listing",
+    "category": "benign",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "desk",
+        "set": {
+          "title": "Birchline Compact Desk, 46.5 in, Oak"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical"
+    }
+  },
+  {
+    "id": "benign.image-change",
+    "name": "New product photo on the webcam listing",
+    "category": "benign",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "add_fact",
+        "role": "webcam",
+        "field": "product.image",
+        "fact": {
+          "id": "f_pica_image_2",
+          "value": "https://greathub.example/img/pica-1080-v2.jpg"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical"
+    }
+  },
+  {
+    "id": "benign.wording-change",
+    "name": "Spec wording changes, value unchanged",
+    "category": "benign",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "cable",
+        "field": "cable.usb_pd_watts",
+        "set": {
+          "raw": "Supports 100W USB Power Delivery"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical"
+    }
+  },
+  {
+    "id": "benign.wedding-refresh",
+    "name": "Wedding basket refreshed with no change",
+    "category": "benign",
+    "world": "wedding",
+    "mutation": [],
+    "expected": {
+      "classification": "identical"
+    }
+  },
+  {
+    "id": "benign.carry-on-refresh",
+    "name": "Carry-on basket refreshed with no change",
+    "category": "benign",
+    "world": "carry-on",
+    "mutation": [],
+    "expected": {
+      "classification": "identical"
+    }
+  }
+]

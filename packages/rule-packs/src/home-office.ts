@@ -195,6 +195,7 @@ export const homeOffice = definePack({
     },
   },
   jsonLd: {
+    "product.pack_size": ["additionalProperty[name=Pack size].value"],
     "desk.width": ["width", "additionalProperty[name=Width].value"],
     "desk.depth": ["depth", "additionalProperty[name=Depth].value"],
     "chair.adjustable_lumbar": [

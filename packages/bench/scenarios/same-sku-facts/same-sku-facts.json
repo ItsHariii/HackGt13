@@ -1,0 +1,295 @@
+[
+  {
+    "id": "facts.pd-watts-cut",
+    "name": "The deal trap: USB-C power 90 W → 15 W on the same SKU",
+    "category": "same-sku-facts",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "monitor",
+        "field": "monitor.usb_c_pd_watts",
+        "set": {
+          "id": "f_vireo_pd_2",
+          "value": {
+            "value": 15,
+            "unit": "W"
+          },
+          "raw": "USB-C power delivery 15 W"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "bases": ["floor.hard_pass_to_fail"],
+      "verdicts": {
+        "r_usb_pd": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.pd-watts-raised",
+    "name": "USB-C power 90 W → 100 W: still passes, Balanced notes it",
+    "category": "same-sku-facts",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "monitor",
+        "field": "monitor.usb_c_pd_watts",
+        "set": {
+          "value": {
+            "value": 100,
+            "unit": "W"
+          },
+          "raw": "USB-C power delivery 100 W"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical",
+      "verdicts": {
+        "r_usb_pd": "pass"
+      }
+    }
+  },
+  {
+    "id": "facts.pd-watts-raised-strict",
+    "name": "USB-C power 90 W → 100 W under Strict needs re-approval",
+    "category": "same-sku-facts",
+    "world": "flagship",
+    "preset": "strict",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "monitor",
+        "field": "monitor.usb_c_pd_watts",
+        "set": {
+          "value": {
+            "value": 100,
+            "unit": "W"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["strict.hard_fact_change"]
+    }
+  },
+  {
+    "id": "facts.desk-width",
+    "name": "Desk width edited 46.5 in → 49 in: no longer fits the alcove",
+    "category": "same-sku-facts",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "desk",
+        "field": "desk.width",
+        "set": {
+          "value": {
+            "value": 49,
+            "unit": "in"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_desk_width": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.monitor-diagonal",
+    "name": "Monitor diagonal edited 27 in → 24 in",
+    "category": "same-sku-facts",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "monitor",
+        "field": "monitor.diagonal",
+        "set": {
+          "value": {
+            "value": 24,
+            "unit": "in"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_monitor_size": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.monitor-resolution",
+    "name": "Monitor resolution edited 4K → 1440p",
+    "category": "same-sku-facts",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "monitor",
+        "field": "monitor.resolution",
+        "set": {
+          "value": "1440p"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_monitor_4k": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.cable-rating",
+    "name": "Cable power rating edited 100 W → 60 W",
+    "category": "same-sku-facts",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "cable",
+        "field": "cable.usb_pd_watts",
+        "set": {
+          "value": {
+            "value": 60,
+            "unit": "W"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_cable_pd": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.garment-chest",
+    "name": "Dress chest measurement edited 36.5 in → 38.5 in",
+    "category": "same-sku-facts",
+    "world": "wedding",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "dress",
+        "field": "garment.chest",
+        "set": {
+          "value": {
+            "value": 38.5,
+            "unit": "in"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "r_fit": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.fiber-blend-strict",
+    "name": "Fiber blend now includes wool; Strict re-asks on a worsened preference",
+    "category": "same-sku-facts",
+    "world": "wedding",
+    "preset": "strict",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "dress",
+        "field": "garment.fibers",
+        "set": {
+          "value": ["viscose", "wool"]
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["strict.preference_worsened"]
+    }
+  },
+  {
+    "id": "facts.fiber-blend-balanced",
+    "name": "Fiber blend now includes wool; a soft preference only notes it under Balanced",
+    "category": "same-sku-facts",
+    "world": "wedding",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "dress",
+        "field": "garment.fibers",
+        "set": {
+          "value": ["viscose", "wool"]
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical",
+      "verdicts": {
+        "r_no_wool": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.power-bank-capacity",
+    "name": "Power bank capacity edited 10,000 → 30,000 mAh (115.5 Wh)",
+    "category": "same-sku-facts",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "power_bank",
+        "field": "power_bank.capacity_mah",
+        "set": {
+          "value": {
+            "value": 30000,
+            "unit": "mAh"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "d_travel_power_bank_wh": "fail"
+      }
+    }
+  },
+  {
+    "id": "facts.bag-dimensions",
+    "name": "Bag dimensions edited to 22.5 × 14 × 9 in",
+    "category": "same-sku-facts",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "bag",
+        "field": "bag.dimensions",
+        "set": {
+          "value": {
+            "dims": [22.5, 14, 9],
+            "unit": "in"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "d_travel_carry_on_size": "fail"
+      }
+    }
+  }
+]

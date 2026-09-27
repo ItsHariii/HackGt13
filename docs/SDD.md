@@ -386,7 +386,9 @@ The user picks a preset before signing. It is stored in the contract, so it is c
 | **Always material (policy floor, cannot be relaxed)** | | | |
 | SKU, variant or GTIN change | Re-approve | Re-approve | Re-approve |
 | Seller or merchant change | Re-approve | Re-approve | Re-approve |
-| Quantity change | Re-approve | Re-approve | Re-approve |
+| Quantity change, including a pack-size change on the same SKU | Re-approve | Re-approve | Re-approve |
+| Item goes to preorder or its availability becomes unknown | Re-approve | Re-approve | Re-approve |
+| Item goes out of stock | **Block** | **Block** | **Block** |
 | New recurring or subscription commitment | Re-approve | Re-approve | Re-approve |
 | Hard verdict `pass → unknown` | Re-approve | Re-approve | Re-approve |
 | Hard verdict `pass → fail` | **Block** | **Block** | **Block** |
@@ -404,6 +406,7 @@ function consentDiff(approved: ContractBody, live: LiveState, policy: AutonomyPo
     ...economicsChanges(approved.economics, live.totals),
     ...termsChanges(approved.items, live.terms),           // final_sale, return window/fee
     ...recurringChanges(approved.items, live.items),
+    ...availabilityChanges(approved.snapshot, live.items),  // out of stock, preorder
   ];
   const classified = changes.map(c => ({ ...c, class: classify(c, policy) }));
   // class ∈ 'info' | 'auto' | 'reapprove' | 'block'

@@ -148,6 +148,7 @@ export type Database = {
       bench_runs: {
         Row: {
           created_at: string;
+          gates: NonNullable<Json>;
           git_sha: string;
           id: string;
           passed: number;
@@ -156,6 +157,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          gates?: NonNullable<Json>;
           git_sha: string;
           id?: string;
           passed: number;
@@ -164,6 +166,7 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          gates?: NonNullable<Json>;
           git_sha?: string;
           id?: string;
           passed?: number;

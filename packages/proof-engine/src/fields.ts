@@ -128,6 +128,13 @@ export const CORE_FIELDS: Readonly<Record<string, FieldDef>> = {
     authority: ["merchant_checkout"],
     freshness: "24h",
   },
+  // Units per purchase ("Pack size: 12"). A change on the same SKU is shrinkflation.
+  "product.pack_size": {
+    kind: "count",
+    label: "Pack size",
+    unit: "count",
+    authority: ["merchant_checkout", "manufacturer", "merchant"],
+  },
   "basket.merchandise_total": { kind: "money", label: "Merchandise total" },
   "basket.shipping_total": { kind: "money", label: "Shipping" },
   "basket.tax_total": { kind: "money", label: "Tax" },

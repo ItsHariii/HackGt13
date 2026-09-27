@@ -382,6 +382,8 @@ describe("home-office roles and pairs", () => {
           name: "Video inputs",
           value: "USB-C, HDMI 2.0, DisplayPort",
         },
+        // GreatHub adds this when an offer is a multipack (pack_size_shrink edits it).
+        { "@type": "PropertyValue", name: "Pack size", value: "2" },
       ],
       width: { "@type": "QuantitativeValue", value: 61.2, unitCode: "CMT" },
       offers: { "@type": "Offer", price: "329.00", priceCurrency: "USD" },
@@ -416,6 +418,12 @@ describe("home-office roles and pairs", () => {
         path: "additionalProperty[name=Video inputs].value",
         raw: "USB-C, HDMI 2.0, DisplayPort",
         value: ["USB-C", "HDMI 2.0", "DisplayPort"],
+      },
+      {
+        field: "product.pack_size",
+        path: "additionalProperty[name=Pack size].value",
+        raw: "2",
+        value: { value: 2, unit: "count" },
       },
       // The webcam map reads the same property; "3840x2160" isn't a webcam resolution.
       {

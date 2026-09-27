@@ -1,0 +1,75 @@
+[
+  {
+    "id": "availability.out-of-stock",
+    "name": "Monitor goes out of stock after you signed",
+    "category": "availability",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "monitor",
+        "set": {
+          "availability": "out_of_stock"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "bases": ["floor.out_of_stock"]
+    }
+  },
+  {
+    "id": "availability.partial-quantity",
+    "name": "Merchant can fill only 2 of the 3 bottles",
+    "category": "availability",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "qty",
+        "role": "toiletry",
+        "qty": 2
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.qty"]
+    }
+  },
+  {
+    "id": "availability.preorder",
+    "name": "Chair becomes a preorder",
+    "category": "availability",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "chair",
+        "set": {
+          "availability": "preorder"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "bases": ["floor.availability_preorder"]
+    }
+  },
+  {
+    "id": "availability.low-stock",
+    "name": "Webcam stock runs low but it still ships",
+    "category": "availability",
+    "world": "flagship",
+    "mutation": [
+      {
+        "op": "offer",
+        "role": "webcam",
+        "set": {
+          "availability": "limited"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical"
+    }
+  }
+]

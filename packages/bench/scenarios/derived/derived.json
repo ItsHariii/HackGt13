@@ -1,0 +1,131 @@
+[
+  {
+    "id": "derived.voltage-missing",
+    "name": "Cell voltage no longer stated: 38.5 Wh becomes a 37 Wh estimate and still passes",
+    "category": "derived",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "remove_fact",
+        "role": "power_bank",
+        "field": "power_bank.nominal_voltage"
+      }
+    ],
+    "expected": {
+      "classification": "identical",
+      "verdicts": {
+        "d_travel_power_bank_wh": "pass"
+      }
+    }
+  },
+  {
+    "id": "derived.boundary-under",
+    "name": "27,000 mAh with no stated voltage: 99.9 Wh (estimate) passes at the boundary",
+    "category": "derived",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "remove_fact",
+        "role": "power_bank",
+        "field": "power_bank.nominal_voltage"
+      },
+      {
+        "op": "fact",
+        "role": "power_bank",
+        "field": "power_bank.capacity_mah",
+        "set": {
+          "value": {
+            "value": 27000,
+            "unit": "mAh"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "identical",
+      "verdicts": {
+        "d_travel_power_bank_wh": "pass"
+      }
+    }
+  },
+  {
+    "id": "derived.boundary-over",
+    "name": "27,100 mAh with no stated voltage: 100.27 Wh crosses 100 Wh",
+    "category": "derived",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "remove_fact",
+        "role": "power_bank",
+        "field": "power_bank.nominal_voltage"
+      },
+      {
+        "op": "fact",
+        "role": "power_bank",
+        "field": "power_bank.capacity_mah",
+        "set": {
+          "value": {
+            "value": 27100,
+            "unit": "mAh"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "d_travel_power_bank_wh": "fail"
+      }
+    }
+  },
+  {
+    "id": "derived.stated-voltage-over",
+    "name": "26,000 mAh at the stated 3.85 V is 100.1 Wh",
+    "category": "derived",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "power_bank",
+        "field": "power_bank.capacity_mah",
+        "set": {
+          "value": {
+            "value": 26000,
+            "unit": "mAh"
+          }
+        }
+      }
+    ],
+    "expected": {
+      "classification": "block",
+      "verdicts": {
+        "d_travel_power_bank_wh": "fail"
+      }
+    }
+  },
+  {
+    "id": "derived.capacity-unreadable",
+    "name": "Capacity can't be read, so Wh can't be derived",
+    "category": "derived",
+    "world": "carry-on",
+    "mutation": [
+      {
+        "op": "fact",
+        "role": "power_bank",
+        "field": "power_bank.capacity_mah",
+        "set": {
+          "value": null,
+          "state": "unknown",
+          "reason": "insufficient_evidence",
+          "raw": "Capacity: see box"
+        }
+      }
+    ],
+    "expected": {
+      "classification": "reapprove",
+      "verdicts": {
+        "d_travel_power_bank_wh": "unknown"
+      }
+    }
+  }
+]

@@ -13,8 +13,8 @@ import {
  * Live attacks for /bench (TASKS T11.12). Each one edits GreatHub's
  * checkout the way the Gremlin would, then runs the real consent diff
  * against signed contract v7. Nothing here decides an outcome: the
- * engine's classification is the result. The full 62-scenario ProofBench
- * suite is Phase 16.
+ * engine's classification is the result. The full scenario suite is
+ * packages/bench, run in CI (docs/PHASE16.md).
  */
 
 export type LiveCase = {

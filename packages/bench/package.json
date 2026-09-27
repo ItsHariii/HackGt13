@@ -10,6 +10,19 @@
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "bench": "jiti src/cli/run.ts",
+    "bench:publish": "jiti src/cli/publish.ts"
+  },
+  "dependencies": {
+    "@cartel/contracts": "workspace:*",
+    "@cartel/proof-engine": "workspace:*",
+    "@cartel/rule-packs": "workspace:*",
+    "@cartel/tap": "workspace:*",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "2.117.2",
+    "jiti": "^2.7.0"
   }
 }

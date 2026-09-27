@@ -90,6 +90,7 @@ export async function consentDiff(
     ...deliveryChanges(pairs, approvedView, requirements),
     ...termsChanges(pairs),
     ...recurringChanges(pairs),
+    ...availabilityChanges(pairs, approvedView),
   ];
 
   const ctx = classifyContext(contract, changes);
@@ -535,6 +536,40 @@ function recurringChanges(pairs: readonly Pair[]): Change[] {
   return out;
 }
 
+/** Availability as the checkout states it, falling back to the offer's own field. */
+function availabilityOf(item: LiveItem): Offer["availability"] {
+  const v = item.get("offer.availability").value;
+  return typeof v === "string" && AVAILABILITY.includes(v)
+    ? (v as Offer["availability"])
+    : item.offer.availability;
+}
+
+const AVAILABILITY: readonly string[] = [
+  "in_stock",
+  "limited",
+  "out_of_stock",
+  "preorder",
+  "unknown",
+];
+
+function availabilityChanges(
+  pairs: readonly Pair[],
+  approvedView: View,
+): Change[] {
+  const out: Change[] = [];
+  for (const { role, before, after } of pairs) {
+    if (!before || !after || before.sku !== after.offer.sku) continue;
+    const old = approvedView.items.find(
+      (i) => i.role === role && i.offer.sku === before.sku,
+    );
+    if (!old) continue;
+    const b = availabilityOf(old);
+    const a = availabilityOf(after);
+    if (b !== a) out.push({ kind: "availability", role, before: b, after: a });
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------- policy
 
 export type ClassifyContext = {
@@ -610,6 +645,9 @@ export function classify(
     }
 
     case "fact": {
+      // Fewer units for the same SKU is a quantity change in disguise.
+      if (change.field === PACK_SIZE)
+        return { class: "reapprove", basis: "floor.pack_size" };
       const onFactChange = ctx.requirements.some(
         (r) => r.materiality === "on_fact_change" && r.field === change.field,
       );
@@ -662,12 +700,30 @@ export function classify(
         : { class: "auto", basis: `${preset}.delivery_later_within_deadline` };
     }
 
+    case "availability": {
+      // The signed item can't ship: paying now would buy something else or nothing.
+      if (change.after === "out_of_stock")
+        return { class: "block", basis: "floor.out_of_stock" };
+      if (change.after === "preorder" || change.after === "unknown")
+        return {
+          class: "reapprove",
+          basis: `floor.availability_${change.after}`,
+        };
+      return SELLABLE.includes(change.before)
+        ? { class: "info", basis: "policy.availability_sellable" }
+        : { class: "auto", basis: "policy.availability_restored" };
+    }
+
     case "terms":
       return change.direction === "improved"
         ? { class: "auto", basis: "policy.terms_improved" }
         : { class: "reapprove", basis: "policy.terms_worsened" };
   }
 }
+
+const PACK_SIZE = "product.pack_size";
+
+const SELLABLE: readonly string[] = ["in_stock", "limited"];
 
 /**
  * An increase is automatic only within **both** the percentage and the
@@ -699,7 +755,8 @@ const KIND_ORDER: Record<Change["kind"], number> = {
   terms: 3,
   delivery: 4,
   recurring: 5,
-  fact: 6,
+  availability: 6,
+  fact: 7,
 };
 
 /** Within a kind: the total before line prices, identity in the order a person reads it. */

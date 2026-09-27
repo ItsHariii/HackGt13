@@ -10,6 +10,8 @@ node_modules/
 .turbo/
 dist/
 coverage/
+bench-results/
+db-report.json
 
 # supabase local
 supabase/.branches/

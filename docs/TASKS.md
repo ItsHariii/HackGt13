@@ -501,7 +501,7 @@ Implementation notes: [PHASE11.md](PHASE11.md). The flagship plan (`/plans/flags
 - [x] **T11.11 Mandates** `/mandates`: active, fired, blocked and expired; next check; cancel (Phase 14's page with arm and cancel, plus the demo plan's blocked mandate.)
 - [ ] **T11.12 Bench** `/bench`: the latest CI run ("62 / 62 caught · 0 false blocks"), a Gremlin-vs-Guard strip of three attack cards, per-category rows (Identity … Security caught, Benign allowed), a scenario list with expected vs actual, **Run live**
   - [x] Gremlin-vs-Guard strip and **Run live**: five live attacks through the real consent diff, expected vs actual, counter from `useBenchProgress`.
-  - [ ] Latest CI run and per-category rows: rendered from `bench_runs` when a run exists; the 62-scenario suite is Phase 16.
+  - [x] Latest CI run, release gates and per-category rows from `bench_runs` (Phase 16).
 - [x] **T11.13 Settings**: `/settings/payment` (Microform card entry; shows brand, last 4 and expiry) and `/settings/signing` (register or remove the signing passkey)
   - [x] `/settings/payment` (Phase 13) and `/settings/signing`: Phase 12's register flow, plus Remove through RLS.
 - [x] **T11.14 States pass**
@@ -605,17 +605,22 @@ Migration `0015_mandates.sql`; worker in `apps/web/lib/mandate-service.ts` (pure
 
 ## Phase 16: ProofBench and test suites (E lead, everyone contributes scenarios)
 
-- [ ] **T16.1 Scenario format and runner**: YAML/JSON under `packages/bench/scenarios/**`; the runner uses the pure engine (plus the DB guard for execution scenarios); JUnit and JSON output
-- [ ] **T16.2 Author ≥ 62 scenarios** per SDD §22.2 (identity 8, same-SKU facts 8, economics 8, terms 6, delivery 4, availability 3, recurring 3, evidence 8, derived 4, security 5, benign 5)
-- [ ] **T16.3 CI integration**: the bench runs on every PR; results upsert into `bench_runs` from `main`; `/bench` reads them
-- [ ] **T16.4 Guard integration suite**: one test per rejection code + idempotency + token reuse (extends T2.7)
-- [ ] **T16.5 Retry fuzz**: 200 randomized execute calls with duplicated idempotency keys, timeouts and webhook replays → exactly one execution and one order per key
+Implementation, commands and limits: [PHASE16.md](PHASE16.md). The bench found two engine gaps (out-of-stock and pack-size shrink passed as `identical`); both are fixed in the Consent Diff.
+
+- [x] **T16.1 Scenario format and runner**: YAML/JSON under `packages/bench/scenarios/**`; the runner uses the pure engine (plus the DB guard for execution scenarios); JUnit and JSON output
+  - JSON scenarios over three signed worlds (flagship v7, wedding, carry-on) plus TAP agent-request scenarios; `pnpm bench` writes `results.json` + `junit.xml`. Execution scenarios live in the DB suites (T16.4, T16.5) and feed the gates.
+- [x] **T16.2 Author ≥ 62 scenarios** per SDD §22.2 (identity 8, same-SKU facts 8, economics 8, terms 6, delivery 4, availability 3, recurring 3, evidence 8, derived 4, security 5, benign 5)
+  - 84 scenarios, every category at or above its minimum; 84/84 as expected.
+- [x] **T16.3 CI integration**: the bench runs on every PR; results upsert into `bench_runs` from `main`; `/bench` reads them
+  - `bench` job after `database`; `bench:publish` on `main` needs the repo secrets `SUPABASE_URL` and `SUPABASE_SECRET_KEY` (skips without them). Migration `0017_bench_gates.sql`.
+- [x] **T16.4 Guard integration suite**: one test per rejection code + idempotency + token reuse (extends T2.7)
+- [x] **T16.5 Retry fuzz**: 200 randomized execute calls with duplicated idempotency keys, timeouts and webhook replays → exactly one execution and one order per key
 - [ ] **T16.6 E2E** (Playwright, run locally or in CI)
-  - [ ] Happy path: brief (AI off, form) → sign (virtual authenticator) → pay (Simulated rail in CI) → order.
-  - [ ] Trap path: sign → mutate → execute → paused → re-sign → pay.
-  - [ ] Keyboard-only run of the trap path.
-  - [ ] `@axe-core/playwright`: 0 critical or serious violations on every route.
-- [ ] **T16.7 Release gates** (SDD §22.2) are recorded on `/bench`
+  - [ ] Happy path: brief (AI off, form) → sign (virtual authenticator) → pay (Simulated rail in CI) → order. Blocked: no UI flow drafts a signable contract from a saved plan yet (PHASE11.md "Still open").
+  - [ ] Trap path: sign → mutate → execute → paused → re-sign → pay. Same blocker.
+  - [x] Keyboard-only run of the trap path. The screens only, on the demo plan (`test:keyboard`); signing and paying can't run there.
+  - [x] `@axe-core/playwright`: 0 critical or serious violations on every route. `test:a11y`, 0 violations of any impact, 70 page/theme/viewport runs; run locally, not yet in CI.
+- [x] **T16.7 Release gates** (SDD §22.2) are recorded on `/bench`
 
 ---
 

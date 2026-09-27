@@ -1,5 +1,6 @@
-// axe-core accessibility check for the Phase 10 and Phase 11 pages (TASKS T10.3: every
-// component axe-clean in both themes). Run against a running app:
+// axe-core accessibility check for every route (TASKS T10.3: every component axe-clean in both
+// themes; T16.6: 0 critical or serious violations on every route). Fails on any violation.
+// Run against a running app:
 //   pnpm --filter @cartel/web build && pnpm --filter @cartel/web start
 //   A11Y_BASE_URL=http://localhost:3000 pnpm --filter @cartel/web test:a11y
 // Set PLAYWRIGHT_CHROMIUM to a Chromium binary if Playwright's own isn't installed.
@@ -36,7 +37,11 @@ const pages = [
   ["/ledger/flagship", "light"],
   ["/mandates", "light"],
   ["/bench", "light"],
-  ["/settings/signing", "light"],
+  ["/bench", "dark"],
+  ["/plans/flagship/evidence/r_usb_pd", "light"],
+  ["/workspace", "light"],
+  ["/foundation", "light"],
+  ["/settings/payment", "light"],
   ["/explore", "light"],
   ["/search?q=monitor", "light"],
   ["/p/dm_halden_m27q", "light"],

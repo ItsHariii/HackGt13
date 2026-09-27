@@ -70,6 +70,7 @@ export const travel = definePack({
     },
   },
   jsonLd: {
+    "product.pack_size": ["additionalProperty[name=Pack size].value"],
     "bag.dimensions": ["additionalProperty[name=Dimensions].value", "size"],
     "bag.weight": ["weight"],
     "power_bank.capacity_mah": ["additionalProperty[name=Capacity].value"],

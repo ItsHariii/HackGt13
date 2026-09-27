@@ -11,6 +11,7 @@
     "lint": "biome check .",
     "test:realtime": "node scripts/realtime-smoke.mjs",
     "test:a11y": "node scripts/a11y.mjs",
+    "test:keyboard": "node scripts/keyboard-trap.mjs",
     "test:perf": "node scripts/perf-figures.mjs"
   },
   "dependencies": {
