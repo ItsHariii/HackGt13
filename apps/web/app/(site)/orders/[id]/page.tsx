@@ -47,22 +47,26 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
     ];
     return (
       <main className="dot-grid text-graphite">
-        <div className="mx-auto grid max-w-[1180px] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[420px_minmax(0,1fr)]">
+        <div className="mx-auto grid max-w-[1440px] gap-[72px] px-5 pb-16 sm:px-10 lg:grid-cols-[520px_minmax(0,1fr)] xl:px-[120px]">
           <Receipt order={order} />
-          <div className="flex flex-col gap-6">
-            <HighFive h={120} />
+          <div className="flex flex-col gap-9 pt-10 lg:pt-[72px]">
+            <HighFive h={150} />
             <p className="flex flex-wrap items-center gap-2 font-semibold text-meta text-muted uppercase tracking-label">
               {order.title} · Order {order.id} <DemoNote />
             </p>
-            <h1 className="font-semibold font-serif text-h2 tracking-heading">
-              Paid. Exactly what you approved.
-            </h1>
-            <p className="max-w-[56ch] text-body text-graphite-2">
-              Contract v{order.contractVersion} was re-checked against the live
-              checkout at {order.when}. Every hard rule passed, so the payment
-              went through.
-            </p>
-            <GuardStepper steps={order.steps} label="Order progress" />
+            <div className="-mt-6 flex flex-col gap-2.5">
+              <h1 className="font-semibold font-serif text-[38px] leading-[1.05] tracking-[-0.03em] sm:text-[48px]">
+                Paid. Exactly what you approved.
+              </h1>
+              <p className="max-w-[560px] text-[18px] text-graphite-2 leading-normal">
+                Contract v{order.contractVersion} was re-checked against the
+                live checkout at {order.when}. Every hard rule passed, so the
+                payment went through.
+              </p>
+            </div>
+            <div className="max-w-[620px]">
+              <GuardStepper steps={order.steps} label="Order status" />
+            </div>
             <div className="flex flex-wrap gap-3">
               <Button asChild>
                 <a href={`/orders/${order.id}/evidence-pack`} download>
@@ -89,6 +93,27 @@ export default async function OrderPage({ params }: PageProps<"/orders/[id]">) {
               scans={[]}
               samples={samples}
             />
+            <p className="flex max-w-[620px] items-center gap-2.5 border-rule border-t pt-[18px] text-[13.5px] text-graphite-2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden="true"
+                className="shrink-0"
+              >
+                <path d="M8 1.5l5.5 2v4c0 3.3-2.4 5.9-5.5 7-3.1-1.1-5.5-3.7-5.5-7v-4z" />
+                <path
+                  d="M5.5 8l1.8 1.8L10.8 6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Verified agent Cartel (RFC 9421) · Customer-signed contract
+              verified by the merchant
+            </p>
             <p className="flex flex-wrap gap-x-4 gap-y-1 text-small">
               <Link
                 href={`/ledger/${FLAGSHIP}`}
