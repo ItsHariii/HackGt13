@@ -38,6 +38,7 @@ export const MERCHANT_NAME: Record<string, string> = {
   shopify: "Shopify Catalog",
   upcitemdb: "UPCitemdb",
   icecat: "Icecat",
+  openfoodfacts: "Open Food Facts",
 };
 
 export function uiTier(

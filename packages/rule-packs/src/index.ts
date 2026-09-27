@@ -1,5 +1,6 @@
 import type { Pack } from "@cartel/proof-engine";
 import { apparel } from "./apparel";
+import { grocery } from "./grocery";
 import { homeOffice } from "./home-office";
 import { travel } from "./travel";
 
@@ -9,6 +10,7 @@ export {
   RESHIP_DAYS,
   RETURN_TRANSIT_DAYS,
 } from "./apparel";
+export { grocery, PHYSICAL_LABEL_CAVEAT } from "./grocery";
 export { homeOffice, requiredLaptopWatts } from "./home-office";
 export { NOMINAL_CELL_VOLTAGE, travel } from "./travel";
 
@@ -17,6 +19,7 @@ export const PACKS: Readonly<Record<string, Pack>> = Object.freeze({
   [homeOffice.id]: homeOffice,
   [apparel.id]: apparel,
   [travel.id]: travel,
+  [grocery.id]: grocery,
 });
 
 /** The packs a contract or report names, in a stable order. Throws on an unknown ID or version. */

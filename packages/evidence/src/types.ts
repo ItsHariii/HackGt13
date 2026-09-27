@@ -111,7 +111,7 @@ export type Availability =
 
 /** A product as one source describes it, before identity resolution (SDD §11.5). */
 export type NormalizedProduct = {
-  source: "shopify" | "upcitemdb" | "icecat" | "greathub";
+  source: "shopify" | "upcitemdb" | "icecat" | "greathub" | "openfoodfacts";
   externalId: string;
   title: string;
   brand?: string;

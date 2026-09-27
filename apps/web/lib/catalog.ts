@@ -3,6 +3,7 @@ import {
   type CatalogProduct,
   fromTransient,
   mapIcecat,
+  mapOpenFoodFacts,
   normalizeProduct,
   type SearchProvider,
   transientSnapshotStore,
@@ -16,6 +17,7 @@ import {
 } from "@cartel/catalog/supabase";
 import {
   createIcecat,
+  createOpenFoodFacts,
   createShopifyCatalog,
   createUpcItemDb,
   type FetchLike,
@@ -113,7 +115,9 @@ export function catalogProviders(): SearchProvider[] {
   // checker, not a product catalog; unsupported stretch adapters are not advertised.
   return [...sources()]
     .filter((source) =>
-      ["greathub", "upcitemdb", "shopify", "icecat"].includes(source),
+      ["greathub", "upcitemdb", "shopify", "icecat", "openfoodfacts"].includes(
+        source,
+      ),
     )
     .map((source) => ({
       source,
@@ -163,6 +167,29 @@ export function catalogProviders(): SearchProvider[] {
                     .map((p) => storeProduct(db, p, result.source, ALL_PACKS)),
                 )),
               );
+            }
+            return localSearch(db, query, source, limit, signal, ids);
+          }
+          if (source === "openfoodfacts") {
+            // Barcode lookups only: grocery facts for one exact product.
+            const gtin = normalizeGtin(query);
+            if (gtin) {
+              const result = await createOpenFoodFacts({
+                store,
+                userAgent: process.env.OFF_USER_AGENT ?? "",
+                fetch: boundedFetch(signal),
+                timeoutMs: 2400,
+              }).byGtin(gtin);
+              signal.throwIfAborted();
+              if (result.product)
+                ids.push(
+                  await storeProduct(
+                    db,
+                    mapOpenFoodFacts(result.product, ALL_PACKS, gtin),
+                    result.source,
+                    ALL_PACKS,
+                  ),
+                );
             }
             return localSearch(db, query, source, limit, signal, ids);
           }

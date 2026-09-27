@@ -1,0 +1,19 @@
+{
+  "code": "3017620422003",
+  "product": {
+    "allergens_tags": ["en:milk", "en:nuts", "en:soybeans"],
+    "brands": "Nutella, Ferrero",
+    "categories": "Confectionary based spreads, Petit-déjeuners, Produits à tartiner, Produits à tartiner sucrés, Pâtes à tartiner, fr:Nutella, fr:Nuttela",
+    "code": "3017620422003",
+    "image_front_url": "https://images.openfoodfacts.org/images/products/301/762/042/2003/front_en.879.400.jpg",
+    "ingredients_text": "Sucre, huile de palme, NOISETTES 13%, cacao maigre 7,4%, LAIT écrémé en poudre 6,6%, LACTOSERUM en poudre, émulsifiants: lécithines [SOJA), vanilline. Sans gluten.",
+    "ingredients_text_en": "Sugar, vegetable fat (palm), hazelnuts (13%), skimmed milk powder (8.7%), fat-reduced cocoa powder (7.4%), emulsifier: lecithins (soya), flavouring (vanillin).",
+    "labels_tags": ["en:vegetarian", "en:no-gluten", "fr:triman"],
+    "product_name": "Nutella",
+    "product_name_en": "Nutella",
+    "quantity": "400 g e",
+    "traces_tags": []
+  },
+  "status": 1,
+  "status_verbose": "product found"
+}

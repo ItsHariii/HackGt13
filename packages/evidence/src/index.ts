@@ -3,6 +3,7 @@
 export * from "./adapters/cpsc";
 export * from "./adapters/greathub";
 export * from "./adapters/icecat";
+export * from "./adapters/openfoodfacts";
 export * from "./adapters/roles";
 export * from "./adapters/shopify";
 export * from "./adapters/upcitemdb";

@@ -5,12 +5,13 @@
  * always change it; it only picks the default rules offered.
  */
 
-export type PackId = "home-office" | "apparel" | "travel";
+export type PackId = "home-office" | "apparel" | "travel" | "grocery";
 
 export const PACK_TITLE: Record<PackId, string> = {
   "home-office": "Home office",
   apparel: "Apparel",
   travel: "Travel",
+  grocery: "Grocery",
 };
 
 const KEYWORDS: Record<PackId, readonly string[]> = {
@@ -54,6 +55,17 @@ const KEYWORDS: Record<PackId, readonly string[]> = {
     "adapter",
     "liquids",
     "toiletr",
+  ],
+  grocery: [
+    "grocer",
+    "allerg",
+    "gluten",
+    "peanut",
+    "dairy",
+    "snack",
+    "cereal",
+    "food",
+    "ingredient",
   ],
 };
 
