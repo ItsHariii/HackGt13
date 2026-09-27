@@ -24,6 +24,8 @@ const TOPIC: Record<string, string> = {
   home_office: "home-office",
   apparel: "apparel",
   travel: "travel",
+  grocery: "grocery",
+  party: "party",
 };
 
 export async function generateMetadata({

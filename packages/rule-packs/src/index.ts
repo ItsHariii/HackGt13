@@ -2,6 +2,7 @@ import type { Pack } from "@cartel/proof-engine";
 import { apparel } from "./apparel";
 import { grocery } from "./grocery";
 import { homeOffice } from "./home-office";
+import { party } from "./party";
 import { travel } from "./travel";
 
 export {
@@ -12,6 +13,7 @@ export {
 } from "./apparel";
 export { grocery, PHYSICAL_LABEL_CAVEAT } from "./grocery";
 export { homeOffice, requiredLaptopWatts } from "./home-office";
+export { party } from "./party";
 export { NOMINAL_CELL_VOLTAGE, travel } from "./travel";
 
 /** Every pack Cartel ships, by ID. */
@@ -20,6 +22,7 @@ export const PACKS: Readonly<Record<string, Pack>> = Object.freeze({
   [apparel.id]: apparel,
   [travel.id]: travel,
   [grocery.id]: grocery,
+  [party.id]: party,
 });
 
 /** The packs a contract or report names, in a stable order. Throws on an unknown ID or version. */

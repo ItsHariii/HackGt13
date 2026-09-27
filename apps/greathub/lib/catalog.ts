@@ -1,4 +1,5 @@
 import "server-only";
+import type { DEPARTMENTS } from "./labels";
 import { db } from "./supabase/admin";
 import type { Json } from "./supabase/db";
 
@@ -54,7 +55,7 @@ export interface ProductSummary {
   slug: string;
   brand: string;
   name: string;
-  department: "home_office" | "apparel" | "travel";
+  department: keyof typeof DEPARTMENTS;
   category: string;
   roles: string[];
   description: string;

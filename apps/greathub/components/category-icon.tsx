@@ -3,6 +3,9 @@ import {
   Backpack,
   BatteryCharging,
   Cable,
+  Cake,
+  Cookie,
+  CupSoda,
   Droplets,
   Footprints,
   Gem,
@@ -12,11 +15,14 @@ import {
   Mic,
   Monitor,
   Package,
+  PartyPopper,
   Plug,
   Shirt,
   Table2,
   Usb,
+  UtensilsCrossed,
   Webcam,
+  Wheat,
 } from "lucide-react";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -38,6 +44,12 @@ const ICONS: Record<string, LucideIcon> = {
   power: BatteryCharging,
   toiletries: Droplets,
   organization: Backpack,
+  cakes: Cake,
+  snacks: Cookie,
+  drinks: CupSoda,
+  tableware: UtensilsCrossed,
+  decorations: PartyPopper,
+  bakery: Wheat,
 };
 
 export function CategoryIcon({
@@ -51,6 +63,12 @@ export function CategoryIcon({
 }) {
   const Icon =
     ICONS[category] ??
-    (department === "apparel" ? Gem : department === "travel" ? Plug : Package);
+    (department === "apparel"
+      ? Gem
+      : department === "travel"
+        ? Plug
+        : department === "party"
+          ? PartyPopper
+          : Package);
   return <Icon size={size} strokeWidth={1} aria-hidden="true" />;
 }

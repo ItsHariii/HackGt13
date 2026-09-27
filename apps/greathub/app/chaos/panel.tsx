@@ -337,17 +337,19 @@ export function ChaosPanel({
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
               >
-                {["home_office", "apparel", "travel"].map((d) => (
-                  <optgroup key={d} label={d.replace("_", " ")}>
-                    {skus
-                      .filter((s) => s.department === d)
-                      .map((s) => (
-                        <option key={s.sku} value={s.sku}>
-                          {s.sku} · {s.title}
-                        </option>
-                      ))}
-                  </optgroup>
-                ))}
+                {["home_office", "apparel", "travel", "grocery", "party"].map(
+                  (d) => (
+                    <optgroup key={d} label={d.replace("_", " ")}>
+                      {skus
+                        .filter((s) => s.department === d)
+                        .map((s) => (
+                          <option key={s.sku} value={s.sku}>
+                            {s.sku} · {s.title}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ),
+                )}
               </select>
               {spec.params.map((p) => (
                 <div key={p.key} className="gh-field">
