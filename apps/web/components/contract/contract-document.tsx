@@ -7,10 +7,8 @@ import { ContractDiff, type DiffLine } from "@/components/cartel/contract-diff";
 import { HashPill } from "@/components/cartel/hash-pill";
 import { Figure } from "@/components/doodle/figure";
 import { useSequence } from "@/components/doodle/use-frames";
-import { Stamp } from "@/components/paper/stamp";
 import { StatusMark } from "@/components/paper/status-mark";
 import { SignContract } from "@/components/signing/sign-contract";
-import { Button } from "@/components/ui/button";
 import { type ContractView, signReady } from "@/lib/contract-view";
 import { cn } from "@/lib/utils";
 
@@ -91,20 +89,26 @@ export function ContractDocument({
   const waivable = view.rules.filter((r) => r.waivable);
   const passing = view.rules.filter((r) => r.status === "pass").length;
 
+  const short = (h: string) =>
+    h.startsWith("sha256:") ? `sha256:${h.slice(7, 11)}…${h.slice(-4)}` : h;
+
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 pb-32 lg:grid-cols-[180px_minmax(0,880px)_180px] lg:justify-center">
-      <nav aria-label="Contract sections" className="hidden lg:block">
-        <p className="mb-2 font-semibold text-meta text-muted uppercase tracking-label">
-          Sections
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-10 pt-6 pb-40 lg:grid-cols-[200px_minmax(0,880px)_200px] lg:justify-center lg:pt-12">
+      <nav
+        aria-label="Contract sections"
+        className="hidden pt-[120px] text-[14px] lg:block"
+      >
+        <p className="mb-2.5 font-bold text-[12px] text-muted tracking-[0.1em]">
+          SECTIONS
         </p>
-        <ol className="sticky top-6 flex flex-col gap-1 text-small">
+        <ol className="sticky top-6 flex flex-col gap-0.5">
           {SECTIONS.map(([key, label], i) => (
             <li key={key}>
               <a
                 href={`#${id}-${key}`}
-                className="flex min-h-7 items-center gap-2 rounded-[5px] px-2 hover:bg-paper-raised"
+                className="flex gap-2.5 py-1.5 text-graphite no-underline hover:underline"
               >
-                <span className="num text-muted">{i + 1}</span>
+                <span className="w-[18px] font-mono text-muted">{i + 1}</span>
                 {label}
               </a>
             </li>
@@ -114,41 +118,52 @@ export function ContractDocument({
 
       <article
         aria-labelledby={`${id}-title`}
-        className="sheet-formal relative flex flex-col gap-8 px-6 py-10 text-graphite outline outline-1 outline-rule -outline-offset-[7px] sm:px-14"
+        className="relative border border-graphite bg-paper-sheet px-6 pt-14 pb-[60px] font-serif text-graphite shadow-[0_1px_2px_rgb(43_42_40/.08)] outline outline-1 outline-graphite -outline-offset-[7px] sm:px-[88px] sm:pt-[72px]"
       >
-        <header className="flex flex-col items-center gap-2 text-center">
-          <p className="font-semibold text-meta text-muted uppercase tracking-[0.1em]">
+        {view.signedAt && (
+          <div className="absolute top-[218px] right-14 z-[2] hidden -rotate-[7deg] flex-col items-center gap-0.5 rounded-[3px] border-[3.5px] border-red-pen bg-paper-sheet/20 px-[18px] pt-2 pb-[7px] text-red-pen outline outline-[1.5px] outline-red-pen outline-offset-4 [filter:url(#stamp)] sm:flex">
+            <span className="font-mono font-semibold text-[30px] leading-none tracking-[0.16em]">
+              SIGNED v{view.version}
+            </span>
+            <span className="font-medium font-mono text-[14px] uppercase tracking-[0.12em]">
+              {view.signedAt.replace(/ UTC$/, "")}
+            </span>
+          </div>
+        )}
+        <header className="flex flex-col gap-3.5 border-graphite border-b-[3px] border-double pb-[22px]">
+          <p className="text-center font-sans font-semibold text-[12px] text-muted uppercase tracking-[0.14em]">
             {view.title}
             {revision ? ` · Revised from v${view.version - 1}` : ""}
           </p>
           <h1
             id={`${id}-title`}
-            className="font-semibold font-serif text-h3 uppercase tracking-[0.1em]"
+            className="text-center font-bold text-[26px] uppercase leading-[1.1] tracking-[0.1em] sm:text-[34px]"
           >
             Purchase contract v{view.version}
           </h1>
-          <p className="font-serif text-graphite-2 text-ui italic">
-            Between you (the Buyer) and Cartel (the Agent)
+          <p className="text-center font-mono text-[12.5px] text-muted">
+            Contract No. {view.number} · {short(view.hash)}
           </p>
-          <p className="flex flex-wrap items-center justify-center gap-2 text-muted text-small">
-            Contract No. <span className="num">{view.number}</span> ·
+          <div className="flex flex-wrap items-center gap-4 font-sans text-[13.5px] text-graphite-2">
+            <span>
+              Between <span className="font-semibold">you (the Buyer)</span> and{" "}
+              <span className="font-semibold">Cartel (the Agent)</span>
+            </span>
             <HashPill hash={view.hash} />
-          </p>
+          </div>
           {view.signedAt && (
-            <div className="rotate-[-6deg] md:absolute md:top-6 md:right-8">
-              <Stamp tone="signed" detail={view.signedAt}>
-                {`SIGNED v${view.version}`}
-              </Stamp>
-            </div>
+            <span className="self-start font-sans font-semibold text-[13px] text-red-pen sm:hidden">
+              Signed v{view.version} · {view.signedAt}
+            </span>
           )}
         </header>
 
         {revision && (
           <section
             aria-label="Changes from the previous version"
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-3 pt-[30px]"
           >
-            <p className="font-serif text-body">{revision.reason}</p>
+            <p className="text-[16.5px] leading-[1.65]">{revision.reason}</p>
             <ContractDiff
               from={`v${view.version - 1}`}
               to={`v${view.version}`}
@@ -159,55 +174,73 @@ export function ContractDocument({
         )}
 
         <Clause id={`${id}-intent`} n={1} title="Intent">
-          <p>1.1 What you asked for, in your words:</p>
-          <blockquote className="border-rule border-l-2 pl-4 italic">
-            “{view.intent}”
-          </blockquote>
+          <Para n="1.1">
+            The Buyer asked for the following, in their own words:
+            <blockquote className="mt-2.5 border-graphite border-l-2 py-0.5 pl-[18px] text-graphite-2 italic">
+              “{view.intent}”
+            </blockquote>
+          </Para>
         </Clause>
 
         <Clause id={`${id}-items`} n={2} title="Approved items">
-          <p>
-            2.1 Only these items, from merchant {view.merchant}, may be
+          <Para n="2.1" className="mb-3">
+            Only these items, from merchant{" "}
+            <span className="font-semibold">{view.merchant}</span>, may be
             purchased.
-          </p>
+          </Para>
           <div
             // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
             tabIndex={0}
-            className="relative overflow-x-auto"
+            className="overflow-x-auto sm:ml-10"
           >
-            <table className="w-full min-w-[560px] border-collapse text-left font-sans text-small">
-              <thead className="text-meta text-muted uppercase tracking-label">
-                <tr className="border-graphite border-b">
+            <table className="w-full min-w-[560px] border-graphite border-y font-sans">
+              <thead>
+                <tr className="border-graphite border-b text-left font-semibold text-[11.5px] text-muted tracking-[0.08em]">
                   <th scope="col" className="py-2 pr-3 font-semibold">
-                    Item
+                    ITEM
                   </th>
-                  <th scope="col" className="py-2 pr-3 font-semibold">
+                  <th scope="col" className="w-[110px] py-2 pr-3 font-semibold">
                     SKU
                   </th>
-                  <th scope="col" className="py-2 pr-3 font-semibold">
-                    Seller
+                  <th scope="col" className="w-[90px] py-2 pr-3 font-semibold">
+                    SELLER
                   </th>
                   <th
                     scope="col"
-                    className="py-2 pr-3 text-right font-semibold"
+                    className="w-10 py-2 pr-3 text-right font-semibold"
                   >
-                    Qty
+                    QTY
                   </th>
-                  <th scope="col" className="py-2 text-right font-semibold">
-                    Unit
+                  <th
+                    scope="col"
+                    className="w-[90px] py-2 text-right font-semibold"
+                  >
+                    UNIT
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {view.items.map((it) => (
-                  <tr key={it.sku} className="border-rule-soft border-b">
-                    <th scope="row" className="py-2 pr-3 font-semibold">
+                  <tr
+                    key={it.sku}
+                    className="border-rule-soft border-b text-[14.5px] last:border-b-0"
+                  >
+                    <th
+                      scope="row"
+                      className="py-[9px] pr-3 text-left font-normal"
+                    >
                       {it.title}
                     </th>
-                    <td className="num py-2 pr-3">{it.sku}</td>
-                    <td className="num py-2 pr-3 text-muted">{it.seller}</td>
-                    <td className="num py-2 pr-3 text-right">{it.qty}</td>
-                    <td className="num py-2 text-right">{it.unit}</td>
+                    <td className="py-[9px] pr-3 font-mono text-[13px]">
+                      {it.sku}
+                    </td>
+                    <td className="py-[9px] pr-3 text-[13.5px]">{it.seller}</td>
+                    <td className="py-[9px] pr-3 text-right font-mono text-[13.5px]">
+                      {it.qty}
+                    </td>
+                    <td className="num py-[9px] text-right text-[13.5px]">
+                      {it.unit}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -216,38 +249,46 @@ export function ContractDocument({
         </Clause>
 
         <Clause id={`${id}-rules`} n={3} title="Hard rules">
-          <p>
-            3.1 Each rule below must pass against the live checkout before any
-            payment. {passing} of {view.rules.length} pass today
-            {waivable.length
-              ? `; ${waivable.length} can't be checked (§4)`
-              : ""}
-            .
-          </p>
-          <ol className="flex flex-col font-sans text-ui">
+          <Para n="3.1" className="mb-2.5">
+            Each rule below must pass against the live checkout before any
+            payment.{" "}
+            {passing === view.rules.length
+              ? `All ${passing} pass today.`
+              : `${passing} of ${view.rules.length} pass today${
+                  waivable.length
+                    ? `; ${waivable.length} can't be checked (§4)`
+                    : ""
+                }.`}
+          </Para>
+          <ol className="grid gap-x-7 font-sans sm:ml-10 sm:grid-cols-2">
             {view.rules.map((r, i) => (
               <li
                 key={r.id}
                 className={cn(
-                  "flex flex-wrap items-center justify-between gap-2 border-rule-soft border-b py-2",
-                  r.status === "fail" && "bg-red-pen-wash px-2",
+                  "grid grid-cols-[18px_30px_1fr] items-center gap-2 border-rule-soft border-b py-[7px] text-[14.5px]",
+                  r.status === "fail" && "bg-red-pen-wash",
                 )}
               >
-                <span>
-                  <span className="num mr-2 text-muted">3.{i + 2}</span>
-                  {r.text}
-                </span>
                 <StatusMark
                   status={r.status === "cant" ? "unknown" : r.status}
+                  hideLabel
                   label={
-                    r.status === "cant" ? "Can't check · see §4" : undefined
+                    r.status === "cant"
+                      ? "Can't check, see §4"
+                      : r.status === "fail"
+                        ? "Fail"
+                        : "Pass"
                   }
                 />
+                <span className="font-mono text-[12px] text-muted">
+                  3.{i + 2}
+                </span>
+                <span>{r.text}</span>
               </li>
             ))}
           </ol>
           {view.preferences.length > 0 && (
-            <p className="text-muted text-small">
+            <p className="mt-2.5 font-sans text-[13.5px] text-muted sm:ml-10">
               Preferences (ranked, never blocking):{" "}
               {view.preferences.join("; ")}.
             </p>
@@ -256,269 +297,346 @@ export function ContractDocument({
 
         <Clause id={`${id}-waivers`} n={4} title="Waivers">
           {waivable.length === 0 ? (
-            <p>4.1 None. Every hard rule can be checked.</p>
+            <Para n="4.1">None. Every hard rule can be checked.</Para>
           ) : (
             waivable.map((r, i) => (
-              <div
-                key={r.id}
-                className="flex flex-wrap items-center gap-3 rounded-card border border-graphite border-dashed px-4 py-3 font-sans"
-              >
-                <span className="num text-muted">4.{i + 1}</span>
-                <span className="flex-1">
-                  <span className="font-semibold">
-                    ? Can't check — {r.text}.
-                  </span>{" "}
-                  <span className="text-muted">{r.reason}</span>
+              <Para key={r.id} n={`4.${i + 1}`}>
+                <span className="flex flex-wrap items-baseline gap-2.5">
+                  <span className="inline-flex h-[22px] items-center gap-1 self-center rounded-[4px] border border-graphite px-[7px] font-sans font-semibold text-[12px]">
+                    ? Can&apos;t check
+                  </span>
+                  {r.text}: Can&apos;t check.
+                  {review ? (
+                    <label className="flex min-h-6 items-center gap-2 font-sans font-semibold text-[14px]">
+                      <input
+                        type="checkbox"
+                        checked={ticked.has(r.id)}
+                        onChange={(e) =>
+                          setTicked((t) => {
+                            const next = new Set(t);
+                            if (e.target.checked) next.add(r.id);
+                            else next.delete(r.id);
+                            return next;
+                          })
+                        }
+                        className="size-4 accent-ink"
+                      />
+                      I accept this.
+                    </label>
+                  ) : (
+                    <span>I accept this.</span>
+                  )}
                 </span>
-                {review ? (
-                  <label className="flex min-h-6 items-center gap-2 font-semibold text-small">
-                    <input
-                      type="checkbox"
-                      checked={ticked.has(r.id)}
-                      onChange={(e) =>
-                        setTicked((t) => {
-                          const next = new Set(t);
-                          if (e.target.checked) next.add(r.id);
-                          else next.delete(r.id);
-                          return next;
-                        })
-                      }
-                      className="size-4 accent-ink"
-                    />
-                    I accept this
-                  </label>
-                ) : (
-                  <span className="font-semibold text-small">
-                    Accepted by you
+                {r.reason && (
+                  <span className="block font-sans text-[13.5px] text-muted">
+                    {r.reason}
                   </span>
                 )}
-              </div>
+              </Para>
             ))
           )}
         </Clause>
 
         <Clause id={`${id}-economics`} n={5} title="Economics">
-          <dl className="grid max-w-[420px] grid-cols-[1fr_auto] gap-x-6 gap-y-1.5 font-sans text-ui">
+          <dl className="grid max-w-[520px] grid-cols-[1fr_auto] gap-y-2 text-[16px] sm:ml-10">
             <dt>Merchandise</dt>
-            <dd className="num text-right">{view.economics.merchandise}</dd>
+            <dd className="num text-right text-[15px]">
+              {view.economics.merchandise}
+            </dd>
             <dt>Shipping</dt>
-            <dd className="num text-right">{view.economics.shipping}</dd>
+            <dd className="num text-right text-[15px]">
+              {view.economics.shipping}
+            </dd>
             <dt className="flex items-center gap-2">
               Estimated tax
-              <span className="rounded-[4px] border border-pencil border-dashed px-1.5 text-meta text-muted">
+              <span className="rounded-[4px] border border-pencil border-dashed px-1.5 py-px font-sans font-semibold text-[11.5px] text-muted">
                 ~ Estimate
               </span>
             </dt>
-            <dd className="num text-right">{view.economics.tax}</dd>
-            <dt className="border-rule border-t pt-1.5 font-semibold">
+            <dd className="num text-right text-[15px]">{view.economics.tax}</dd>
+            <dt className="border-graphite border-t pt-2 font-semibold">
               Delivered total
             </dt>
-            <dd className="num border-rule border-t pt-1.5 text-right font-semibold">
+            <dd className="num border-graphite border-t pt-2 text-right font-semibold text-[16px]">
               {view.economics.total}
             </dd>
           </dl>
-          <div className="flex w-fit flex-col gap-1 border-2 border-graphite px-5 py-3 font-sans">
-            <span className="font-semibold text-meta uppercase tracking-label">
-              Maximum total
+          <div className="mt-3.5 flex max-w-[520px] items-center justify-between border-2 border-graphite px-4 py-3 sm:ml-10">
+            <span className="font-bold font-sans text-[13px] tracking-[0.12em]">
+              MAXIMUM TOTAL
             </span>
-            <span className="num font-semibold text-[26px]">
+            <span className="num font-semibold text-[22px]">
               {view.economics.max}
             </span>
           </div>
-          <p>
-            5.1 No payment may exceed the maximum total, including tax and
-            shipping.
-          </p>
+          <Para n="5.1" className="mt-3">
+            No payment may exceed the maximum total, including tax and shipping.
+          </Para>
         </Clause>
 
         <Clause id={`${id}-autonomy`} n={6} title="Autonomy">
-          <p>6.1 What the Agent may accept without asking the Buyer.</p>
-          <fieldset className="font-sans" disabled={!review || locked}>
+          <Para n="6.1" className="mb-3.5">
+            What the Agent may accept without asking the Buyer.
+          </Para>
+          <fieldset className="font-sans sm:ml-10" disabled={!review || locked}>
             <legend className="sr-only">Autonomy preset</legend>
-            <div className="flex flex-wrap gap-2 pb-3">
-              {PRESETS.map((p) => (
-                <label
-                  key={p.id}
-                  className={cn(
-                    "flex h-10 items-center gap-2 rounded-card border px-4 font-semibold text-ui",
-                    preset === p.id
-                      ? "border-graphite bg-paper-raised"
-                      : "border-rule text-muted",
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name={`${id}-preset`}
-                    value={p.id}
-                    checked={preset === p.id}
-                    onChange={() => setPreset(p.id)}
-                    className="accent-ink"
-                  />
-                  {p.label}
-                </label>
-              ))}
+            <div
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
+              tabIndex={0}
+              className="overflow-x-auto"
+            >
+              <table className="w-full min-w-[560px] border border-graphite text-[13.5px]">
+                <thead>
+                  <tr>
+                    <td className="w-[170px]" />
+                    {PRESETS.map((p) => (
+                      <th
+                        key={p.id}
+                        scope="col"
+                        className={cn(
+                          "h-11 border-graphite border-l px-3.5 text-left font-medium text-[14.5px]",
+                          preset === p.id &&
+                            "bg-graphite font-semibold text-paper-sheet",
+                        )}
+                      >
+                        <label className="flex cursor-pointer items-center gap-2">
+                          <input
+                            type="radio"
+                            name={`${id}-preset`}
+                            value={p.id}
+                            checked={preset === p.id}
+                            onChange={() => setPreset(p.id)}
+                            className="peer sr-only"
+                          />
+                          <span
+                            aria-hidden="true"
+                            className={cn(
+                              "size-4 shrink-0 rounded-full peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-ink peer-focus-visible:outline-offset-2",
+                              preset === p.id
+                                ? "border-[5px] border-paper-sheet"
+                                : "border-[1.5px] border-graphite",
+                            )}
+                          />
+                          {p.label}
+                        </label>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {AUTONOMY_ROWS.map((row) => (
+                    <tr key={row.change}>
+                      <th
+                        scope="row"
+                        className="border-rule border-t px-3.5 py-2.5 text-left font-semibold"
+                      >
+                        {row.change}
+                      </th>
+                      {row.cells.map((c, i) => (
+                        <td
+                          // biome-ignore lint/suspicious/noArrayIndexKey: one cell per preset
+                          key={i}
+                          className={cn(
+                            "border-rule border-t border-l border-l-graphite px-3.5 py-2.5",
+                            PRESETS[i]?.id === preset
+                              ? "bg-[#f4f1ea] font-semibold dark:bg-paper-shade"
+                              : "text-graphite-2",
+                          )}
+                        >
+                          {c}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </fieldset>
           {locked && (
-            <p className="font-sans text-muted text-small">
+            <p className="mt-2 font-sans text-[13.5px] text-muted sm:ml-10">
               Set when this version was drafted. Your passkey signs exactly
               these terms; changing them creates v{view.version + 1}.
             </p>
           )}
-          <div
-            // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
-            tabIndex={0}
-            className="relative overflow-x-auto"
-          >
-            <table className="w-full min-w-[520px] border-collapse text-left font-sans text-small">
-              <thead className="text-meta text-muted uppercase tracking-label">
-                <tr className="border-graphite border-b">
-                  <th scope="col" className="py-2 pr-3 font-semibold">
-                    Change
-                  </th>
-                  {PRESETS.map((p) => (
-                    <th
-                      key={p.id}
-                      scope="col"
-                      className={cn(
-                        "py-2 pr-3 font-semibold",
-                        preset === p.id && "text-graphite",
-                      )}
-                    >
-                      {p.label}
-                      {preset === p.id && (
-                        <span className="sr-only"> (selected)</span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {AUTONOMY_ROWS.map((row) => (
-                  <tr key={row.change} className="border-rule-soft border-b">
-                    <th scope="row" className="py-2 pr-3 font-semibold">
-                      {row.change}
-                    </th>
-                    {row.cells.map((c, i) => (
-                      <td
-                        // biome-ignore lint/suspicious/noArrayIndexKey: one cell per preset
-                        key={i}
-                        className={cn(
-                          "py-2 pr-3",
-                          PRESETS[i]?.id === preset
-                            ? "font-semibold"
-                            : "text-muted",
-                        )}
-                      >
-                        {c}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </Clause>
 
         <Clause id={`${id}-mandate`} n={7} title="Standing mandate">
           {review && !locked ? (
-            <MandateBuilder
-              view={view}
-              on={mandateOn}
-              onToggle={setMandateOn}
-            />
+            <div className="sm:ml-10">
+              <MandateBuilder
+                view={view}
+                on={mandateOn}
+                onToggle={setMandateOn}
+              />
+            </div>
           ) : view.mandate ? (
-            <p>7.1 {view.mandate.text}</p>
+            <>
+              <Para n="7.1" className="font-semibold">
+                {view.mandate.text}
+              </Para>
+              <Para n="7.2" className="mt-2">
+                At execution, Cartel re-checks every rule in §3 against the live
+                checkout. If any rule fails, the purchase pauses and no payment
+                is made.
+              </Para>
+            </>
           ) : (
-            <p>7.1 None. Payment runs only when you start checkout.</p>
+            <Para n="7.1">
+              None. Payment runs only when you start checkout.
+            </Para>
           )}
         </Clause>
 
         <Clause id={`${id}-expires`} n={8} title="Expires">
-          <p>
-            8.1 Issued {view.issued}. This version expires {view.expires}. Any
-            change creates v{view.version + 1}.
-          </p>
+          <Para n="8.1">
+            Issued {view.issued}. This contract expires {view.expires}, or when
+            executed, whichever comes first. Any change creates v
+            {view.version + 1}.
+          </Para>
         </Clause>
+
+        <footer className="mt-10 grid items-end gap-6 border-graphite border-t pt-[22px] font-sans shadow-[0_-3px_0_-2px_var(--color-graphite)] sm:grid-cols-[1fr_auto]">
+          <div className="flex flex-col gap-2">
+            <span className="font-semibold text-[11.5px] text-muted tracking-[0.1em]">
+              BUYER SIGNATURE
+            </span>
+            {view.signedAt || signedHash ? (
+              <>
+                <span className="flex h-[30px] w-full max-w-[340px] items-end border-graphite border-b pb-1 font-mono text-[13.5px]">
+                  passkey · {short(signedHash ?? view.hash)}
+                </span>
+                <span className="text-[13px] text-graphite-2">
+                  Signed with passkey
+                  {view.signedAt ? ` · ${view.signedAt}` : ""}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="block h-[30px] w-full max-w-[340px] border-graphite border-b" />
+                <span className="text-[13px] text-muted">Not signed</span>
+              </>
+            )}
+          </div>
+          <span className="font-mono text-[12.5px] text-muted">
+            v{view.version} · {short(view.hash)} · page 1 of 1
+          </span>
+        </footer>
       </article>
 
-      <aside aria-hidden="true" className="hidden lg:block">
+      <aside aria-hidden="true" className="relative hidden lg:block">
         {(view.signedAt || signedHash) && (
-          <div className="sticky top-40 flex flex-col items-center gap-2 text-center">
+          <div className="sticky top-10 -ml-3.5 flex flex-col gap-3 pt-10">
             <Figure
               who="notary"
               pose={signedHash ? notaryPose : "stamp3"}
-              h={96}
+              h={180}
             />
-            <p className="text-muted text-small">
+            <p className="w-[180px] text-[13px] text-muted leading-normal">
               The Notary stamps only after your passkey.
             </p>
           </div>
         )}
       </aside>
 
-      <div className="fixed inset-x-0 bottom-0 z-10 border-graphite border-t bg-paper-sheet">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5 py-3">
-          {mode.kind === "signed" ? (
-            <p className="flex items-center gap-2 text-ui" aria-live="polite">
-              <Clock size={16} aria-hidden="true" />
-              <span>
-                <span className="font-semibold">Signed v{view.version}.</span>{" "}
-                {mode.status}
-              </span>
-              {mode.statusHref && (
-                <Link
-                  href={mode.statusHref}
-                  className="text-ink underline underline-offset-4"
+      <div className="fixed inset-x-0 bottom-0 z-10 flex min-h-32 items-center justify-center border-graphite border-t bg-paper-sheet px-5 py-4">
+        {mode.kind === "signed" ? (
+          <div className="flex flex-wrap items-center justify-center gap-x-[22px] gap-y-3">
+            <span
+              aria-hidden="true"
+              className="flex size-11 items-center justify-center rounded-full border-2 border-graphite"
+            >
+              <Clock size={20} strokeWidth={1.8} />
+            </span>
+            <div className="flex flex-col gap-[3px]">
+              <p
+                aria-live="polite"
+                className="font-semibold font-serif text-[20px] tracking-[-0.015em] sm:text-[22px]"
+              >
+                Signed v{view.version}. {mode.status}
+              </p>
+              {view.mandate && (
+                <p className="text-[14px] text-muted">{view.mandate.text}</p>
+              )}
+            </div>
+            {mode.statusHref && (
+              <Link
+                href={mode.statusHref}
+                className="ml-0 inline-flex h-11 items-center rounded-card border border-graphite bg-paper-raised px-[18px] font-medium text-[14.5px] text-graphite no-underline hover:bg-paper sm:ml-10"
+              >
+                View
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            {versionId && gate.ready ? (
+              <SignContract
+                contractVersionId={versionId}
+                version={view.version}
+                onSigned={({ bodyHash }) => {
+                  setSignedHash(bodyHash);
+                  router.refresh();
+                }}
+              />
+            ) : (
+              <div className="flex flex-col items-center gap-2.5">
+                <button
+                  type="button"
+                  disabled
+                  className="flex h-[60px] min-w-[min(360px,90vw)] items-center justify-center gap-3 rounded-card bg-graphite px-8 font-semibold text-[17px] text-paper-raised disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  View
-                </Link>
-              )}
-            </p>
-          ) : (
-            <>
-              {versionId && gate.ready ? (
-                <SignContract
-                  contractVersionId={versionId}
-                  version={view.version}
-                  onSigned={({ bodyHash }) => {
-                    setSignedHash(bodyHash);
-                    router.refresh();
-                  }}
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-1">
-                  <Button type="button" disabled>
-                    <Fingerprint size={18} aria-hidden="true" />
-                    Sign v{view.version} with passkey
-                  </Button>
-                  <p className="text-muted text-small">
-                    {versionId
-                      ? `Touch ID signs this exact version. Any change creates v${view.version + 1}.`
-                      : "Demo contracts aren't stored, so they can't be signed. Signing works on your saved plans."}
-                  </p>
-                </div>
-              )}
-              {!gate.ready && (
-                <div
-                  role="note"
-                  aria-label="Why signing is disabled"
-                  className="max-w-[420px] border-red-pen border-l-2 pl-3 text-small"
-                >
-                  <p className="font-semibold text-red-pen">
-                    Sign is disabled until:
-                  </p>
-                  <ul className="list-disc pl-4">
-                    {gate.reasons.map((r) => (
-                      <li key={r}>{r}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                  <Fingerprint size={22} strokeWidth={1.6} aria-hidden="true" />
+                  Sign with passkey
+                </button>
+                <p className="text-[14px] text-graphite-2 leading-normal">
+                  {versionId
+                    ? `Touch ID signs this exact version. Any change creates v${view.version + 1}.`
+                    : "Demo contracts aren't stored, so they can't be signed. Signing works on your saved plans."}
+                </p>
+              </div>
+            )}
+            {!gate.ready && (
+              <div
+                role="note"
+                aria-label="Why signing is disabled"
+                className="max-w-[420px] border-red-pen border-l-2 pl-3 text-small"
+              >
+                <p className="font-semibold text-red-pen">
+                  Sign is disabled until:
+                </p>
+                <ul className="list-disc pl-4">
+                  {gate.reasons.map((r) => (
+                    <li key={r}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+/** A numbered paragraph: the number in a 40 px column, like the design. */
+function Para({
+  n,
+  className,
+  children,
+}: {
+  n: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-[40px_1fr] text-[16.5px] leading-[1.65]",
+        className,
+      )}
+    >
+      <span className="font-semibold">{n}</span>
+      <div>{children}</div>
     </div>
   );
 }
@@ -538,11 +656,11 @@ function Clause({
     <section
       id={id}
       aria-labelledby={`${id}-h`}
-      className="flex scroll-mt-6 flex-col gap-3 font-serif text-[16.5px] leading-[1.6]"
+      className="scroll-mt-6 pt-[30px]"
     >
       <h2
         id={`${id}-h`}
-        className="border-rule border-b pb-1.5 font-sans font-semibold text-meta uppercase tracking-[0.12em]"
+        className="mb-3.5 border-graphite border-b pb-1.5 font-bold font-serif text-[15px] uppercase tracking-[0.14em]"
       >
         §{n} {title}
       </h2>

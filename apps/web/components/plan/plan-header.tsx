@@ -44,6 +44,7 @@ export function PlanHeader({
         size={tall ? 31 : 29}
       />
       {title && <span className="text-[15px] text-muted">{title}</span>}
+      {back && <span aria-hidden="true" className="h-6 w-px bg-rule" />}
       {back && (
         <Link
           href={back.href}
