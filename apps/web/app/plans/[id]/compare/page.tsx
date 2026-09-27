@@ -6,8 +6,9 @@ import { PlanCard } from "@/components/cartel/plan-card";
 import { Figure } from "@/components/doodle/figure";
 import { PlanHeader } from "@/components/plan/plan-header";
 import { StateCard } from "@/components/states/edge-states";
-import type { CompareCell } from "@/lib/compare";
+import { buildCompare, type CompareCell } from "@/lib/compare";
 import { FLAGSHIP, flagshipCompare } from "@/lib/flagship";
+import { loadStoredSolve } from "@/lib/stored-workspace";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Compare plans" };
@@ -55,7 +56,10 @@ export default async function ComparePage({
   searchParams,
 }: PageProps<"/plans/[id]/compare">) {
   const { id } = await params;
-  if (id !== FLAGSHIP) notFound();
+  const demo = id === FLAGSHIP;
+  const stored = demo ? null : await loadStoredSolve(id);
+  if (!demo && stored?.kind !== "solved" && stored?.kind !== "infeasible")
+    notFound();
   const q = await searchParams;
   const budgetRaw = Number(one(q.budget));
   const budget =
@@ -69,21 +73,35 @@ export default async function ComparePage({
     !Number.isNaN(Date.parse(byRaw))
       ? byRaw
       : undefined;
-  const view = await flagshipCompare({ budget, by });
+  const view =
+    stored?.kind === "solved" || stored?.kind === "infeasible"
+      ? await buildCompare(stored.problem, stored.context, { budget, by })
+      : await flagshipCompare({ budget, by });
   const changed = budget !== undefined || by !== undefined;
+  const title = stored?.plan.title ?? "Home office";
+  const limits =
+    stored?.kind === "solved" || stored?.kind === "infeasible"
+      ? stored.problem.limits
+      : undefined;
+  const defaultBudget = stored
+    ? limits?.budget
+      ? Math.ceil(limits.budget.maxTotalMinor / 100)
+      : undefined
+    : 1000;
+  const defaultBy = stored ? limits?.delivery?.by : "2026-09-28";
 
   return (
     <div className="dot-grid min-h-dvh text-graphite">
       <PlanHeader
-        back={{ href: `/plans/${id}`, label: "Home office" }}
+        back={{ href: `/plans/${id}`, label: title }}
         step={3}
-        demo
+        demo={demo}
       />
       <main className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-10 sm:px-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
             <p className="font-semibold text-meta text-muted uppercase tracking-label">
-              Home office · Plans
+              {title} · Plans
             </p>
             <h1 className="font-semibold font-serif text-h3 tracking-heading sm:text-h2">
               Compare plans
@@ -103,7 +121,7 @@ export default async function ComparePage({
               <input
                 name="budget"
                 inputMode="numeric"
-                defaultValue={budget ?? 1000}
+                defaultValue={budget ?? defaultBudget}
                 className="num h-10 w-28 rounded-card border border-rule bg-paper-sheet px-2.5"
               />
             </label>
@@ -112,7 +130,7 @@ export default async function ComparePage({
               <input
                 name="by"
                 type="date"
-                defaultValue={by ?? "2026-09-28"}
+                defaultValue={by ?? defaultBy}
                 className="h-10 rounded-card border border-rule bg-paper-sheet px-2.5"
               />
             </label>

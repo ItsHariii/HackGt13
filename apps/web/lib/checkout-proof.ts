@@ -1,11 +1,21 @@
-import { type ContractBody, type Fact, Offer } from "@cartel/contracts";
+import { type Fact, Offer } from "@cartel/contracts";
 import type { CheckoutRead, SpecRefresh } from "@cartel/evidence";
 import { toDrafts } from "@cartel/evidence";
 import { type CheckoutState, fieldDef, type Pack } from "@cartel/proof-engine";
 
+/**
+ * What a checkout read is proved for: a signed contract, or a plan's basket
+ * before anything is signed. Items give each line its role.
+ */
+export type CheckoutScope = {
+  planId: string;
+  merchants: readonly { id: string }[];
+  items: readonly { role: string; sku: string; variant?: string | undefined }[];
+};
+
 /** Fresh merchant facts only. Never carry stale product claims into checkout. */
 export function checkoutState(
-  contract: ContractBody,
+  contract: CheckoutScope,
   read: CheckoutRead,
   specs: readonly SpecRefresh[],
   packs: readonly Pack[],

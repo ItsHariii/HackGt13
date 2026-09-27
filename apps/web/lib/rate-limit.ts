@@ -18,6 +18,8 @@ export const RATE_LIMITS = {
   search: { capacity: 30, refillPerS: 0.5 },
   /** AI endpoints (A1–A5): model spend. */
   ai: { capacity: 10, refillPerS: 1 / 6 },
+  /** Solving reads every candidate page and quotes three GreatHub checkouts. */
+  solve: { capacity: 6, refillPerS: 1 / 20 },
 } as const satisfies Record<string, { capacity: number; refillPerS: number }>;
 
 export type RateBucket = keyof typeof RATE_LIMITS;

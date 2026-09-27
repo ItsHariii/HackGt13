@@ -84,7 +84,7 @@ function titleFor(id: string, titles: Record<string, string>): string {
   );
 }
 
-function tradeoffText(
+export function tradeoffText(
   t: Plan["tradeoff"],
   prefs: Record<string, string>,
 ): string {
@@ -105,15 +105,17 @@ function tradeoffText(
   return text ? text.charAt(0).toUpperCase() + text.slice(1) : "Same as Plan A";
 }
 
+export type CompareContext = {
+  titles: Record<string, string>;
+  roleLabels: Record<string, string>;
+  /** Hard item rules settled before solving, in display text. */
+  itemRules: { id: string; text: string }[];
+  preferences: Record<string, string>;
+};
+
 export async function buildCompare(
   base: SolverProblem,
-  context: {
-    titles: Record<string, string>;
-    roleLabels: Record<string, string>;
-    /** Hard item rules settled before solving, in display text. */
-    itemRules: { id: string; text: string }[];
-    preferences: Record<string, string>;
-  },
+  context: CompareContext,
   options: CompareOptions = {},
 ): Promise<CompareView> {
   const limits = { ...base.limits };
@@ -195,7 +197,7 @@ export async function buildCompare(
   };
 }
 
-function conflictView(
+export function conflictView(
   conflict: ConflictSet,
   limits: NonNullable<SolverProblem["limits"]>,
   roleLabels: Record<string, string>,

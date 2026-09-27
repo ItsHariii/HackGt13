@@ -105,6 +105,29 @@ const FALSE = new Set([
 ]);
 
 /** Reads raw text as the field's kind. Null if it doesn't fit. */
+/**
+ * An enum value as sellers write it: "2560 × 1440 (QHD)", "3840x2160",
+ * "4K UHD". Tries the whole text, the dimensions with the × normalized, the
+ * text outside and inside parentheses, and each word; returns a value only
+ * when every spelling that matches agrees, so a contradiction stays unknown.
+ */
+function readEnum(raw: string, def: FieldDef): string | null {
+  const values = def.values ?? [];
+  const text = raw.trim();
+  const inside = [...text.matchAll(/\(([^)]*)\)/g)].map((m) => m[1] ?? "");
+  const outside = text.replace(/\([^)]*\)/g, " ").trim();
+  const dims = (s: string) => s.replace(/(\d)\s*[x×]\s*(\d)/gi, "$1x$2");
+  const spellings = [text, dims(text), outside, dims(outside), ...inside];
+  const words = [outside, ...inside].flatMap((s) => dims(s).split(/[\s,/]+/));
+  const hits = new Set<string>();
+  for (const s of [...spellings, ...words]) {
+    if (!s.trim()) continue;
+    const t = normalizeText(s, def);
+    if (values.includes(t)) hits.add(t);
+  }
+  return hits.size === 1 ? ([...hits][0] as string) : null;
+}
+
 export function readAs(
   raw: string,
   def: FieldDef,
@@ -117,10 +140,8 @@ export function readAs(
       const t = raw.trim().toLowerCase();
       return TRUE.has(t) ? true : FALSE.has(t) ? false : null;
     }
-    case "enum": {
-      const t = normalizeText(raw, def);
-      return def.values?.includes(t) ? t : null;
-    }
+    case "enum":
+      return readEnum(raw, def);
     case "date":
       return isIsoDate(raw.trim()) ? raw.trim() : null;
     case "list":

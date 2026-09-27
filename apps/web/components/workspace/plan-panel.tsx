@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type KeyboardEvent, useId, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { PlanView } from "@/lib/workspace";
@@ -25,13 +26,24 @@ export function PlanPanel({
   plans,
   canReviewContract,
   ctaNote,
+  hrefs,
+  initial = 0,
 }: {
   planId: string;
   plans: PlanView[];
   canReviewContract: boolean;
   ctaNote: string;
+  /** Saved plans: each tab opens its own proof, so switching navigates. */
+  hrefs?: string[];
+  initial?: number;
 }) {
-  const [active, setActive] = useState(0);
+  const router = useRouter();
+  const [active, setActiveState] = useState(initial);
+  const setActive = (i: number) => {
+    setActiveState(i);
+    const href = hrefs?.[i];
+    if (href) router.replace(href, { scroll: false });
+  };
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const base = useId();
   const plan = plans[active] ?? plans[0];

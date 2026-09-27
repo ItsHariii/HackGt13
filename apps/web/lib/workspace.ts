@@ -116,6 +116,9 @@ export type WorkspaceView = {
   canReviewContract: boolean;
   ctaNote: string;
   evidence: Record<string, EvidenceView>;
+  /** Saved plans with Plans A–C: where each tab leads, and which is open. */
+  planHrefs?: string[];
+  activePlan?: number;
 };
 
 export type WorkspaceInput = {

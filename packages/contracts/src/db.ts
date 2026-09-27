@@ -1181,6 +1181,7 @@ export type Database = {
       proof_reports: {
         Row: {
           basket_id: string;
+          checkout_state: Json | null;
           created_at: string;
           engine_version: string;
           evaluated_at: string;
@@ -1194,6 +1195,7 @@ export type Database = {
         };
         Insert: {
           basket_id: string;
+          checkout_state?: Json | null;
           created_at?: string;
           engine_version: string;
           evaluated_at: string;
@@ -1207,6 +1209,7 @@ export type Database = {
         };
         Update: {
           basket_id?: string;
+          checkout_state?: Json | null;
           created_at?: string;
           engine_version?: string;
           evaluated_at?: string;
@@ -1487,36 +1490,42 @@ export type Database = {
       solver_runs: {
         Row: {
           conflict_set: Json | null;
+          context: Json | null;
           created_at: string;
           id: string;
           input_hash: string;
           ms: number | null;
           objective: number | null;
           plan_id: string;
+          problem: Json | null;
           relaxations: Json | null;
           set_id: string;
           status: Database["public"]["Enums"]["solver_status"];
         };
         Insert: {
           conflict_set?: Json | null;
+          context?: Json | null;
           created_at?: string;
           id?: string;
           input_hash: string;
           ms?: number | null;
           objective?: number | null;
           plan_id: string;
+          problem?: Json | null;
           relaxations?: Json | null;
           set_id: string;
           status: Database["public"]["Enums"]["solver_status"];
         };
         Update: {
           conflict_set?: Json | null;
+          context?: Json | null;
           created_at?: string;
           id?: string;
           input_hash?: string;
           ms?: number | null;
           objective?: number | null;
           plan_id?: string;
+          problem?: Json | null;
           relaxations?: Json | null;
           set_id?: string;
           status?: Database["public"]["Enums"]["solver_status"];
@@ -1943,6 +1952,10 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      srv_record_plan_solve: {
+        Args: { p_plan: string; p_run: Json; p_set: string };
+        Returns: Json;
       };
       srv_take_rate_token: {
         Args: {
