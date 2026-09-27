@@ -14,7 +14,7 @@ export type CeremonyResult<T> =
   | ({ status: "ok" } & T)
   | { status: "cancelled" }
   | { status: "unsupported" }
-  | { status: "error"; code: string };
+  | { status: "error"; code: string; expected?: string };
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(path, {
@@ -23,15 +23,31 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new ServerError(data.error ?? "signing_unavailable");
+  if (!response.ok)
+    throw new ServerError(
+      data.error ?? "signing_unavailable",
+      typeof data.expected === "string" ? data.expected : undefined,
+    );
   return data as T;
 }
-class ServerError extends Error {}
+class ServerError extends Error {
+  constructor(
+    code: string,
+    /** For `origin_rejected`: the address that can sign. */
+    readonly expected?: string,
+  ) {
+    super(code);
+  }
+}
 
 /** Cancelled, timed out, or no matching passkey: WebAuthn reports all as NotAllowedError. */
 function outcome(error: unknown): CeremonyResult<never> {
   if (error instanceof ServerError)
-    return { status: "error", code: error.message };
+    return {
+      status: "error",
+      code: error.message,
+      ...(error.expected ? { expected: error.expected } : {}),
+    };
   // WebAuthnError keeps the DOMException name of its cause.
   const name = (error as Error | undefined)?.name;
   if (name === "NotAllowedError" || name === "AbortError")
@@ -126,7 +142,17 @@ const MESSAGES: Record<string, string> = {
   body_hash_mismatch: "The contract changed. Nothing was signed.",
   credential_exists: "This passkey is already a signing key.",
   authentication_required: "Sign in to continue.",
+  signing_not_configured:
+    "Passkey signing isn't set up on this deployment. Nothing was signed.",
+  auth_not_configured:
+    "Sign-in isn't set up on this deployment. Nothing was signed.",
+  origin_rejected:
+    "Passkeys only work on Cartel's own address. Nothing was signed.",
+  signing_storage_failed:
+    "The signature couldn't be saved. Nothing was signed. Try again.",
 };
-export function signingMessage(code: string) {
+export function signingMessage(code: string, expected?: string) {
+  if (code === "origin_rejected" && expected)
+    return `Passkeys only work at ${new URL(expected).host}. Open Cartel there to sign. Nothing was signed.`;
   return MESSAGES[code] ?? "Signing failed. Nothing was signed.";
 }

@@ -33,7 +33,7 @@ export function SigningSettings({ keys }: { keys: SigningKey[] | null }) {
       setMessage(
         "This browser can't create a passkey. Try “Use my phone” or another browser.",
       );
-    else setMessage(signingMessage(result.code));
+    else setMessage(signingMessage(result.code, result.expected));
   }
   return (
     <div className="mx-auto max-w-3xl px-6 py-14">

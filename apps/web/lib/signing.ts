@@ -1,6 +1,7 @@
 import "server-only";
 import { CatalogError } from "@cartel/catalog/supabase";
 import type { AuthenticatorTransportFuture } from "@simplewebauthn/server";
+import { allowedOrigins, matchOrigin } from "./signing-origin";
 import {
   type SigningConfig,
   type SigningDeps,
@@ -35,21 +36,40 @@ const toHex = (bytes: Uint8Array) => `\\x${Buffer.from(bytes).toString("hex")}`;
 const fromHex = (value: string) =>
   new Uint8Array(Buffer.from(value.replace(/^\\x/, ""), "hex"));
 
-export function signingConfig(): SigningConfig {
+/** Origins the ceremony accepts; see lib/signing-origin.ts. */
+function configuredOrigins(): { rpId: string; origins: string[] } {
   const e = process.env;
-  if (!e.WEBAUTHN_RP_ID || !e.WEBAUTHN_ORIGIN)
+  const rpId = e.WEBAUTHN_RP_ID;
+  const origins = rpId ? allowedOrigins(e.WEBAUTHN_ORIGIN, rpId) : [];
+  if (!rpId || origins.length === 0)
     throw new SigningError("signing_not_configured", 503);
+  return { rpId, origins };
+}
+
+/** The RP for this request; `origin` is the allowed origin it came from. */
+export function signingConfig(origin?: string): SigningConfig {
+  const { rpId, origins } = configuredOrigins();
   return {
-    rpId: e.WEBAUTHN_RP_ID,
-    rpName: e.WEBAUTHN_RP_NAME || "Cartel",
-    origin: new URL(e.WEBAUTHN_ORIGIN).origin,
+    rpId,
+    rpName: process.env.WEBAUTHN_RP_NAME || "Cartel",
+    origin:
+      origin && origins.includes(origin) ? origin : (origins[0] as string),
   };
 }
 
-/** Signing routes accept only same-origin browser requests from the RP origin. */
-export function signingOrigin(request: Request) {
-  if (request.headers.get("origin") !== signingConfig().origin)
-    throw new SigningError("origin_rejected", 403);
+/** Refused origin; carries the one to use so the page can say where to sign. */
+export class OriginRejected extends SigningError {
+  constructor(readonly expected: string) {
+    super("origin_rejected", 403);
+  }
+}
+
+/** Signing routes accept only same-origin browser requests from an allowed origin. */
+export function signingOrigin(request: Request): string {
+  const { origins } = configuredOrigins();
+  const origin = matchOrigin(request.headers.get("origin"), origins);
+  if (!origin) throw new OriginRejected(origins[0] as string);
+  return origin;
 }
 
 export async function signingUser() {
@@ -160,8 +180,8 @@ export function supabaseSigningStore(): SigningStore {
   };
 }
 
-export function signingDeps(): SigningDeps {
-  return { config: signingConfig(), store: supabaseSigningStore() };
+export function signingDeps(origin?: string): SigningDeps {
+  return { config: signingConfig(origin), store: supabaseSigningStore() };
 }
 
 export function signingResponse(value: unknown, status = 200) {
@@ -172,6 +192,11 @@ export function signingResponse(value: unknown, status = 200) {
 }
 
 export function signingError(error: unknown) {
+  if (error instanceof OriginRejected)
+    return signingResponse(
+      { error: error.code, expected: error.expected },
+      error.status,
+    );
   if (error instanceof SigningError || error instanceof CatalogError)
     return signingResponse({ error: error.code }, error.status);
   return signingResponse({ error: "signing_unavailable" }, 503);

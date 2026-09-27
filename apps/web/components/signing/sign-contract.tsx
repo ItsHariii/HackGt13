@@ -10,7 +10,7 @@ type State =
   | { kind: "signed"; bodyHash: string }
   | { kind: "cancelled" }
   | { kind: "unsupported" }
-  | { kind: "error"; code: string };
+  | { kind: "error"; code: string; expected?: string };
 
 /**
  * "Sign with passkey" for one contract version (T12.4). The SIGNED stamp shows
@@ -34,7 +34,11 @@ export function SignContract({
       setState({ kind: "signed", bodyHash: result.bodyHash });
       onSigned?.({ bodyHash: result.bodyHash });
     } else if (result.status === "error")
-      setState({ kind: "error", code: result.code });
+      setState({
+        kind: "error",
+        code: result.code,
+        ...(result.expected ? { expected: result.expected } : {}),
+      });
     else setState({ kind: result.status });
   }
   if (state.kind === "signed")
@@ -68,7 +72,9 @@ export function SignContract({
           </p>
         )}
         {state.kind === "error" && (
-          <p className="text-[#9b2924]">{signingMessage(state.code)}</p>
+          <p className="text-[#9b2924]">
+            {signingMessage(state.code, state.expected)}
+          </p>
         )}
       </div>
       <div className="flex flex-wrap gap-3">
