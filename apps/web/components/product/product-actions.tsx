@@ -9,7 +9,6 @@ import {
   SpecReceiptTable,
 } from "@/components/cartel/spec-receipt-row";
 import { Mark } from "@/components/paper/mark";
-import { Button } from "@/components/ui/button";
 import { fieldOptions, manualRule } from "@/lib/manual-rule";
 import type { ProductView, SpecView } from "@/lib/product-view";
 import { COMPARE_MAX, trays, useTrays } from "@/lib/tray-store";
@@ -46,19 +45,27 @@ export function OfferPicker({
 
   return (
     <div className="flex flex-col gap-4">
-      <fieldset className="flex flex-col gap-2">
-        <legend className="pb-2 font-semibold text-meta text-muted uppercase tracking-label">
-          Offers
-        </legend>
+      <fieldset className="overflow-hidden rounded-card border border-rule bg-paper-raised">
+        <legend className="sr-only">Offers</legend>
+        <div
+          aria-hidden="true"
+          className="hidden grid-cols-[28px_minmax(0,1.3fr)_92px_minmax(0,1fr)_auto] items-center gap-3.5 border-rule border-b bg-[#f6f1e4] px-[18px] py-2.5 font-semibold text-[12px] text-muted uppercase tracking-[0.08em] sm:grid dark:bg-paper-shade"
+        >
+          <span />
+          <span>Offers</span>
+          <span className="text-right">Price</span>
+          <span>Availability</span>
+          <span>Checkout</span>
+        </div>
         {view.offers.length === 0 && (
-          <p className="text-muted text-small">
+          <p className="px-[18px] py-4 text-muted text-small">
             No store lists a price for this product.
           </p>
         )}
         {view.offers.map((o) => (
           <label
             key={o.id}
-            className="sheet flex cursor-pointer flex-wrap items-center gap-x-4 gap-y-1 p-3 has-[:checked]:border-graphite"
+            className="grid cursor-pointer grid-cols-[28px_minmax(0,1fr)_auto] items-center gap-x-3.5 gap-y-2 border-rule-soft border-b px-[18px] py-4 last:border-b-0 has-[:checked]:bg-paper-sheet has-[:checked]:shadow-[inset_3px_0_0_var(--color-graphite)] sm:grid-cols-[28px_minmax(0,1.3fr)_92px_minmax(0,1fr)_auto]"
           >
             <input
               type="radio"
@@ -67,11 +74,14 @@ export function OfferPicker({
               checked={offerId === o.id}
               disabled={o.referenceOnly}
               onChange={() => setOfferId(o.id)}
-              className="accent-ink"
+              className="size-5 accent-graphite"
             />
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span className="font-semibold text-ui">{o.merchant}</span>
-              <span className="text-muted text-small">
+            <span className="font-semibold text-[15px]">{o.merchant}</span>
+            <span className="num text-right font-medium text-[17px] text-ink sm:order-none">
+              {o.price ?? "—"}
+            </span>
+            <span className="col-start-2 flex min-w-0 flex-col text-[14px] sm:col-start-auto">
+              <span>
                 {o.availability}
                 {o.referenceOnly
                   ? " · reference only, never used for price rules"
@@ -92,10 +102,9 @@ export function OfferPicker({
                 )}
               </span>
             </span>
-            <span className="num font-semibold text-[17px] text-ink">
-              {o.price ?? "—"}
+            <span className="col-start-2 sm:col-start-auto">
+              <CheckoutTierBadge tier={o.tier} explain />
             </span>
-            <CheckoutTierBadge tier={o.tier} explain />
           </label>
         ))}
       </fieldset>
@@ -116,8 +125,9 @@ export function OfferPicker({
             </select>
           </label>
         )}
-        <Button
+        <button
           type="button"
+          className="inline-flex h-[54px] items-center gap-2.5 rounded-card bg-graphite px-[30px] font-semibold text-[16px] text-paper-raised shadow-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!offer || offer.referenceOnly}
           onClick={() => {
             if (!offer) return;
@@ -134,11 +144,14 @@ export function OfferPicker({
             setStatus(`Added to your plan tray as the ${role}.`);
           }}
         >
-          Add to plan{offer?.price ? ` ${offer.price}` : ""}
-        </Button>
-        <Button
+          Add to plan
+          {offer?.price && (
+            <span className="num font-medium opacity-80">{offer.price}</span>
+          )}
+        </button>
+        <button
           type="button"
-          variant="outline"
+          className="inline-flex h-[54px] items-center rounded-card border border-graphite bg-paper-raised px-6 font-medium text-[16px] text-graphite hover:bg-paper aria-pressed:bg-paper-shade"
           aria-pressed={compared}
           onClick={() => {
             const ok = trays.toggleCompare(
@@ -155,7 +168,7 @@ export function OfferPicker({
           }}
         >
           {compared ? "In compare" : "Compare"}
-        </Button>
+        </button>
       </div>
       <p aria-live="polite" className="text-muted text-small">
         {status}

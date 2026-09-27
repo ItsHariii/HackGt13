@@ -24,17 +24,26 @@ export function FacetChip({
 }) {
   const id = useId();
   return (
-    <div className="flex min-h-8 items-center gap-2 text-small">
+    <div
+      className={
+        checked
+          ? "-mx-2 flex min-h-9 items-center gap-2.5 rounded-[6px] border border-graphite bg-paper-raised pr-1.5 pl-2 text-[15px]"
+          : "flex min-h-9 items-center gap-2.5 text-[15px]"
+      }
+    >
       <input
         id={id}
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="size-4 accent-ink"
+        className="size-[18px] accent-graphite"
       />
-      <label htmlFor={id} className="flex flex-1 items-center gap-2">
-        {label}
-        <span className="num text-meta text-muted">{count}</span>
+      <label
+        htmlFor={id}
+        className={`flex flex-1 items-center gap-2 ${checked ? "font-semibold" : ""}`}
+      >
+        <span className="flex-1">{label}</span>
+        <span className="num font-normal text-[13px] text-muted">{count}</span>
       </label>
       {onAddRule && checked && (
         <button
@@ -46,7 +55,7 @@ export function FacetChip({
               : undefined
           }
           aria-label={`Add as rule${ruleText ? `: ${ruleText}` : ""}`}
-          className="inline-flex min-h-6 items-center gap-1 rounded-[5px] border border-ink px-1.5 font-semibold text-ink text-meta hover:bg-ink/10"
+          className="inline-flex h-[26px] items-center gap-1 rounded-[5px] border border-ink bg-ink px-2 font-semibold text-[12.5px] text-paper-raised hover:opacity-90"
         >
           <Plus size={12} aria-hidden="true" /> Add as rule
         </button>
