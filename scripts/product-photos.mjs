@@ -95,12 +95,18 @@ const SLUG_QUERY = {
   "brightfold-bamboo-plate-set-serves-12": "bamboo plates",
   "brightfold-mini-tea-party-set-serves-8": "tea party set",
   "galloon-classic-party-decoration-kit": "birthday party decorations",
-  "fernway-sparkling-apple-juice-boxes-12-pack": "juice boxes",
-  "fernway-fruit-punch-juice-boxes-24-pack": "juice boxes",
   "fernway-lemonade-pouches-10-pack": "lemonade",
   "fernway-still-water-bottles-8-oz-24-pack": "water bottles",
   "fernway-chocolate-milk-boxes-12-pack": "chocolate milk",
-  "grainhouse-certified-gluten-free-oats": "rolled oats",
+  "fernway-sparkling-apple-juice-boxes-12-pack": "apple juice glass",
+  "fernway-fruit-punch-juice-boxes-24-pack": "fruit punch drink",
+  "galloon-latex-balloons-assorted": "colorful balloons",
+  "brightfold-dinosaur-themed-tableware-serves-12": "kids birthday party table",
+  "brightfold-jungle-safari-themed-tableware-serves-12":
+    "kids birthday party table",
+  "brightfold-paper-party-pack-large-serves-32": "party plates and cups",
+  "brightfold-paper-plates-cups-and-napkins-serves-16": "paper plates and cups",
+  "grainhouse-certified-gluten-free-oats": "oats in a bowl",
   "grainhouse-mini-pizza-kit": "mini pizza",
   "pipit-tortilla-chips-and-salsa-cups-12-pack": "tortilla chips salsa",
   "pipit-sunflower-seed-butter-cups-12-pack": "sunflower seed butter",
@@ -129,6 +135,15 @@ const REJECTED = new Set([
   "hDtjXwMl1-c", // tissue paper, not streamers
   "DPcboE2nSjo", // an exploded parts diagram
   "wHidMzRSGeo", // fabric on grass, no dress
+  "smgTvepind4", // a video call on a laptop, no webcam
+  "ELdZCx2k5ic", // twisted fabric, not balloons
+  "H0cfUw2DCC8", // a man eating, no tableware
+  "LWgN-KMs6xM", // a picnic from across the lawn
+  "FsR5o995vIo", // the same cake shoot as another product
+  "OJgDvH0mKDE", // a roll of paper
+  "bOoIlSsYN5g", // a shop sign
+  "lMdVYh2g7LM", // a real brand's tin (SDD §16: fictional brands only)
+  "gcjRweyBTJQ", // a real brand's carton
 ]);
 
 /** "Sea Salt Popcorn, 12 pack" -> "sea salt popcorn"; "Gluten-Free Oats" -> "oats". */
