@@ -64,28 +64,28 @@ export default async function ProductPage({
   return (
     <>
       <main className="dot-grid text-graphite">
-        <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <nav aria-label="Breadcrumb" className="text-muted text-small">
-              <ol className="flex flex-wrap items-center gap-1.5">
-                <li>
+        <div className="mx-auto flex max-w-[1440px] flex-col px-5 pb-24 sm:px-12">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-5">
+            <nav aria-label="Breadcrumb" className="text-[14px] text-muted">
+              <ol className="flex flex-wrap items-center gap-2">
+                <li className="flex gap-2">
                   <Link
                     href="/search"
-                    className="underline-offset-4 hover:underline"
+                    className="text-ink underline-offset-[3px] hover:underline"
                   >
                     Search
-                  </Link>{" "}
-                  /
+                  </Link>
+                  <span aria-hidden="true">/</span>
                 </li>
                 {view.category && (
-                  <li>
+                  <li className="flex gap-2">
                     <Link
                       href={`/search?q=${encodeURIComponent(view.category)}`}
-                      className="underline-offset-4 hover:underline"
+                      className="underline-offset-[3px] hover:underline"
                     >
                       {view.category}
-                    </Link>{" "}
-                    /
+                    </Link>
+                    <span aria-hidden="true">/</span>
                   </li>
                 )}
                 <li aria-current="page" className="text-graphite">
@@ -95,25 +95,47 @@ export default async function ProductPage({
             </nav>
             <Link
               href="/plans/flagship"
-              className="inline-flex h-8 items-center gap-2 rounded-pill border border-graphite bg-paper-raised px-3 font-semibold text-small"
+              className="inline-flex h-10 items-center gap-2.5 rounded-card border border-ink bg-paper-raised px-3.5 text-[14px] no-underline"
             >
-              Plan: Home office <span className="num text-ink">$896.05</span>
+              <span aria-hidden="true" className="size-2 rounded-full bg-ink" />
+              <span className="font-semibold text-ink">Plan: Home office</span>
+              <span className="num text-graphite">$896.05</span>
             </Link>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div
-              role="img"
-              aria-label={`No photo for ${view.title}`}
-              className="sheet aspect-[4/3] bg-[repeating-linear-gradient(135deg,var(--color-paper)_0_8px,var(--color-paper-shade)_8px_16px)]"
-            />
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-col gap-1.5">
-                <p className="flex flex-wrap items-center gap-2 font-semibold text-meta text-muted uppercase tracking-label">
+          <div className="grid items-start gap-12 pt-5 lg:grid-cols-2">
+            <div className="flex flex-col gap-3.5 rounded-card border border-rule bg-paper-raised p-5 shadow-stack">
+              <div
+                role="img"
+                aria-label={`No photo for ${view.title}`}
+                className="flex h-[300px] items-center justify-center rounded-sheet bg-[repeating-linear-gradient(135deg,#f3eee2_0_12px,#ece5d6_12px_24px)] sm:h-[540px] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_12px,#223556_12px_24px)]"
+              >
+                <span className="rounded-[4px] bg-paper px-2.5 py-1 font-mono text-[13px] text-muted">
+                  product photo · front
+                </span>
+              </div>
+              <div
+                aria-hidden="true"
+                className="hidden grid-cols-5 gap-2.5 sm:grid"
+              >
+                {["front", "side", "ports", "stand", "in box"].map((v, i) => (
+                  <span
+                    key={v}
+                    className={`flex h-[88px] items-center justify-center rounded-sheet bg-[repeating-linear-gradient(135deg,#f3eee2_0_6px,#ece5d6_6px_12px)] font-mono text-[11px] text-muted dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_6px,#223556_6px_12px)] ${i === 0 ? "border-2 border-graphite" : "border border-rule"}`}
+                  >
+                    {v}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-7">
+              <div className="flex flex-col gap-2.5">
+                <p className="flex flex-wrap items-center gap-2 font-semibold text-[13px] text-muted uppercase tracking-[0.08em]">
                   {[view.brand, view.category].filter(Boolean).join(" · ")}
                   {demo && <DemoNote label="Demo data" />}
                 </p>
-                <h1 className="font-semibold font-serif text-h3 tracking-heading">
+                <h1 className="text-balance font-semibold font-serif text-[30px] leading-[1.08] tracking-[-0.03em] sm:text-[42px]">
                   {view.title}
                 </h1>
                 {view.gtin && (
@@ -121,48 +143,77 @@ export default async function ProductPage({
                 )}
               </div>
               <OfferPicker view={view} pass={pass} fail={fail} />
+
+              {view.checks.length > 0 && (
+                <section aria-labelledby="checks" className="relative mt-11">
+                  <div
+                    aria-hidden="true"
+                    className="absolute -top-[106px] right-7 hidden sm:block"
+                  >
+                    <Figure
+                      who="inspector"
+                      pose={fail ? "idle" : "thumbs"}
+                      h={108}
+                    />
+                  </div>
+                  <div className="rounded-card border border-rule bg-paper-raised px-6 pt-[22px] pb-3 shadow-stack">
+                    <div className="flex flex-wrap items-baseline gap-3 border-graphite border-b pb-3.5">
+                      <h2
+                        id="checks"
+                        className="font-semibold font-serif text-[22px] tracking-[-0.02em]"
+                      >
+                        Checks against your plan
+                      </h2>
+                      <p className="text-[14px] text-muted">
+                        Home office · Plan A
+                      </p>
+                    </div>
+                    <ul className="flex flex-col">
+                      {view.checks.map((c, i) => (
+                        <li
+                          key={c.id}
+                          className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-[13px] ${i > 0 ? "border-rule-soft border-t" : ""}`}
+                        >
+                          <span className="flex items-center gap-3 text-[15px]">
+                            <StatusMark
+                              status={STATUS[c.status]}
+                              size={20}
+                              className="shrink-0"
+                            />
+                            <span className="text-graphite">· {c.rule}</span>
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <span className="num text-[14px] text-ink">
+                              {c.value}
+                            </span>
+                            <span className="hidden text-[12px] text-muted sm:inline">
+                              {c.evidence}
+                            </span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </section>
+              )}
             </div>
           </div>
 
-          {view.checks.length > 0 && (
-            <section
-              aria-labelledby="checks"
-              className="sheet flex flex-col gap-3 p-5"
-            >
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <h2 id="checks" className="font-semibold font-serif text-h4">
-                    Checks against your plan
-                  </h2>
-                  <p className="text-muted text-small">
-                    Home office · Plan A · this product's rules only
-                  </p>
-                </div>
-                <div aria-hidden="true">
-                  <Figure
-                    who="inspector"
-                    pose={fail ? "idle" : "thumbs"}
-                    h={64}
-                  />
-                </div>
-              </div>
-              <ul className="flex flex-col">
-                {view.checks.map((c) => (
-                  <li
-                    key={c.id}
-                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-rule-soft border-t py-2.5 sm:grid-cols-[150px_minmax(0,1fr)_auto_auto]"
-                  >
-                    <StatusMark status={STATUS[c.status]} />
-                    <span className="font-semibold text-ui">{c.rule}</span>
-                    <span className="num text-ink">{c.value}</span>
-                    <span className="text-muted text-small">{c.evidence}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          <SpecTable view={view} />
+          <section
+            aria-labelledby="specs"
+            className="flex flex-col gap-[18px] pt-16"
+          >
+            <div className="flex flex-wrap items-baseline gap-4">
+              <h2
+                id="specs"
+                className="font-semibold font-serif text-[28px] tracking-[-0.025em] sm:text-[32px]"
+              >
+                Specs with receipts
+              </h2>
+              <p className="text-[15px] text-muted">Who says so, and when</p>
+            </div>
+            <SpecTable view={view} />
+          </section>
         </div>
       </main>
       <GlobalTrays />
