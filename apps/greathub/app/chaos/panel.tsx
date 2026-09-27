@@ -1,25 +1,21 @@
 "use client";
-import { Activity, Play, RotateCcw, Send, Timer, Zap } from "lucide-react";
 import { useId, useMemo, useState } from "react";
-import { RelativeTime } from "@/components/relative-time";
+import { GHFigure } from "@/components/gh/figure";
+import { Bell, Knot, Play, Undo } from "@/components/gh/icons";
 import { usePoll } from "@/components/use-poll";
-import type { MutationSpec, Scenario } from "@/lib/chaos";
+import {
+  ago,
+  type CatchEntry,
+  catchAuthor,
+  catchHash,
+  catchMessage,
+} from "@/lib/catches";
+import type { MutationSpec } from "@/lib/chaos";
 
 interface SkuOption {
   sku: string;
   title: string;
   department: string;
-}
-
-interface LogEntry {
-  id: number;
-  mutation: string;
-  scenario: string | null;
-  target: { sku?: string; params?: Record<string, unknown> };
-  before: Record<string, unknown> | null;
-  after: Record<string, unknown> | null;
-  actor: string;
-  created_at: string;
 }
 
 interface WebhookRow {
@@ -33,66 +29,62 @@ interface WebhookRow {
   created_at: string;
 }
 
+export interface ScenarioView {
+  id: string;
+  label: string;
+  story: string;
+  subject: string;
+  ids: string;
+  lines: { label: string; from: string; to: string }[];
+}
+
 type Status = { kind: "idle" | "busy" | "ok" | "error"; text: string };
 
-function money(minor: unknown) {
-  return typeof minor === "number"
-    ? `$${(minor / 100).toFixed(2)}`
-    : String(minor);
-}
-
-const FIELD_LABELS: Record<string, string> = {
-  price_minor: "price",
-  seller_id: "seller",
-  availability: "availability",
-  stock: "stock",
-  final_sale: "final sale",
-  return_policy_id: "returns",
-  pack_size: "pack size",
-  shipping_fee_minor: "surcharge",
-  ships_sku: "ships as",
-  injection_text: "seller note",
-  delivery_max_days: "latest delivery (days)",
-};
-
-/** A readable one-line diff of what a mutation changed. */
-function describe(entry: LogEntry): string[] {
-  const b = entry.before ?? {};
-  const a = entry.after ?? {};
-  const out: string[] = [];
-  for (const [key, label] of Object.entries(FIELD_LABELS)) {
-    if (JSON.stringify(b[key]) === JSON.stringify(a[key])) continue;
-    const fmt = key.endsWith("_minor")
-      ? money
-      : (v: unknown) => (v === null || v === undefined ? "—" : String(v));
-    out.push(`${label} ${fmt(b[key])} → ${fmt(a[key])}`);
-  }
-  for (const specKey of ["spec", "jsonld_spec"] as const) {
-    const before =
-      (b[specKey] as { name: string; value: string }[] | null) ?? [];
-    const after =
-      (a[specKey] as { name: string; value: string }[] | null) ?? [];
-    for (const s of after) {
-      const prev =
-        before.find((x) => x.name === s.name) ??
-        (specKey === "jsonld_spec" && !b.jsonld_spec
-          ? ((b.spec as { name: string; value: string }[]) ?? []).find(
-              (x) => x.name === s.name,
-            )
-          : undefined);
-      if (!prev || prev.value !== s.value) {
-        out.push(
-          `${specKey === "spec" ? "" : "JSON-LD "}${s.name}: ${prev?.value ?? "—"} → ${s.value}`,
-        );
-      }
-    }
-  }
-  if (JSON.stringify(b.subscription) !== JSON.stringify(a.subscription))
-    out.push("now a subscription");
-  if (JSON.stringify(b.recalls) !== JSON.stringify(a.recalls))
-    out.push("recall posted (Mock CPSC)");
-  return out;
-}
+/* "Stir the waters": the design's harbor labels over the real mutation
+   ids. Every mutation in lib/chaos.ts has a button. */
+const GROUPS: { name: string; items: [id: string, label: string][] }[] = [
+  {
+    name: "PRICE",
+    items: [
+      ["price_drop", "Force-ship price drop"],
+      ["price_raise", "Price hike"],
+      ["shipping_fee_added", "Add shipping fee"],
+    ],
+  },
+  {
+    name: "SPECS",
+    items: [
+      ["spec_edit", "Scribble on spec (same SKU)"],
+      ["variant_swap", "Swap variant"],
+      ["jsonld_conflict", "Mismatch the listing data"],
+      ["pack_size_shrink", "Shrink the pack"],
+    ],
+  },
+  {
+    name: "TERMS",
+    items: [
+      ["final_sale_flip", "Flip to final sale"],
+      ["return_fee_added", "Add return fee"],
+      ["return_window_shortened", "Shorten return window"],
+      ["subscription_added", "Sneak in a subscription"],
+    ],
+  },
+  {
+    name: "DELIVERY",
+    items: [
+      ["delivery_slip", "Delay delivery"],
+      ["out_of_stock", "Mark out of stock"],
+    ],
+  },
+  {
+    name: "CREW AND SECURITY",
+    items: [
+      ["seller_rotation", "Rotate the seller"],
+      ["listing_injection_text", "Plant a message in the listing"],
+      ["recall_posted", "Post a recall (Mock CPSC)"],
+    ],
+  },
+];
 
 async function post(url: string, body?: unknown) {
   const res = await fetch(url, {
@@ -115,32 +107,36 @@ export function ChaosPanel({
   mutations,
   scenarios,
   skus,
+  gullTag,
+  signOut,
 }: {
   mutations: MutationSpec[];
-  scenarios: Scenario[];
+  scenarios: ScenarioView[];
   skus: SkuOption[];
+  /** The Vireo U2727's real current price, for the Gull's tag. */
+  gullTag: string;
+  signOut: () => Promise<void>;
 }) {
   const formId = useId();
   const [status, setStatus] = useState<Status>({
     kind: "idle",
     text: "Ready.",
   });
-  const [mutationId, setMutationId] = useState(mutations[0]?.id ?? "");
+  const [mutationId, setMutationId] = useState<string | null>(null);
   const [sku, setSku] = useState("U2727");
   const [params, setParams] = useState<Record<string, string>>({});
   const [confirmReset, setConfirmReset] = useState(false);
+  const [bell, setBell] = useState<string | null>(null);
   const { data, error, refresh } = usePoll<{
-    entries: LogEntry[];
+    entries: CatchEntry[];
     webhooks: WebhookRow[];
   }>("/api/chaos/log", 1000);
   const spec = useMemo(
     () => mutations.find((m) => m.id === mutationId),
     [mutations, mutationId],
   );
-  const titles = useMemo(
-    () => new Map(skus.map((s) => [s.sku, s.title])),
-    [skus],
-  );
+  const busy = status.kind === "busy";
+  const entries = data?.entries ?? [];
 
   async function run(label: string, fn: () => Promise<unknown>) {
     setStatus({ kind: "busy", text: `${label}…` });
@@ -181,204 +177,380 @@ export function ChaosPanel({
     return out;
   }
 
+  const [flagship, ...others] = scenarios;
+  const labelOf = (id: string) =>
+    GROUPS.flatMap((g) => g.items).find(([m]) => m === id)?.[1] ??
+    spec?.label ??
+    id;
+
   return (
-    <div className="chaos">
+    <>
+      <div className="gh-deck-head">
+        <div>
+          <p className="gh-code gh-muted gh-deck-path">
+            greathub / admin / chaos
+          </p>
+          <h1 className="gh-title">The Chaos Deck</h1>
+        </div>
+        <div className="gh-deck-actions">
+          <button
+            type="button"
+            className="gh-bigbtn"
+            disabled={busy}
+            onClick={() =>
+              run("Ship's bell", async () => {
+                const r = await post("/api/chaos/mandate-tick");
+                const at = new Date().toLocaleTimeString("en-US", {
+                  hour12: false,
+                });
+                setBell(at);
+                return `Mandate tick sent at ${at}: Cartel answered HTTP ${r.status} in ${r.ms} ms.`;
+              })
+            }
+          >
+            <Bell size={32} />
+            <span>
+              <strong>Ring the ship&apos;s bell</strong>
+              <span>
+                {bell ? `Mandate tick sent · ${bell}` : "Run mandate tick now"}
+              </span>
+            </span>
+          </button>
+          {confirmReset ? (
+            <div className="gh-confirm">
+              <button
+                type="button"
+                className="gh-bigbtn danger"
+                onClick={() => {
+                  setConfirmReset(false);
+                  run("Reset", () =>
+                    post("/api/chaos/reset").then(
+                      () => "Low tide: the catalog is back to its seed state.",
+                    ),
+                  );
+                }}
+              >
+                <Undo size={30} />
+                <span>
+                  <strong>Confirm low tide</strong>
+                  <span>Every catch is undone</span>
+                </span>
+              </button>
+              <button
+                type="button"
+                className="gh-btn gh-btn-ghost"
+                onClick={() => setConfirmReset(false)}
+              >
+                Keep the changes
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="gh-bigbtn danger"
+              disabled={busy}
+              onClick={() => setConfirmReset(true)}
+            >
+              <Undo size={30} />
+              <span>
+                <strong>Reset to low tide</strong>
+                <span>Restore seed data</span>
+              </span>
+            </button>
+          )}
+          <form action={signOut}>
+            <button type="submit" className="gh-btn gh-btn-ghost">
+              Leave the quarters
+            </button>
+          </form>
+        </div>
+      </div>
+
       <p
-        className={`status status-${status.kind}`}
+        className={`gh-status gh-status-${status.kind}`}
         role="status"
         aria-live="polite"
       >
         {status.text}
       </p>
 
-      <section aria-labelledby="scenarios-title" className="panel">
-        <h2 id="scenarios-title">
-          <Zap size={16} aria-hidden="true" /> Scenario scripts
-        </h2>
-        <ul className="scenarios">
-          {scenarios.map((s) => (
-            <li key={s.id}>
-              <div>
-                <strong>{s.label}</strong>
-                <p>{s.story}</p>
+      <div className="gh-deck-grid">
+        <section aria-labelledby={`${formId}-stir`} className="gh-stir">
+          <h2 id={`${formId}-stir`} className="gh-h2">
+            Stir the waters
+          </h2>
+          {GROUPS.map((g) => (
+            <div key={g.name} className="gh-stir-group">
+              <div className="gh-rope-label">
+                <span>{g.name}</span>
+                <span className="gh-rope" aria-hidden="true" />
+                <Knot size={18} />
               </div>
-              <button
-                type="button"
-                className="primary-link"
-                disabled={status.kind === "busy"}
-                onClick={() =>
-                  run(s.label, () => post(`/api/chaos/scenarios/${s.id}`))
-                }
-              >
-                <Play size={13} aria-hidden="true" /> Run
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section aria-labelledby="mutate-title" className="panel">
-        <h2 id="mutate-title">
-          <Activity size={16} aria-hidden="true" /> Single mutation
-        </h2>
-        <form
-          className="mutate"
-          onSubmit={(e) => {
-            e.preventDefault();
-            run(spec?.label ?? "Mutation", async () => {
-              await post("/api/chaos/mutations", {
-                mutation: mutationId,
-                sku,
-                params: buildParams(),
-              });
-              return `${spec?.label} applied to ${sku}.`;
-            });
-          }}
-        >
-          <label htmlFor={`${formId}-sku`}>Item</label>
-          <select
-            id={`${formId}-sku`}
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-          >
-            {["home_office", "apparel", "travel"].map((d) => (
-              <optgroup key={d} label={d.replace("_", " ")}>
-                {skus
-                  .filter((s) => s.department === d)
-                  .map((s) => (
-                    <option key={s.sku} value={s.sku}>
-                      {s.sku} · {s.title}
-                    </option>
+              <div className="gh-stir-grid">
+                {g.items
+                  .filter(([id]) => mutations.some((m) => m.id === id))
+                  .map(([id, label]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className="gh-stir-btn"
+                      aria-pressed={mutationId === id}
+                      aria-controls={`${formId}-form`}
+                      onClick={() => {
+                        setMutationId(mutationId === id ? null : id);
+                        setParams({});
+                      }}
+                    >
+                      <span>{label}</span>
+                      <span className="gh-code">{id}</span>
+                    </button>
                   ))}
-              </optgroup>
-            ))}
-          </select>
-          <label htmlFor={`${formId}-mutation`}>Mutation</label>
-          <select
-            id={`${formId}-mutation`}
-            value={mutationId}
-            onChange={(e) => {
-              setMutationId(e.target.value);
-              setParams({});
-            }}
-          >
-            {mutations.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-          {spec ? (
-            <p className="hint">
-              {spec.description} <em>{spec.expect}</em>
-            </p>
-          ) : null}
-          {spec?.params.map((p) => (
-            <div key={p.key} className="param">
-              <label htmlFor={`${formId}-${p.key}`}>{p.label}</label>
-              {p.kind === "sku" ? (
-                <select
-                  id={`${formId}-${p.key}`}
-                  value={params[p.key] ?? ""}
-                  required={p.required}
-                  onChange={(e) =>
-                    setParams({ ...params, [p.key]: e.target.value })
-                  }
-                >
-                  <option value="">Choose…</option>
-                  {skus
-                    .filter((s) => s.sku !== sku)
-                    .map((s) => (
-                      <option key={s.sku} value={s.sku}>
-                        {s.sku} · {s.title}
-                      </option>
-                    ))}
-                </select>
-              ) : (
-                <input
-                  id={`${formId}-${p.key}`}
-                  inputMode={
-                    p.kind === "money"
-                      ? "decimal"
-                      : p.kind === "integer"
-                        ? "numeric"
-                        : "text"
-                  }
-                  placeholder={
-                    p.placeholder ?? (p.kind === "money" ? "e.g. 319.00" : "")
-                  }
-                  required={p.required}
-                  value={params[p.key] ?? ""}
-                  onChange={(e) =>
-                    setParams({ ...params, [p.key]: e.target.value })
-                  }
-                />
-              )}
+              </div>
             </div>
           ))}
-          <button
-            type="submit"
-            className="primary-link"
-            disabled={status.kind === "busy"}
-          >
-            <Send size={13} aria-hidden="true" /> Apply
-          </button>
-        </form>
-      </section>
-
-      <section aria-labelledby="controls-title" className="panel">
-        <h2 id="controls-title">
-          <Timer size={16} aria-hidden="true" /> Controls
-        </h2>
-        <div className="controls">
-          {confirmReset ? (
-            <>
-              <button
-                type="button"
-                className="danger"
-                onClick={() => {
-                  setConfirmReset(false);
-                  run("Reset", () =>
-                    post("/api/chaos/reset").then(
-                      () => "Catalog restored to the seed state.",
-                    ),
-                  );
-                }}
-              >
-                <RotateCcw size={13} aria-hidden="true" /> Confirm reset
-              </button>
-              <button
-                type="button"
-                className="ghost"
-                onClick={() => setConfirmReset(false)}
-              >
-                Keep changes
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              className="ghost"
-              onClick={() => setConfirmReset(true)}
+          {spec ? (
+            <form
+              id={`${formId}-form`}
+              className="gh-card gh-stir-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                run(labelOf(spec.id), async () => {
+                  await post("/api/chaos/mutations", {
+                    mutation: spec.id,
+                    sku,
+                    params: buildParams(),
+                  });
+                  return `${labelOf(spec.id)} applied to ${sku}.`;
+                });
+              }}
             >
-              <RotateCcw size={13} aria-hidden="true" /> Reset catalog
-            </button>
+              <p className="gh-stir-form-title">
+                <strong>{labelOf(spec.id)}</strong>{" "}
+                <span className="gh-code gh-muted">{spec.id}</span>
+              </p>
+              <p className="gh-fine">
+                {spec.description} <em>{spec.expect}</em>
+              </p>
+              <label htmlFor={`${formId}-sku`}>Item</label>
+              <select
+                id={`${formId}-sku`}
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+              >
+                {["home_office", "apparel", "travel"].map((d) => (
+                  <optgroup key={d} label={d.replace("_", " ")}>
+                    {skus
+                      .filter((s) => s.department === d)
+                      .map((s) => (
+                        <option key={s.sku} value={s.sku}>
+                          {s.sku} · {s.title}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
+              </select>
+              {spec.params.map((p) => (
+                <div key={p.key} className="gh-field">
+                  <label htmlFor={`${formId}-${p.key}`}>{p.label}</label>
+                  {p.kind === "sku" ? (
+                    <select
+                      id={`${formId}-${p.key}`}
+                      value={params[p.key] ?? ""}
+                      required={p.required}
+                      onChange={(e) =>
+                        setParams({ ...params, [p.key]: e.target.value })
+                      }
+                    >
+                      <option value="">Choose…</option>
+                      {skus
+                        .filter((s) => s.sku !== sku)
+                        .map((s) => (
+                          <option key={s.sku} value={s.sku}>
+                            {s.sku} · {s.title}
+                          </option>
+                        ))}
+                    </select>
+                  ) : (
+                    <input
+                      id={`${formId}-${p.key}`}
+                      inputMode={
+                        p.kind === "money"
+                          ? "decimal"
+                          : p.kind === "integer"
+                            ? "numeric"
+                            : "text"
+                      }
+                      placeholder={
+                        p.placeholder ??
+                        (p.kind === "money" ? "e.g. 319.00" : "")
+                      }
+                      required={p.required}
+                      value={params[p.key] ?? ""}
+                      onChange={(e) =>
+                        setParams({ ...params, [p.key]: e.target.value })
+                      }
+                    />
+                  )}
+                </div>
+              ))}
+              <button
+                type="submit"
+                className="gh-btn gh-btn-navy"
+                disabled={busy}
+              >
+                <Play size={14} /> Stir it
+              </button>
+            </form>
+          ) : (
+            <p className="gh-fine">
+              Pick a mutation to choose the item and its values.
+            </p>
           )}
+        </section>
+
+        <section aria-labelledby={`${formId}-scripts`} className="gh-scripts">
+          <h2 id={`${formId}-scripts`} className="gh-h2">
+            Scenario scripts
+          </h2>
+          {flagship ? (
+            <div className="gh-rope-card gh-flagship">
+              <div className="gh-rope-card-inner">
+                <div className="gh-flagship-head">
+                  <span className="gh-overline danger">
+                    SCENARIO 1 · FLAGSHIP
+                  </span>
+                  <h3>{flagship.label}</h3>
+                  <span className="gh-flagship-subject">
+                    {flagship.subject}
+                  </span>
+                </div>
+                <dl className="gh-flagship-lines">
+                  {flagship.lines.map((l) => (
+                    <div key={l.label}>
+                      <dt>{l.label}</dt>
+                      <dd className="gh-code">
+                        {l.from} → {l.to}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="gh-flagship-run">
+                  <button
+                    type="button"
+                    className="gh-btn gh-btn-navy gh-btn-lg"
+                    disabled={busy}
+                    onClick={() =>
+                      run(flagship.label, () =>
+                        post(`/api/chaos/scenarios/${flagship.id}`),
+                      )
+                    }
+                  >
+                    <Play size={20} /> Run scenario
+                  </button>
+                  <span className="gh-code gh-muted">{flagship.ids}</span>
+                </div>
+              </div>
+              <GHFigure
+                pose="gtag"
+                flip
+                tag={gullTag}
+                className="gh-flagship-gull"
+              />
+            </div>
+          ) : null}
+          <div className="gh-scenario-grid">
+            {others.map((s, i) => (
+              <div key={s.id} className="gh-card gh-scenario">
+                <span className="gh-overline">SCENARIO {i + 2}</span>
+                <h3>{s.label}</h3>
+                <span className="gh-scenario-subject">{s.subject}</span>
+                {s.lines.map((l) => (
+                  <span key={l.label} className="gh-code gh-scenario-line">
+                    {l.from} → {l.to}
+                  </span>
+                ))}
+                <p className="gh-fine">{s.story}</p>
+                <button
+                  type="button"
+                  className="gh-btn gh-btn-outline"
+                  disabled={busy}
+                  onClick={() =>
+                    run(s.label, () => post(`/api/chaos/scenarios/${s.id}`))
+                  }
+                >
+                  <Play size={14} /> Run
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section
+          aria-labelledby={`${formId}-history`}
+          aria-live="polite"
+          className="gh-history"
+        >
+          <div className="gh-history-head">
+            <h2 id={`${formId}-history`} className="gh-h2">
+              Catch history
+            </h2>
+            <span>
+              {entries.length} catch{entries.length === 1 ? "" : "es"}
+            </span>
+          </div>
+          {error ? (
+            <p className="gh-form-error">Log not updating: {error}</p>
+          ) : null}
+          <div className="gh-history-box">
+            {entries.length > 0 ? (
+              <ol className="gh-catches">
+                {entries.map((e, i) => (
+                  <li key={e.id} className={i === 0 ? "latest" : undefined}>
+                    <p className="gh-code">{catchMessage(e)}</p>
+                    <div className="gh-catch-meta">
+                      <span
+                        className={`gh-avatar ${catchAuthor(e) === "the-gull" ? "gull" : ""}`}
+                        aria-hidden="true"
+                      />
+                      <strong>{catchAuthor(e)}</strong>
+                      <span>caught {ago(e.created_at)}</span>
+                      {i === 0 ? (
+                        <span className="gh-latest">LATEST</span>
+                      ) : null}
+                      {e.scenario ? (
+                        <span className="gh-code gh-muted">{e.scenario}</span>
+                      ) : null}
+                      <span className="gh-code gh-hash">{catchHash(e.id)}</span>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <div className="gh-calm">
+                <GHFigure pose="nap" className="gh-calm-figure" />
+                <p>
+                  {data
+                    ? "Calm seas. Nothing's been tampered with."
+                    : "Checking the log…"}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+
+      <section
+        aria-labelledby={`${formId}-webhooks`}
+        className="gh-card gh-webhooks"
+      >
+        <div className="gh-webhooks-head">
+          <h2 id={`${formId}-webhooks`} className="gh-h3">
+            Order webhooks → Cartel
+          </h2>
           <button
             type="button"
-            className="ghost"
-            onClick={() =>
-              run("Mandate tick", async () => {
-                const r = await post("/api/chaos/mandate-tick");
-                return `Cartel answered HTTP ${r.status} in ${r.ms} ms.`;
-              })
-            }
-          >
-            <Play size={13} aria-hidden="true" /> Run mandate tick now
-          </button>
-          <button
-            type="button"
-            className="ghost"
+            className="gh-btn gh-btn-ghost"
+            disabled={busy}
             onClick={() =>
               run("Webhooks", async () => {
                 const r = await post("/api/chaos/webhooks", {
@@ -388,47 +560,11 @@ export function ChaosPanel({
               })
             }
           >
-            <Send size={13} aria-hidden="true" /> Retry webhooks
+            Retry webhooks
           </button>
         </div>
-      </section>
-
-      <section aria-labelledby="log-title" className="panel span">
-        <h2 id="log-title">Mutation log</h2>
-        {error ? <p className="form-error">Log not updating: {error}</p> : null}
-        <ol className="mutation-log">
-          {(data?.entries ?? []).map((e) => (
-            <li key={e.id} className={e.mutation === "reset" ? "reset" : ""}>
-              <div className="log-head">
-                <strong>{e.mutation.replace(/_/g, " ")}</strong>
-                {e.target.sku ? (
-                  <span className="mono">
-                    {e.target.sku}
-                    {titles.get(e.target.sku)
-                      ? ` · ${titles.get(e.target.sku)}`
-                      : ""}
-                  </span>
-                ) : null}
-                {e.scenario ? <span className="tag">{e.scenario}</span> : null}
-                <RelativeTime iso={e.created_at} />
-              </div>
-              <p>
-                {e.mutation === "reset"
-                  ? "Catalog restored to the seed state."
-                  : describe(e).join(" · ") || "No visible change."}
-              </p>
-            </li>
-          ))}
-          {data && data.entries.length === 0 ? (
-            <li className="empty">No mutations yet.</li>
-          ) : null}
-        </ol>
-      </section>
-
-      <section aria-labelledby="webhooks-title" className="panel span">
-        <h2 id="webhooks-title">Order webhooks → Cartel</h2>
-        <div className="table-wrap">
-          <table className="log">
+        <div className="gh-table-wrap">
+          <table className="gh-table">
             <thead>
               <tr>
                 <th scope="col">Event</th>
@@ -440,16 +576,14 @@ export function ChaosPanel({
             <tbody>
               {(data?.webhooks ?? []).map((w) => (
                 <tr key={w.event_id}>
-                  <td className="mono">{w.event_type}</td>
-                  <td className="mono">{w.order_id}</td>
+                  <td className="gh-code">{w.event_type}</td>
+                  <td className="gh-code">{w.order_id}</td>
                   <td>{w.attempts}</td>
                   <td>
                     {w.delivered_at ? (
-                      <span className="verdict ok">Delivered</span>
+                      <span className="gh-ok">Delivered</span>
                     ) : w.failed_at ? (
-                      <span className="verdict bad">
-                        Parked · {w.last_error}
-                      </span>
+                      <span className="gh-bad">Parked · {w.last_error}</span>
                     ) : (
                       <span>
                         Retrying{w.last_error ? ` · ${w.last_error}` : ""}
@@ -460,8 +594,8 @@ export function ChaosPanel({
               ))}
               {data && data.webhooks.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="empty">
-                    No orders yet.
+                  <td colSpan={4} className="gh-empty-row">
+                    No cargo yet, so nothing to tell Cartel.
                   </td>
                 </tr>
               ) : null}
@@ -469,6 +603,6 @@ export function ChaosPanel({
           </table>
         </div>
       </section>
-    </div>
+    </>
   );
 }

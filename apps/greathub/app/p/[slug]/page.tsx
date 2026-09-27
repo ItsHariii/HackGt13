@@ -1,26 +1,30 @@
-import {
-  AlertTriangle,
-  Repeat,
-  Store as StoreIcon,
-  Truck,
-  Undo2,
-} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CategoryIcon } from "@/components/category-icon";
-import { getActiveRecalls, getProduct, getStorePolicies } from "@/lib/catalog";
-import { pageOrigin } from "@/lib/config";
-import { productJsonLd, serializeJsonLd } from "@/lib/jsonld";
+import { GHFigure } from "@/components/gh/figure";
+import { Check, Cross, Lock } from "@/components/gh/icons";
+import { type SpecRow, SpecsPanel } from "@/components/gh/specs-panel";
 import {
-  AVAILABILITY_LABEL,
-  DEPARTMENTS,
-  deliveryLabel,
-  returnLabel,
-} from "@/lib/labels";
+  getActiveRecalls,
+  getProduct,
+  getSeededSpecs,
+  getStorePolicies,
+} from "@/lib/catalog";
+import { ago, catchHash, catchMessage } from "@/lib/catches";
+import { pageOrigin } from "@/lib/config";
+import { latestBySku, recentCatches } from "@/lib/harbor";
+import { productJsonLd, serializeJsonLd } from "@/lib/jsonld";
+import { AVAILABILITY_LABEL, deliveryLabel, returnLabel } from "@/lib/labels";
 import { formatMinor } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
+
+const TOPIC: Record<string, string> = {
+  home_office: "home-office",
+  apparel: "apparel",
+  travel: "travel",
+};
 
 export async function generateMetadata({
   params,
@@ -41,9 +45,11 @@ export default async function ProductPage({
   const variant =
     product.variants.find((v) => v.sku === sku) ?? product.variants[0];
   if (!variant) notFound();
-  const [policies, recalls] = await Promise.all([
+  const [policies, recalls, seeded, catches] = await Promise.all([
     getStorePolicies(),
     getActiveRecalls([variant.sku]),
+    getSeededSpecs(),
+    recentCatches(50),
   ]);
   const origin = await pageOrigin();
   const url = `${origin}/p/${product.slug}?sku=${encodeURIComponent(variant.sku)}`;
@@ -53,48 +59,82 @@ export default async function ProductPage({
     shippingFlatMinor: policies.shipping.flatMinor,
     variantCount: product.variants.length,
   });
+  const seed = seeded.get(variant.listingId);
+  const rows: SpecRow[] = [
+    ...variant.spec.map((s) => ({
+      name: s.name,
+      value: s.value,
+      changed:
+        seed !== undefined &&
+        seed.find((x) => x.name === s.name)?.value !== s.value,
+    })),
+    { name: "SKU", value: variant.sku, changed: false },
+    { name: "GTIN", value: variant.gtin, changed: false },
+    { name: "MPN", value: variant.mpn, changed: false },
+  ];
+  const lastCatch = latestBySku(catches).get(variant.sku);
+  const returns = returnLabel(o.returnPolicy.terms);
 
   return (
-    <main className="pdp">
+    <main className="gh-page">
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD is escaped by serializeJsonLd.
         dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
-      <nav aria-label="Breadcrumb" className="crumbs">
-        <Link href="/">Shop</Link> /{" "}
-        <Link href={`/?d=${product.department}`}>
-          {DEPARTMENTS[product.department]}
-        </Link>{" "}
-        / <span aria-current="page">{product.name}</span>
-      </nav>
-      <div className="pdp-grid">
-        <div className={`pdp-art product-art tone-${product.department}`}>
-          <span>{product.category.toUpperCase()}</span>
-          <CategoryIcon
-            category={product.category}
-            department={product.department}
-            size={180}
-          />
-        </div>
-        <div className="pdp-buy">
-          <p className="brand">{product.brand}</p>
-          <h1>{variant.title}</h1>
-          <p className="lede">{product.description}</p>
-          <p className="price">
-            {formatMinor(o.priceMinor)}
-            {o.subscription ? (
-              <span className="tag">
-                <Repeat size={13} aria-hidden="true" /> Renews{" "}
-                {o.subscription.every.replace(/^P(\d+)D$/, "every $1 days")} at{" "}
-                {formatMinor(o.subscription.priceMinor)}
+      <div className="gh-pathbar">
+        <nav aria-label="Breadcrumb" className="gh-crumbs gh-crumbs-lg">
+          <Link href="/">greathub</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/">the-workday-edit</Link>
+          <span aria-hidden="true">/</span>
+          <Link href={`/?d=${product.department}`}>
+            {TOPIC[product.department] ?? product.department}
+          </Link>
+          <span aria-hidden="true">/</span>
+          <strong aria-current="page">{product.slug}</strong>
+        </nav>
+        <span className="gh-code gh-muted gh-pathbar-catch">
+          {lastCatch
+            ? `last catch ${catchHash(lastCatch.id)} · ${catchMessage(lastCatch)} · ${ago(lastCatch.created_at)}`
+            : `listing revision ${o.revision} · docked ${new Date(o.updatedAt).toLocaleDateString("en-US", { timeZone: "UTC" })}`}
+        </span>
+      </div>
+
+      <div className="gh-pdp">
+        <div className="gh-porthole-frame">
+          <div className="gh-porthole">
+            <span className="gh-rivet top" />
+            <span className="gh-rivet bottom" />
+            <span className="gh-rivet left" />
+            <span className="gh-rivet right" />
+            <div className="gh-porthole-glass">
+              <CategoryIcon
+                category={product.category}
+                department={product.department}
+                size={150}
+              />
+              <span className="gh-code">
+                {product.brand} · {product.category}
               </span>
-            ) : null}
-            {o.finalSale ? <span className="tag warn">Final sale</span> : null}
-          </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="gh-pdp-buy">
+          <p className="gh-brandline">{product.brand}</p>
+          <h1>{variant.title}</h1>
+          <p className="gh-code gh-price">{formatMinor(o.priceMinor)}</p>
+          {o.subscription ? (
+            <p className="gh-flag">
+              Renews{" "}
+              {o.subscription.every.replace(/^P(\d+)D$/, "every $1 days")} at{" "}
+              {formatMinor(o.subscription.priceMinor)}
+            </p>
+          ) : null}
 
           {product.variants.length > 1 ? (
-            <fieldset className="options">
+            <fieldset className="gh-options">
               <legend>Options</legend>
               {product.variants.map((v) => (
                 <Link
@@ -109,110 +149,91 @@ export default async function ProductPage({
             </fieldset>
           ) : null}
 
+          <ul className="gh-facts">
+            <li className={`stock-${o.availability}`}>
+              {o.availability === "out_of_stock" ? (
+                <Cross size={16} />
+              ) : (
+                <Check size={18} />
+              )}
+              {AVAILABILITY_LABEL[o.availability]}
+              {o.availability !== "out_of_stock" ? ` · ${o.stock} left` : ""}
+              {" · "}
+              {deliveryLabel(o.deliveryMinDays, o.deliveryMaxDays)}
+              {o.packSize > 1 ? ` · pack of ${o.packSize}` : ""}
+            </li>
+            <li>
+              Sold by <strong>{o.seller.name}</strong>
+            </li>
+            <li>
+              {returns}
+              {o.finalSale ? "" : " · not final sale"}
+            </li>
+            <li>
+              {policies.shipping.label}{" "}
+              {formatMinor(policies.shipping.flatMinor + o.shippingFeeMinor)}{" "}
+              per order
+              {o.shippingFeeMinor > 0
+                ? ` (includes ${formatMinor(o.shippingFeeMinor)} handling)`
+                : ""}
+            </li>
+          </ul>
+
           {recalls.length > 0 ? (
-            <div className="alert" role="alert">
-              <AlertTriangle size={16} aria-hidden="true" />
-              <div>
-                <strong>
-                  Recall {recalls[0]?.recall_number} (Mock CPSC, demo)
-                </strong>
-                <p>{recalls[0]?.hazard}</p>
-              </div>
+            <div className="gh-alert" role="alert">
+              <strong>
+                Recall {recalls[0]?.recall_number} (Mock CPSC, demo)
+              </strong>
+              <p>{recalls[0]?.hazard}</p>
             </div>
           ) : null}
           {variant.shipsAs ? (
-            <div className="alert" role="note">
-              <AlertTriangle size={16} aria-hidden="true" />
-              <div>
-                <strong>Ships as {variant.shipsAs.sku}</strong>
-                <p>
-                  This listing currently fulfills with GTIN{" "}
-                  {variant.shipsAs.gtin}.
-                </p>
-              </div>
+            <div className="gh-alert" role="note">
+              <strong>Ships as {variant.shipsAs.sku}</strong>
+              <p>
+                This listing currently fulfills with GTIN{" "}
+                <span className="gh-code">{variant.shipsAs.gtin}</span>.
+              </p>
             </div>
           ) : null}
 
-          <dl className="facts">
-            <div>
-              <dt>
-                <Truck size={15} aria-hidden="true" /> Delivery
-              </dt>
-              <dd>
-                {deliveryLabel(o.deliveryMinDays, o.deliveryMaxDays)} ·{" "}
-                {policies.shipping.label}{" "}
-                {formatMinor(policies.shipping.flatMinor + o.shippingFeeMinor)}{" "}
-                per order
-                {o.shippingFeeMinor > 0
-                  ? ` (includes ${formatMinor(o.shippingFeeMinor)} handling)`
-                  : ""}
-              </dd>
-            </div>
-            <div>
-              <dt>
-                <Undo2 size={15} aria-hidden="true" /> Returns
-              </dt>
-              <dd>{returnLabel(o.returnPolicy.terms)}</dd>
-            </div>
-            <div>
-              <dt>
-                <StoreIcon size={15} aria-hidden="true" /> Sold by
-              </dt>
-              <dd>{o.seller.name}</dd>
-            </div>
-            <div>
-              <dt>Availability</dt>
-              <dd className={`stock-${o.availability}`}>
-                {AVAILABILITY_LABEL[o.availability]}
-                {o.availability !== "out_of_stock" ? ` · ${o.stock} left` : ""}
-                {o.packSize > 1 ? ` · pack of ${o.packSize}` : ""}
-              </dd>
-            </div>
-          </dl>
-          <p className="agent-note">
-            Checkout on GreatHub is agent-only: signed ACP requests from Cartel.
-            There is no cart for people.
-          </p>
+          <div className="gh-hold">
+            <button type="button" disabled className="gh-btn gh-btn-disabled">
+              <Lock size={18} />
+              Load the hold
+            </button>
+            <p>
+              Checkout at GreatHub happens through signed AI agents (ACP).
+              Humans: enjoy the view.
+            </p>
+          </div>
         </div>
       </div>
 
-      <section className="pdp-section" aria-labelledby="spec-title">
-        <h2 id="spec-title">Specifications</h2>
-        <table className="spec">
-          <tbody>
-            {variant.spec.map((s) => (
-              <tr key={s.name}>
-                <th scope="row">{s.name}</th>
-                <td>{s.value}</td>
-              </tr>
-            ))}
-            <tr>
-              <th scope="row">SKU</th>
-              <td className="mono">{variant.sku}</td>
-            </tr>
-            <tr>
-              <th scope="row">GTIN</th>
-              <td className="mono">{variant.gtin}</td>
-            </tr>
-            <tr>
-              <th scope="row">MPN</th>
-              <td className="mono">{variant.mpn}</td>
-            </tr>
-          </tbody>
-        </table>
-        <p className="fine">
-          Listing revision {o.revision} · updated{" "}
-          {new Date(o.updatedAt).toLocaleString("en-US", { timeZone: "UTC" })}{" "}
-          UTC
-        </p>
-      </section>
-
-      {variant.injectionText ? (
-        <section className="pdp-section" aria-labelledby="seller-note">
-          <h2 id="seller-note">From the seller</h2>
-          <p className="seller-note">{variant.injectionText}</p>
-        </section>
-      ) : null}
+      <div className="gh-pdp-lower">
+        <div className="gh-pdp-lower-main">
+          <SpecsPanel rows={rows} />
+          <p className="gh-fine">{product.description}</p>
+          {variant.injectionText ? (
+            <section
+              className="gh-card gh-bottle"
+              aria-labelledby="seller-note"
+            >
+              <h2 id="seller-note" className="gh-h4">
+                From the seller
+              </h2>
+              <p>{variant.injectionText}</p>
+            </section>
+          ) : null}
+        </div>
+        <aside className="gh-pdp-aside">
+          <p className="gh-bubble">
+            Every spec here matches our machine-readable listing. Unless the
+            Gull&apos;s been at it.
+          </p>
+          <GHFigure pose="point" flip className="gh-pdp-figure" />
+        </aside>
+      </div>
     </main>
   );
 }

@@ -33,6 +33,8 @@ export interface OfferView {
 }
 
 export interface VariantView {
+  /** The listing that carries this variant's title, specs and offer. */
+  listingId: string;
   sku: string;
   gtin: string;
   mpn: string;
@@ -122,6 +124,7 @@ function toVariant(v: Row): VariantView | null {
     ? spec(listing.jsonld_spec as Json)
     : listed;
   return {
+    listingId: String(listing.id),
     sku: String(v.sku),
     gtin: String(v.gtin),
     mpn: String(v.mpn),
@@ -270,4 +273,24 @@ export async function getActiveRecalls(skus: readonly string[]) {
     .in("sku", [...skus]);
   if (error) throw new Error(`recall query failed: ${error.message}`);
   return data ?? [];
+}
+
+/**
+ * The specs each listing had when the catalog was seeded (the state Reset
+ * restores), keyed by listing ID. A row that differs was changed by the
+ * Chaos Deck; the product page marks it with the Gull's footprint.
+ */
+export async function getSeededSpecs(): Promise<Map<string, SpecEntry[]>> {
+  const { data, error } = await db()
+    .from("catalog_baseline")
+    .select("listings")
+    .maybeSingle();
+  if (error) throw new Error(`baseline query failed: ${error.message}`);
+  const out = new Map<string, SpecEntry[]>();
+  const rows = Array.isArray(data?.listings) ? data.listings : [];
+  for (const row of rows) {
+    const r = row as Row;
+    out.set(String(r.id), spec((r.spec ?? null) as Json));
+  }
+  return out;
 }

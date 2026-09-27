@@ -1,19 +1,12 @@
-import { Store } from "lucide-react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { GHDefs } from "@/components/gh/figure";
+import { Anchor, PortholeLogo, Search } from "@/components/gh/icons";
+import { NavLinks } from "@/components/gh/nav-links";
+import { isAdminSession } from "@/lib/admin";
+import { code, display, ui } from "./fonts";
 import "./globals.css";
 
-const sans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-const mono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
 export const metadata: Metadata = {
   title: {
     default: "GreatHub — Test merchant",
@@ -22,35 +15,56 @@ export const metadata: Metadata = {
   description: "A fictional storefront for testing Cartel. No real purchases.",
   robots: { index: false, follow: false },
 };
-export default function Layout({ children }: { children: React.ReactNode }) {
+
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const admin = await isAdminSession();
   return (
     <html lang="en">
-      <body className={`${sans.variable} ${mono.variable}`}>
+      <body className={`${display.variable} ${ui.variable} ${code.variable}`}>
+        <GHDefs />
         <a href="#main" className="skip-link">
           Skip to content
         </a>
-        <div className="test-banner" role="note">
-          TEST MERCHANT <span>Fictional products. No real purchases.</span>
-        </div>
-        <header className="merchant-header">
-          <Link href="/" className="merchant-logo">
-            <Store size={26} aria-hidden="true" />
-            demo<span>mart</span>
+        <header className="gh-header">
+          <Link href="/" className="gh-brand" aria-label="GreatHub home">
+            <PortholeLogo />
+            <span>GreatHub</span>
           </Link>
-          <nav aria-label="Merchant" className="merchant-nav">
-            <Link href="/">Shop</Link>
-            <Link href="/agents">Agent log</Link>
-            <Link href="/orders">Orders</Link>
-            <Link href="/chaos">Chaos Panel</Link>
-          </nav>
-        </header>
-        <div id="main">{children}</div>
-        <footer>
-          <span>
-            GreatHub / A Cartel test merchant ·{" "}
-            <Link href="/policies">Policies</Link>
+          <search className="gh-search">
+            <form action="/" className="gh-search-form">
+              <Search size={16} />
+              <label htmlFor="harbor-search" className="sr-only">
+                Search the harbor
+              </label>
+              <input
+                id="harbor-search"
+                name="q"
+                type="search"
+                placeholder="Search the harbor…"
+              />
+            </form>
+          </search>
+          <NavLinks />
+          <span className={admin ? "gh-pill admin" : "gh-pill"}>
+            {admin ? "Captain's quarters · admin" : "TEST MERCHANT"}
           </span>
-          <span>All product names and prices are fictional.</span>
+        </header>
+        <div className="gh-banner" role="note">
+          <Anchor size={18} />
+          <span>
+            GreatHub is a test merchant for the Cartel demo. Nothing here ships.
+            Not even to the harbor.
+          </span>
+        </div>
+        <div id="main">{children}</div>
+        <footer className="gh-footer">
+          <Anchor size={16} />
+          <span>We yam what we yam: a test merchant. Built at HackGT 13.</span>
+          <Link href="/policies">Policies</Link>
         </footer>
       </body>
     </html>
