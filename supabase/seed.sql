@@ -749,7 +749,7 @@ join greathub.offers o on o.listing_id = l.id
 join greathub.policies pol on pol.id = o.return_policy_id;
 
 -- BEGIN GENERATED (scripts/product-photos.mjs) --
--- 125 Unsplash stock photos served by GreatHub (apps/greathub/public/products).
+-- 150 Unsplash stock photos served by GreatHub (apps/greathub/public/products).
 -- The catalog links to GreatHub's copy, with the same origin rule as product links above.
 update greathub.products set image_path = '/products/' || slug || '.webp'
 where slug in (
@@ -769,22 +769,28 @@ where slug in (
   'galloon-dinosaur-party-decoration-kit', 'galloon-foil-number-balloon', 'galloon-happy-birthday-banner', 'galloon-jungle-safari-party-decoration-kit',
   'galloon-latex-balloons-assorted', 'galloon-latex-free-foil-balloon-bouquet', 'galloon-paper-streamers-6-rolls', 'galloon-rainbow-party-decoration-kit',
   'galloon-space-party-decoration-kit', 'galloon-superhero-party-decoration-kit', 'galloon-under-the-sea-party-decoration-kit', 'galloon-unicorn-party-decoration-kit',
-  'grainhouse-gluten-free-sandwich-bread', 'grainhouse-granola-bars-12-pack', 'grainhouse-hummus-snack-cups-6-pack', 'grainhouse-mini-pizza-kit',
-  'grainhouse-nut-free-granola-bites', 'grainhouse-oat-milk-unsweetened', 'grainhouse-orange-juice-52-oz', 'grainhouse-penne-pasta',
-  'grainhouse-plain-bagels-6-pack', 'halden-h24f', 'halden-m27q-usbc', 'halden-q27',
-  'hearthbake-classic-birthday-cake-quarter-sheet', 'hearthbake-confetti-sprinkle-cake-quarter-sheet', 'hearthbake-dinosaur-birthday-cake-8-round', 'hearthbake-dinosaur-dig-cake-7-round',
-  'hearthbake-flourless-chocolate-torte', 'hearthbake-free-from-celebration-cake-6-round', 'hearthbake-free-from-celebration-cake-8-round', 'hearthbake-free-from-celebration-cake-half-sheet',
-  'hearthbake-free-from-celebration-cake-quarter-sheet', 'hearthbake-gluten-free-vanilla-cupcakes-12-pack', 'hearthbake-gluten-free-vanilla-cupcakes-24-pack', 'hearthbake-jungle-safari-birthday-cake-6-round',
-  'hearthbake-rainbow-birthday-cake-8-round', 'hearthbake-space-birthday-cake-quarter-sheet', 'hearthbake-superhero-birthday-cake-8-round', 'hearthbake-tiered-unicorn-showpiece-cake',
-  'hearthbake-under-the-sea-birthday-cake-quarter-sheet', 'hearthbake-unicorn-birthday-cake-6-round', 'hearthbake-vanilla-cupcakes-12-pack', 'hearthbake-vanilla-cupcakes-24-pack',
-  'kestrel-adjustable-footrest', 'kestrel-basic-task-chair', 'kestrel-ergo-pro-chair', 'kestrel-mesh-task-chair',
-  'loop-hdmi-2-1-cable', 'loop-thunderbolt-4-dock', 'loop-usb-c-cable-100w', 'loop-usb-c-cable-240w',
-  'loop-usb-c-cable-60w', 'loop-usb-c-dock-7-in-1', 'marlow-cashmere-scarf', 'marlow-heather-wrap-dress',
-  'marlow-knit-cardigan', 'marlow-leather-belt', 'marlow-linen-shift-dress', 'marlow-linen-shirt',
-  'marlow-navy-midi-dress', 'marlow-navy-sheath-dress', 'marlow-navy-wrap-dress', 'pica-1080p-webcam',
-  'pica-4k-webcam', 'pipit-sunflower-seed-butter-cups-12-pack', 'vireo-p3223', 'vireo-u2727',
-  'volt-10k-power-bank', 'volt-20k-power-bank', 'volt-26800-power-bank', 'volt-30k-power-bank',
-  'volt-universal-travel-adapter'
+  'grainhouse-certified-gluten-free-oats', 'grainhouse-gluten-free-sandwich-bread', 'grainhouse-granola-bars-12-pack', 'grainhouse-greek-yogurt-cups-4-pack',
+  'grainhouse-hummus-snack-cups-6-pack', 'grainhouse-mini-pizza-kit', 'grainhouse-nut-free-granola-bites', 'grainhouse-oat-milk-unsweetened',
+  'grainhouse-orange-juice-52-oz', 'grainhouse-penne-pasta', 'grainhouse-plain-bagels-6-pack', 'grainhouse-sunflower-seed-butter',
+  'halden-h24f', 'halden-m27q-usbc', 'halden-q27', 'hearthbake-classic-birthday-cake-quarter-sheet',
+  'hearthbake-confetti-sprinkle-cake-quarter-sheet', 'hearthbake-dinosaur-birthday-cake-8-round', 'hearthbake-dinosaur-dig-cake-7-round', 'hearthbake-flourless-chocolate-torte',
+  'hearthbake-free-from-celebration-cake-6-round', 'hearthbake-free-from-celebration-cake-8-round', 'hearthbake-free-from-celebration-cake-half-sheet', 'hearthbake-free-from-celebration-cake-quarter-sheet',
+  'hearthbake-gluten-free-vanilla-cupcakes-12-pack', 'hearthbake-gluten-free-vanilla-cupcakes-24-pack', 'hearthbake-jungle-safari-birthday-cake-6-round', 'hearthbake-rainbow-birthday-cake-8-round',
+  'hearthbake-space-birthday-cake-quarter-sheet', 'hearthbake-superhero-birthday-cake-8-round', 'hearthbake-tiered-unicorn-showpiece-cake', 'hearthbake-under-the-sea-birthday-cake-quarter-sheet',
+  'hearthbake-unicorn-birthday-cake-6-round', 'hearthbake-vanilla-cupcakes-12-pack', 'hearthbake-vanilla-cupcakes-24-pack', 'kestrel-adjustable-footrest',
+  'kestrel-basic-task-chair', 'kestrel-ergo-pro-chair', 'kestrel-mesh-task-chair', 'loop-hdmi-2-1-cable',
+  'loop-thunderbolt-4-dock', 'loop-usb-c-cable-100w', 'loop-usb-c-cable-240w', 'loop-usb-c-cable-60w',
+  'loop-usb-c-dock-7-in-1', 'marlow-cashmere-scarf', 'marlow-heather-wrap-dress', 'marlow-knit-cardigan',
+  'marlow-leather-belt', 'marlow-linen-shift-dress', 'marlow-linen-shirt', 'marlow-navy-midi-dress',
+  'marlow-navy-sheath-dress', 'marlow-navy-suit-jacket', 'marlow-navy-suit-trousers', 'marlow-navy-wrap-dress',
+  'marlow-oxford-shirt', 'marlow-pleated-skirt', 'marlow-silk-tie', 'pica-1080p-webcam',
+  'pica-4k-webcam', 'pica-key-light', 'pica-usb-desk-microphone', 'pipit-apple-chips-10-pack',
+  'pipit-cheddar-cheese-crackers-12-pack', 'pipit-cheese-puffs-18-pack', 'pipit-chocolate-chip-cookies-24-pack', 'pipit-fruit-snacks-mixed-berry-20-pack',
+  'pipit-gluten-free-graham-bites-12-pack', 'pipit-mini-rice-cakes-chocolate-drizzle-12-pack', 'pipit-peanut-butter-sandwich-cookies-24-pack', 'pipit-pretzel-twists-16-pack',
+  'pipit-rice-crisps-lightly-salted-10-pack', 'pipit-sea-salt-popcorn-12-pack', 'pipit-sunflower-seed-butter-cups-12-pack', 'pipit-tortilla-chips-and-salsa-cups-12-pack',
+  'pipit-trail-mix-snack-packs-10-pack', 'vireo-p3223', 'vireo-u2727', 'volt-10k-power-bank',
+  'volt-20k-power-bank', 'volt-26800-power-bank', 'volt-30k-power-bank', 'volt-eu-plug-adapter',
+  'volt-universal-travel-adapter', 'volt-voltage-converter'
 );
 update public.products p
 set image_url = coalesce(nullif(current_setting('app.greathub_origin', true), ''), 'http://localhost:3001')
