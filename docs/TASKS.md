@@ -590,13 +590,16 @@ Migration `0015_mandates.sql`; worker in `apps/web/lib/mandate-service.ts` (pure
 
 ## Phase 15: Post-purchase (M, F for the UI)
 
-- [ ] **T15.1 Evidence Pack generator** (a `q_evidence_pack` consumer or on demand)
-  - [ ] A zip (`fflate`) with `contract.json` (JCS), `contract.sha256`, `signature.json` (assertion + public key JWK), `proof-report.json`, `ap2-mandates.json`, `sources/*` with hashes, `ledger-excerpt.json`, `payment.json`, `summary.pdf` (`@react-pdf/renderer`), `verify.mjs`, and a `README.txt`.
-  - [ ] Stored in `evidence-packs/`; `evidence_packs` row with its sha256.
-- [ ] **T15.2 `verify.mjs`**: bundled with esbuild into one file with no network use; recomputes the JCS hash, verifies the WebAuthn signature over `authenticatorData ‖ SHA-256(clientDataJSON)` and checks that the challenge contains the hash, and verifies the ledger excerpt chain
+- [x] **T15.1 Evidence Pack generator** (a `q_evidence_pack` consumer or on demand)
+  - [x] A zip (`fflate`) with `contract.json` (JCS), `contract.sha256`, `signature.json` (assertion + public key JWK), `proof-report.json`, `ap2-mandates.json`, `sources/*` with hashes, `ledger-excerpt.json`, `payment.json`, `summary.pdf` (`@react-pdf/renderer`), `verify.mjs`, and a `README.txt`.
+  - [x] Stored in `evidence-packs/`; `evidence_packs` row with its sha256.
+  - Done in `packages/evidence-pack` (builder, deterministic zip, `manifest.json`) and `apps/web/lib/evidence-pack.ts`. Every new order is queued by a trigger (`0016_post_purchase.sql`); `/api/internal/queue/evidence_pack` builds it, and `/orders/[id]/evidence-pack` builds it on demand if the queue hasn't. The demo order's pack is signed with a published demo key so it verifies end to end.
+- [x] **T15.2 `verify.mjs`**: bundled with esbuild into one file with no network use; recomputes the JCS hash, verifies the WebAuthn signature over `authenticatorData ‖ SHA-256(clientDataJSON)` and checks that the challenge contains the hash, and verifies the ledger excerpt chain
   - ✅ `node verify.mjs` prints ✓ for each check; tampering with `contract.json` → ✗ hash.
-- [ ] **T15.3 Delivery match**: on `/orders/[id]`, scan (`BarcodeDetector` with a `@zxing/browser` fallback) or type a GTIN → compare with the contract items → ledger `delivery.matched` / `delivery.mismatched`
-- [ ] **T15.4 Dispute packet view**: on a mismatch, a structured "approved vs facts at purchase vs received" summary, exportable as PDF
+  - Also checks the proof report hash, every source snapshot and `manifest.json`. `node verify.mjs pack.zip` checks a zip without unzipping. Regenerate with `pnpm --filter @cartel/evidence-pack verify:bundle`; a test fails when the committed bundle is stale.
+- [x] **T15.3 Delivery match**: on `/orders/[id]`, scan (`BarcodeDetector` with a `@zxing/browser` fallback) or type a GTIN → compare with the contract items → ledger `delivery.matched` / `delivery.mismatched`
+- [x] **T15.4 Dispute packet view**: on a mismatch, a structured "approved vs facts at purchase vs received" summary, exportable as PDF
+  - `/orders/[id]/dispute` and `/orders/[id]/dispute/pdf`.
 
 ---
 
