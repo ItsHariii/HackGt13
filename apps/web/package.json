@@ -12,7 +12,8 @@
     "test:realtime": "node scripts/realtime-smoke.mjs",
     "test:a11y": "node scripts/a11y.mjs",
     "test:keyboard": "node scripts/keyboard-trap.mjs",
-    "test:perf": "node scripts/perf-figures.mjs"
+    "test:perf": "node scripts/perf-figures.mjs",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@cartel/acp": "workspace:*",
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

@@ -51,6 +51,33 @@ jobs:
           if-no-files-found: ignore
       - if: always()
         run: pnpm db:stop
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:start
+      - run: pnpm --filter @cartel/web exec playwright install --with-deps chromium
+      # Kit → Plans A–C → drafted contract → passkey (virtual authenticator) → Simulated pay,
+      # and the price-raise trap that must pause (TASKS T16.6).
+      - run: pnpm --filter @cartel/web e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          if-no-files-found: ignore
+      - if: always()
+        run: pnpm db:stop
   bench:
     name: bench
     needs: database
