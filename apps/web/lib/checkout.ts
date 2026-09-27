@@ -18,6 +18,7 @@ import {
   CheckoutError,
   type Execution,
   executeCheckout,
+  type StepListener,
 } from "./checkout-service";
 import { ALL_PACKS, evidenceStore, greathubAdapter } from "./evidence";
 import { appOrigin, paymentRailId } from "./payment-config";
@@ -129,6 +130,7 @@ export async function runCheckout(
   owner: string,
   key: string,
   instrumentId: string,
+  onStep?: StepListener,
 ) {
   const { db, context, baseUrl } = await loadCheckout(versionId, owner);
   const instrument = checked(
@@ -189,6 +191,7 @@ export async function runCheckout(
     sessionId: context.sessionId,
   });
   return executeCheckout(context, key, {
+    ...(onStep ? { onStep } : {}),
     rail,
     packs: ALL_PACKS,
     now: () => new Date().toISOString(),
@@ -222,7 +225,14 @@ export async function runCheckout(
       return inflight ? execution(inflight) : null;
     },
     async refresh(ctx) {
+      let started = performance.now();
       const read = await adapter.getCheckout(ctx.sessionId);
+      onStep?.(
+        "cart",
+        Math.round(performance.now() - started),
+        read.session.status,
+      );
+      started = performance.now();
       const specs = await Promise.all(
         read.session.line_items.map((line, i) => {
           const item =
@@ -234,6 +244,11 @@ export async function runCheckout(
             throw new CheckoutError("checkout_evidence_missing");
           return adapter.refreshSpecs({ url, roles: [item.role] }, ALL_PACKS);
         }),
+      );
+      onStep?.(
+        "specs",
+        Math.round(performance.now() - started),
+        `${specs.length} page${specs.length === 1 ? "" : "s"}`,
       );
       return {
         session: read.session,

@@ -34,6 +34,59 @@ const STEPS = [
   "Pay",
   "Order",
 ] as const;
+const STEP_NAMES = [
+  "cart",
+  "specs",
+  "prove",
+  "diff",
+  "guard",
+  "pay",
+  "order",
+] as const;
+type Done = Map<string, { ms: number; detail?: string }>;
+
+const seconds = (ms: number) =>
+  ms < 1000 ? `${ms} ms` : `${(ms / 1000).toFixed(1)} s`;
+
+/**
+ * The guard's steps as the server reports them (NDJSON, TASKS T11.7): each
+ * finished step shows what it found and how long it took; the next one is
+ * current while the request runs. Steps the server never reported fall
+ * back to the outcome, so no step is invented.
+ */
+function liveSteps(phase: Phase, done: Done): GuardStep[] {
+  if (done.size === 0) return stepsFor(phase);
+  const fallback = stepsFor(phase);
+  let current = phase === "busy";
+  return STEP_NAMES.map((name, i) => {
+    const label = STEPS[i] as string;
+    const d = done.get(name);
+    if (d) {
+      const blocked =
+        (name === "guard" &&
+          (d.detail === "block" || d.detail === "reapprove")) ||
+        (name === "pay" && phase === "declined");
+      return {
+        label,
+        state: blocked ? "failed" : "done",
+        meta: [
+          name === "guard" && blocked ? "Blocked · no payment" : d.detail,
+          seconds(d.ms),
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      };
+    }
+    if (current) {
+      current = false;
+      return { label, state: "current", meta: "Checking…" };
+    }
+    return phase === "busy"
+      ? { label, state: "pending" }
+      : (fallback[i] ?? { label, state: "pending" });
+  });
+}
+
 /** The guard's steps for an outcome; the server answers once, so no step is invented. */
 function stepsFor(phase: Phase): GuardStep[] {
   const stop =
@@ -80,6 +133,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
   const [busy, setBusy] = useState(false);
   const [paused, setPaused] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
+  const [done, setDone] = useState<Done>(new Map());
   const [handoffUrl, setHandoffUrl] = useState<string | null>(null);
   const keys = useRef(new Map<string, string>());
   const [uncertain, setUncertain] = useState(new Set<string>());
@@ -103,18 +157,59 @@ export function CheckoutPanel({ planId }: { planId: string }) {
     setBusy(true);
     setPaused(false);
     setPhase("busy");
+    setDone(new Map());
     setMessage("Refreshing the checkout and checking your signed rules…");
     const key = keys.current.get(merchant.versionId) ?? crypto.randomUUID();
     keys.current.set(merchant.versionId, key);
     try {
       const res = await fetch(`/api/checkout/${merchant.versionId}/execute`, {
         method: "POST",
-        headers: { "content-type": "application/json", "Idempotency-Key": key },
+        headers: {
+          "content-type": "application/json",
+          accept: "application/x-ndjson",
+          "Idempotency-Key": key,
+        },
         body: JSON.stringify({ instrumentId }),
       });
-      const result = await res.json();
+      // Guard steps arrive as they finish; the last line is the outcome.
+      let final: { httpStatus: number; body: Record<string, unknown> } | null =
+        null;
+      if (res.body && res.headers.get("content-type")?.includes("ndjson")) {
+        const reader = res.body
+          .pipeThrough(new TextDecoderStream())
+          .getReader();
+        let buffer = "";
+        for (;;) {
+          const { value, done: end } = await reader.read();
+          if (value) buffer += value;
+          const lines = buffer.split("\n");
+          buffer = end ? "" : (lines.pop() ?? "");
+          for (const raw of lines) {
+            if (!raw.trim()) continue;
+            const line = JSON.parse(raw);
+            if (line.type === "step")
+              setDone((old) =>
+                new Map(old).set(line.step, {
+                  ms: line.ms,
+                  ...(line.detail ? { detail: line.detail } : {}),
+                }),
+              );
+            else final = { httpStatus: line.httpStatus, body: line.body };
+          }
+          if (end) break;
+        }
+      } else {
+        final = { httpStatus: res.status, body: await res.json() };
+      }
+      if (!final) throw new Error("no outcome");
+      const result = final.body as {
+        status?: string;
+        error?: unknown;
+        diffId?: string;
+      };
+      const ok = final.httpStatus < 400;
       const before =
-        !res.ok && typeof result.error === "string"
+        !ok && typeof result.error === "string"
           ? BEFORE_PAYMENT[result.error]
           : undefined;
       if (before) {
@@ -282,7 +377,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
       )}
       {phase !== "idle" && (
         <div className="mt-8">
-          <GuardStepper steps={stepsFor(phase)} label="Guard steps" />
+          <GuardStepper steps={liveSteps(phase, done)} label="Guard steps" />
         </div>
       )}
       <p

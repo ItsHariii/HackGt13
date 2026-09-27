@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { ProofView, Tick } from "@/lib/workspace";
-import { ProofInspector, ProofListInspector } from "./proof-inspector";
+import {
+  LiveProof,
+  ProofInspector,
+  ProofListInspector,
+} from "./proof-inspector";
 import { StatusIcon } from "./status-icon";
 
 const TICK: Record<Tick, string> = {
@@ -68,6 +72,7 @@ export function ProofPanel({
           ))}
         </div>
         {proof.sub && <p className="text-muted text-small">{proof.sub}</p>}
+        <LiveProof planId={planId} />
       </div>
       <div className="relative flex min-h-0 flex-col overflow-y-auto pt-1">
         <span

@@ -1,4 +1,6 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { useProofStream } from "@/components/doodle/events";
 import { Figure } from "@/components/doodle/figure";
 import { ProofWalker } from "@/components/doodle/proof-walker";
@@ -32,5 +34,35 @@ export function ProofListInspector({
       eventId={stream.latest?.id ?? null}
       done={stream.results.length >= hardRules && stream.fail === 0}
     />
+  );
+}
+
+/**
+ * Proof results streaming in over Realtime (TASKS T11.3): a live count while
+ * a new report's rows arrive (a re-solve, a refinement, another tab), then
+ * the page refreshes to render that report. Demo plans have no stream.
+ */
+export function LiveProof({ planId }: { planId: string }) {
+  const stream = useProofStream(planStream(planId));
+  const router = useRouter();
+  const seen = useRef<string | null>(null);
+  const reportId = stream.latest?.reportId ?? null;
+  const count = stream.results.length;
+  useEffect(() => {
+    if (!reportId || count === 0) return;
+    // Rows of one report arrive together; refresh once they settle.
+    const t = setTimeout(() => {
+      if (seen.current === `${reportId}:${count}`) return;
+      seen.current = `${reportId}:${count}`;
+      router.refresh();
+    }, 700);
+    return () => clearTimeout(t);
+  }, [reportId, count, router]);
+  if (count === 0) return null;
+  return (
+    <p role="status" className="text-muted text-small">
+      New proof: {count} results · {stream.pass} pass · {stream.fail} fail ·{" "}
+      {stream.unknown} can't check
+    </p>
   );
 }
