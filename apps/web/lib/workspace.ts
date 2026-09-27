@@ -106,6 +106,18 @@ export type EvidenceView = {
   extracted: string;
   sourceId: string | null;
   url: string | null;
+  /** How long the deciding fact stays usable, judged at the report's time. */
+  freshness: string | null;
+  /** Every source's value for this field when they disagree; the used one first. */
+  conflict: {
+    source: string;
+    claimedBy: string;
+    value: string;
+    retrieved: string;
+    used: boolean;
+  }[];
+  /** The facts this result read, as recorded (rendered JSON, not the page). */
+  snapshot: string;
 };
 
 export type WorkspaceView = {
@@ -272,6 +284,58 @@ function tierOf(offers: readonly Offer[]): {
   return { tier: "mixed", label: "Mixed checkout" };
 }
 
+/** "Fresh for 3 h" / "Stale since 2 h" / "No expiry", at the report's time. */
+export function freshnessText(
+  fact: Fact | undefined,
+  now: string,
+): string | null {
+  if (!fact) return null;
+  if (!fact.freshUntil) return "No expiry";
+  const left = (Date.parse(fact.freshUntil) - Date.parse(now)) / 1000;
+  if (!Number.isFinite(left)) return null;
+  return left >= 0
+    ? `Fresh for ${formatAge(left).replace(/ ago$/, "")}`
+    : `Stale by ${formatAge(-left).replace(/ ago$/, "")} when proved`;
+}
+
+/**
+ * Every source's claim for one subject's field, side by side, when they
+ * disagree (SDD §11.3 "Sources disagree"). The fact the engine used comes
+ * first; authority decided it, and the others stay visible.
+ */
+export function conflictClaims(
+  checkout: CheckoutState,
+  used: Fact | undefined,
+  field: string,
+  def: FieldDef | undefined,
+  now: string,
+): EvidenceView["conflict"] {
+  if (!used) return [];
+  const same = checkout.facts.filter(
+    (f) =>
+      f.field === field &&
+      f.subjectKind === used.subjectKind &&
+      f.subjectId === used.subjectId &&
+      f.value !== null,
+  );
+  const values = new Set(same.map((f) => JSON.stringify(f.value)));
+  if (values.size < 2 && !used.conflict) return [];
+  return same
+    .sort((a, b) => Number(b.id === used.id) - Number(a.id === used.id))
+    .map((f) => {
+      const authority = checkout.sources?.[f.sourceId]?.authority;
+      return {
+        source: checkout.sources?.[f.sourceId]?.name ?? f.sourceId,
+        claimedBy: authority
+          ? (AUTHORITY_LABEL[authority] ?? authority)
+          : "Unknown",
+        value: display(f.value, def),
+        retrieved: formatAge(ageSeconds(f.retrievedAt, now)),
+        used: f.id === used.id,
+      };
+    });
+}
+
 export function buildWorkspace(input: WorkspaceInput): WorkspaceView {
   const { checkout, report, packs, requirements, waivers } = input;
   const now = report.evaluatedAt;
@@ -398,6 +462,33 @@ export function buildWorkspace(input: WorkspaceInput): WorkspaceView {
         }`,
         sourceId: anyFact?.sourceId ?? null,
         url: offer?.url ?? null,
+        freshness: freshnessText(anyFact, now),
+        conflict: conflictClaims(
+          checkout,
+          fact ?? anyFact,
+          req.field,
+          def,
+          now,
+        ),
+        snapshot: JSON.stringify(
+          result.factIds
+            .map((id) => factById.get(id))
+            .filter((f): f is Fact => f !== undefined)
+            .map((f) => ({
+              field: f.field,
+              value: f.value,
+              state: f.state,
+              ...(f.raw ? { raw: f.raw } : {}),
+              ...(f.quote ? { quote: f.quote } : {}),
+              source: checkout.sources?.[f.sourceId]?.name ?? f.sourceId,
+              extractor: f.extractor,
+              retrievedAt: f.retrievedAt,
+              ...(f.freshUntil ? { freshUntil: f.freshUntil } : {}),
+              ...(f.conflict ? { conflict: true } : {}),
+            })),
+          null,
+          2,
+        ),
       };
     }
   }

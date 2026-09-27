@@ -2,7 +2,12 @@ import { FLAGSHIP_REQUIREMENTS } from "@cartel/contracts/fixtures";
 import { signGate } from "@cartel/proof-engine";
 import { FLAGSHIP_PACKS, flagshipV7 } from "@cartel/rule-packs/fixtures";
 import { describe, expect, it } from "vitest";
-import { buildWorkspace, ruleText } from "./workspace";
+import {
+  buildWorkspace,
+  conflictClaims,
+  freshnessText,
+  ruleText,
+} from "./workspace";
 
 async function flagship(waived = true) {
   const v7 = await flagshipV7();
@@ -132,5 +137,65 @@ describe("ruleText wording", async () => {
     expect(texts.some((t) => /between 35\.5 in and 36\.5 in$/.test(t))).toBe(
       true,
     );
+  });
+});
+
+describe("evidence conflicts and freshness", () => {
+  it("lists every source side by side when they disagree, the used one first", async () => {
+    const v7 = await flagshipV7();
+    const used = v7.snapshot.facts.find(
+      (f) => f.field === "desk.width" && f.subjectKind === "product",
+    );
+    if (!used) throw new Error("fixture changed");
+    const rival = {
+      ...used,
+      id: "icecat-width",
+      sourceId: "src_icecat",
+      value: { value: 49, unit: "in" as const },
+    };
+    const checkout = {
+      ...v7.snapshot,
+      facts: [rival, ...v7.snapshot.facts],
+      sources: {
+        ...v7.snapshot.sources,
+        src_icecat: { authority: "manufacturer" as const, name: "Icecat" },
+      },
+    };
+    const claims = conflictClaims(
+      checkout,
+      used,
+      "desk.width",
+      undefined,
+      v7.report.evaluatedAt,
+    );
+    expect(claims.map((c) => [c.source, c.used])).toEqual([
+      [expect.any(String), true],
+      ["Icecat", false],
+    ]);
+    // One source, one value: nothing to show.
+    expect(
+      conflictClaims(
+        v7.snapshot,
+        used,
+        "desk.width",
+        undefined,
+        v7.report.evaluatedAt,
+      ),
+    ).toEqual([]);
+  });
+
+  it("says how long a fact stays fresh at the report's time", async () => {
+    const v7 = await flagshipV7();
+    const f = v7.snapshot.facts[0];
+    if (!f) throw new Error("fixture changed");
+    const at = "2026-09-26T12:00:00Z";
+    expect(
+      freshnessText({ ...f, freshUntil: "2026-09-26T15:00:00Z" }, at),
+    ).toMatch(/^Fresh for 3/);
+    expect(
+      freshnessText({ ...f, freshUntil: "2026-09-26T10:00:00Z" }, at),
+    ).toMatch(/^Stale by 2/);
+    const { freshUntil: _drop, ...noExpiry } = f;
+    expect(freshnessText(noExpiry, at)).toBe("No expiry");
   });
 });

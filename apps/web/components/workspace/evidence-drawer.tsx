@@ -78,6 +78,16 @@ export function EvidenceDrawer({
         {evidence.retrieved}
       </span>,
     ],
+    ...(evidence.freshness
+      ? ([
+          [
+            "Freshness",
+            <span key="f" className="font-mono text-[13.5px]">
+              {evidence.freshness}
+            </span>,
+          ],
+        ] as [string, React.ReactNode][])
+      : []),
     [
       "Extractor",
       <span key="e" className="font-mono text-[13.5px]">
@@ -192,6 +202,48 @@ export function EvidenceDrawer({
           </div>
         )}
 
+        {evidence.conflict.length > 1 && (
+          <section
+            aria-label="Sources disagree"
+            className="flex flex-col gap-2"
+          >
+            <span className="font-bold text-meta text-muted uppercase tracking-label">
+              Sources disagree
+            </span>
+            <ul
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: `repeat(${Math.min(evidence.conflict.length, 3)}, minmax(0, 1fr))`,
+              }}
+            >
+              {evidence.conflict.map((c) => (
+                <li
+                  key={`${c.source}:${c.value}`}
+                  className={cn(
+                    "flex flex-col gap-1 rounded-card border px-3 py-2.5",
+                    c.used
+                      ? "border-graphite bg-paper-sheet"
+                      : "border-rule border-dashed",
+                  )}
+                >
+                  <span className="font-mono font-semibold text-[15px]">
+                    {c.value}
+                  </span>
+                  <span className="text-[13px]">{c.source}</span>
+                  <span className="text-muted text-meta">
+                    {c.claimedBy} · {c.retrieved}
+                  </span>
+                  {c.used && (
+                    <span className="font-semibold text-meta text-ink">
+                      Used: strongest source
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <dl className="flex flex-col overflow-hidden rounded-card border border-rule">
           {facts.map(([label, value], i) => (
             <div
@@ -230,6 +282,17 @@ export function EvidenceDrawer({
               </span>
             </div>
           </div>
+        )}
+
+        {evidence.snapshot !== "[]" && (
+          <details className="rounded-card border border-rule">
+            <summary className="cursor-pointer px-3.5 py-2.5 font-semibold text-[14px]">
+              Recorded facts
+            </summary>
+            <pre className="max-h-64 overflow-auto border-rule-soft border-t bg-paper-sheet px-3.5 py-3 font-mono text-[12.5px] leading-[1.5]">
+              {evidence.snapshot}
+            </pre>
+          </details>
         )}
 
         <div className="flex flex-wrap items-center gap-4 text-[14px]">
