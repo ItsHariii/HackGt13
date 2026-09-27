@@ -30,7 +30,10 @@
     "test:acp-contract": "node scripts/greathub-contract.mjs",
     "ai:smoke": "pnpm --filter @cartel/ai ai:smoke",
     "ai:cost": "pnpm --filter @cartel/ai ai:cost",
-    "eval:ai": "pnpm --filter @cartel/ai eval:ai"
+    "eval:ai": "pnpm --filter @cartel/ai eval:ai",
+    "ai:warm": "pnpm --filter @cartel/ai ai:warm",
+    "demo:reset": "node scripts/demo-reset.mjs",
+    "demo:check": "node scripts/demo-check.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",

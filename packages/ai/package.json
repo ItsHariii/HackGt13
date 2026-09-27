@@ -15,7 +15,8 @@
     "lint": "biome check .",
     "ai:smoke": "jiti src/cli/smoke.ts",
     "ai:cost": "jiti src/cli/cost.ts",
-    "eval:ai": "jiti src/cli/eval.ts"
+    "eval:ai": "jiti src/cli/eval.ts",
+    "ai:warm": "jiti src/cli/warm.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.78",

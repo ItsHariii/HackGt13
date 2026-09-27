@@ -638,8 +638,11 @@ Migration `0015_mandates.sql`; worker in `apps/web/lib/mandate-service.ts` (pure
 
 ## Phase 18: Demo and submission (M lead, everyone)
 
-- [ ] **T18.1 Reset script** `pnpm demo:reset`: resets the GreatHub seed, clears the demo user's plans, keeps the enrolled card and signing passkey, warms the prompt cache, pre-runs the bench, and pre-warms the search cache for "navy linen shirt"
-- [ ] **T18.2 Demo environment check** (run 30 min before judging)
+Status and what is still needed: [PHASE18.md](PHASE18.md).
+
+- [x] **T18.1 Reset script** `pnpm demo:reset`: resets the GreatHub seed, clears the demo user's plans, keeps the enrolled card and signing passkey, warms the prompt cache, pre-runs the bench, and pre-warms the search cache for "navy linen shirt"
+  - `scripts/demo-reset.mjs` (`--dry-run` changes nothing) and `pnpm ai:warm`. Configured by `.env.demo`; see [DEMO.md](DEMO.md) §1. Verified against local Supabase with both apps running: after the deal trap it restored U2727 to $329 and deleted only the demo user's plans, keeping the passkey, the card and the ledger. The bench step runs `@cartel/bench`'s `bench` script, which Phase 16 adds; until then it is skipped. The web app doesn't call A1 yet, so the warm-up only primes the provider cache and checks the key.
+- [ ] **T18.2 Demo environment check** (run 30 min before judging). `pnpm demo:check --visa` covers the scriptable items (health, JWKS, pages, rail, Visa smoke, bench row, ledgers, passkey and card, search); the rest are by hand in [DEMO.md](DEMO.md) §2.
   - [ ] Production URLs load; `/api/health` is green in both apps; the JWKS is reachable from GreatHub.
   - [ ] Touch ID works on the demo laptop on the **production** domain; the phone backup is signed in.
   - [ ] Visa Acceptance sandbox smoke test passes; `PAYMENT_RAIL` is correct.
@@ -649,14 +652,16 @@ Migration `0015_mandates.sql`; worker in `apps/web/lib/mandate-service.ts` (pure
   - [ ] Reduced motion is **off** on the demo laptop (so the cast animates) and the volume/notifications are muted.
   - [ ] Wi-Fi fallback: phone hotspot ready.
 - [ ] **T18.3 Rehearse the 3:00 script** (SDD §25.2) three times with a timer; assign the speaker and the driver; decide in advance what to skip if you run over time (the breadth flash)
-- [ ] **T18.4 Backup video**: record the full flow in one take (1080p, with captions) and upload it unlisted
-- [ ] **T18.5 Devpost**
-  - [ ] Inspiration, what it does, how we built it (the architecture diagram from SDD §6.1), challenges, accomplishments, what we learned, what's next.
+  - [x] Run sheet with driver actions, lines, the skip order and a rehearsal log: [DEMO.md](DEMO.md) §4. §3 lists which beats are live and which are fixtures today.
+  - [ ] Three timed rehearsals (people).
+- [ ] **T18.4 Backup video**: record the full flow in one take (1080p, with captions) and upload it unlisted (recording notes: [DEMO.md](DEMO.md) §5)
+- [ ] **T18.5 Devpost** (draft: [DEVPOST.md](DEVPOST.md))
+  - [x] Inspiration, what it does, how we built it (the architecture diagram from SDD §6.1), challenges, accomplishments, what we learned, what's next.
   - [ ] Screenshots: the landing page with the cast, Explore search, a product page with specs and receipts, the workspace, the paused screen with the Guard and the layers table, the contract with its stamp and hash, `/bench`, the Agent Log.
-  - [ ] **Honesty notes**: GreatHub is a test merchant; the payment is a Visa Acceptance sandbox; the scoped grant emulates agent-token controls; VIC status.
+  - [x] **Honesty notes**: GreatHub is a test merchant; the payment is a Visa Acceptance sandbox; the scoped grant emulates agent-token controls; VIC status.
   - [ ] Links: the live app, the repo, the video.
-- [ ] **T18.6 README.md**: a one-paragraph pitch, the architecture, local setup (`pnpm i`, `supabase start`, `pnpm dev`), env vars, scripts, the test and bench commands
-- [ ] **T18.7 Judge Q&A drill**: each person answers two questions from SDD §25.3 out loud
+- [x] **T18.6 README.md**: a one-paragraph pitch, the architecture, local setup (`pnpm i`, `supabase start`, `pnpm dev`), env vars, scripts, the test and bench commands
+- [ ] **T18.7 Judge Q&A drill**: each person answers two questions from SDD §25.3 out loud (assignment table and corrections for the current build: [DEMO.md](DEMO.md) §6)
 - [ ] **T18.8 Submit** by H+35
 
 ---
