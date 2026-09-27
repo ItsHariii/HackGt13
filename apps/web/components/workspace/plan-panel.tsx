@@ -127,6 +127,11 @@ export function PlanPanel({
               <span className="flex min-w-0 flex-col gap-1">
                 <span className="font-semibold text-[15px] leading-[1.3]">
                   {it.title}
+                  {it.changed && (
+                    <span className="ml-2 inline-flex h-[20px] items-center rounded-[4px] bg-tape/80 px-1.5 align-middle font-semibold text-graphite text-meta">
+                      Changed
+                    </span>
+                  )}
                 </span>
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-muted text-small">
                   <span className="whitespace-nowrap font-mono text-ink">

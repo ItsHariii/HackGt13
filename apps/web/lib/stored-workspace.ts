@@ -95,6 +95,7 @@ export async function loadStoredSolve(
     ];
   });
   if (solved.length === 0) return { kind: "none", plan };
+  const before = await previousSkus(db, plan.id, run.data.id);
 
   const path = `/plans/${plan.id}`;
   const views = solved.map((s) =>
@@ -114,6 +115,22 @@ export async function loadStoredSolve(
     0,
     solved.findIndex((s) => s.label === wanted),
   );
+  // After a refinement, mark the lines that differ from the same plan before it.
+  for (const [i, v] of views.entries()) {
+    const s = solved[i];
+    const prev = s ? before.get(s.label) : undefined;
+    const card = v.plans[0];
+    if (!s || !prev || !card) continue;
+    const offers = new Map(s.checkout.offers.map((o) => [o.id, o]));
+    const skus = s.checkout.basket.lines.flatMap((l) => {
+      const o = offers.get(l.offerId);
+      return o ? [o.sku] : [];
+    });
+    card.items = card.items.map((it, n) => ({
+      ...it,
+      changed: !prev.has(skus[n] ?? ""),
+    }));
+  }
   const view = views[active] as WorkspaceView;
   const label = solved[active]?.label ?? "A";
   // A hard rule nothing could check can still be accepted as a waiver when
@@ -149,4 +166,34 @@ export async function loadStoredSolve(
           : view.ctaNote,
     },
   };
+}
+
+/** SKUs per plan label in the solve before `runId`, when there was one. */
+async function previousSkus(
+  db: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  planId: string,
+  runId: string,
+): Promise<Map<string, Set<string>>> {
+  const out = new Map<string, Set<string>>();
+  const prev = await db
+    .from("solver_runs")
+    .select("id")
+    .eq("plan_id", planId)
+    .eq("status", "optimal")
+    .neq("id", runId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!prev.data) return out;
+  const baskets = await db
+    .from("baskets")
+    .select("label,proof_reports(checkout_state)")
+    .eq("solver_run_id", prev.data.id);
+  for (const b of baskets.data ?? []) {
+    const state = b.proof_reports?.[0]?.checkout_state as unknown as
+      | CheckoutState
+      | undefined;
+    if (state) out.set(b.label, new Set(state.offers.map((o) => o.sku)));
+  }
+  return out;
 }

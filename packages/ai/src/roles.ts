@@ -1,6 +1,6 @@
 import type { Requirement } from "@cartel/contracts";
 import type { Pack } from "@cartel/proof-engine";
-import { ontologyFor } from "./ontology";
+import { ontologyFor, targetText } from "./ontology";
 import { systemFor } from "./prompts";
 import type { AiRunner, RunResult } from "./router";
 import { type CandidateQuery, type RolePlan, RolePlanSchema } from "./schemas";
@@ -79,7 +79,7 @@ export type RolePlanInput = {
 function promptFor(input: RolePlanInput): string {
   const lines = input.requirements.map(
     (r) =>
-      `- ${r.id}: ${r.field} ${r.op} ${JSON.stringify(r.target)} (${r.importance})`,
+      `- ${r.id}: ${r.field} ${r.op} ${targetText(r, input.packs)} (${r.importance})`,
   );
   return [
     "Confirmed requirements:",

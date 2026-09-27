@@ -2,9 +2,12 @@ import {
   type Requirement,
   type RequirementPatch,
   RequirementPatch as RequirementPatchSchema,
+  UNIT_DIMENSION,
+  type Value,
+  Value as ValueSchema,
 } from "@cartel/contracts";
 import type { FieldDef, Pack } from "@cartel/proof-engine";
-import { ontologyFor } from "./ontology";
+import { ontologyFor, targetText } from "./ontology";
 import { systemFor, untrustedBlock } from "./prompts";
 import { buildRequirements, targetFor } from "./requirements";
 import type { AiRunner, RunResult } from "./router";
@@ -45,6 +48,27 @@ export type PatchOptions = {
   currency?: string;
 };
 
+/**
+ * A target the model wrote as the typed JSON value instead of text
+ * (`{"amountMinor":90000,"currency":"USD"}`). Accepted only when it is a
+ * valid value of the field's own kind.
+ */
+function jsonTarget(raw: string, def: FieldDef): Value | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  const v = ValueSchema.safeParse(parsed);
+  if (!v.success || typeof v.data !== "object" || v.data === null) return null;
+  if (Array.isArray(v.data)) return def.kind === "list" ? v.data : null;
+  if ("amountMinor" in v.data) return def.kind === "money" ? v.data : null;
+  if ("unit" in v.data)
+    return UNIT_DIMENSION[v.data.unit] === def.kind ? v.data : null;
+  return null;
+}
+
 /** Reads a replacement target with the same parser A1 uses. */
 function replacementTarget(
   proposal: PatchProposal,
@@ -52,6 +76,8 @@ function replacementTarget(
   def: FieldDef,
   currency: string | undefined,
 ) {
+  const json = jsonTarget(proposal.value ?? "", def);
+  if (json) return json;
   return targetFor(
     {
       field,
@@ -189,7 +215,7 @@ export type RefineInput = {
 function promptFor(input: RefineInput): string {
   const lines = input.requirements.map(
     (r) =>
-      `- ${r.id}: ${r.field} ${r.op} ${JSON.stringify(r.target)} (${r.importance})`,
+      `- ${r.id}: ${r.field} ${r.op} ${targetText(r, input.packs)} (${r.importance})`,
   );
   return [
     "Current requirements:",
