@@ -13,6 +13,18 @@ import {
   startSearch,
 } from "@/lib/figure-events";
 import { subscribePlan } from "@/lib/plan-channel";
+import {
+  allRevealed,
+  applySolveLine,
+  IDLE_SOLVE,
+  revealAll,
+  revealNext,
+  SOLVE_MESSAGE,
+  type SolveErrorCode,
+  type SolveLine,
+  type SolveRun,
+} from "@/lib/solve-progress";
+import { usePrefersReducedMotion } from "./use-reduced-motion";
 
 /*
  * Event hooks (TASKS T10B.5). Figures animate only from these: each one
@@ -135,6 +147,81 @@ export function useSearchStatus(
     return () => abort.abort();
   }, [query, expected, attempt]);
   return { sources: states, loading, products, facets };
+}
+
+/** Motion board 03: one stamped proof row every ≈150 ms. */
+const ROW_MS = 150;
+
+/**
+ * "Find plans" as it runs: the NDJSON steps of POST /api/plans/[id]/solve,
+ * then Plan A's proof rows revealed one at a time (all at once with reduced
+ * motion). `start` begins a solve (or retries one). Leaving the page doesn't
+ * cancel it: the server finishes and stores the plans either way.
+ */
+export function useSolveStream(planId: string): {
+  run: SolveRun;
+  running: boolean;
+  start: () => void;
+} {
+  const [run, setRun] = useState(IDLE_SOLVE);
+  const [running, setRunning] = useState(false);
+  const reduced = usePrefersReducedMotion();
+  const start = useCallback(() => {
+    setRun(IDLE_SOLVE);
+    setRunning(true);
+    const apply = (line: SolveLine) => setRun((r) => applySolveLine(r, line));
+    (async () => {
+      const res = await fetch(`/api/plans/${planId}/solve`, {
+        method: "POST",
+        headers: { Accept: "application/x-ndjson" },
+      });
+      if (!res.ok || !res.body) {
+        const body = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          retryAfterMs?: number;
+        };
+        const code = (
+          body.error && body.error in SOLVE_MESSAGE ? body.error : "storage"
+        ) as SolveErrorCode;
+        apply({
+          phase: "error",
+          code,
+          ...(body.retryAfterMs ? { retryAfterMs: body.retryAfterMs } : {}),
+        });
+        return;
+      }
+      const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+      let buffer = "";
+      let ended = false;
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const { lines, rest } = splitLines(buffer + value);
+        buffer = rest;
+        for (const line of lines) {
+          const parsed = JSON.parse(line) as SolveLine;
+          ended ||= parsed.phase === "done" || parsed.phase === "error";
+          apply(parsed);
+        }
+      }
+      if (!ended) apply({ phase: "error", code: "storage" });
+    })()
+      .catch(() => apply({ phase: "error", code: "storage" }))
+      .finally(() => setRunning(false));
+  }, [planId]);
+
+  // Rows queue and land one per tick, however fast they arrived.
+  const queued = run.proof !== null && !allRevealed(run);
+  useEffect(() => {
+    if (!queued) return;
+    if (reduced) {
+      setRun(revealAll);
+      return;
+    }
+    const id = setInterval(() => setRun(revealNext), ROW_MS);
+    return () => clearInterval(id);
+  }, [queued, reduced]);
+  return { run, running, start };
 }
 
 export type BenchCase = { id: string; category: string; caught: boolean };

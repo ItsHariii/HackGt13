@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import type { ProofView, Tick } from "@/lib/workspace";
+import type { ProofRowView, ProofView, Tick } from "@/lib/workspace";
 import {
   LiveProof,
   ProofInspector,
@@ -8,7 +8,7 @@ import {
 } from "./proof-inspector";
 import { StatusIcon } from "./status-icon";
 
-const TICK: Record<Tick, string> = {
+export const TICK: Record<Tick, string> = {
   pass: "border-green-check bg-green-check",
   fail: "border-red-pen bg-red-pen",
   waived: "border-graphite border-dashed bg-transparent",
@@ -99,46 +99,7 @@ export function ProofPanel({
                     aria-hidden="true"
                     className="absolute top-1/2 left-5 -mt-2.5 size-5 rounded-full bg-paper-raised"
                   />
-                  <span className="relative">
-                    <StatusIcon kind={r.kind} />
-                  </span>
-                  <span className="flex min-w-0 flex-col gap-[3px]">
-                    <span className="font-semibold text-[14.5px] leading-[1.3]">
-                      {r.rule}
-                    </span>
-                    <span
-                      className={cn(
-                        "font-semibold text-[12.5px]",
-                        STATUS_TONE[r.kind],
-                      )}
-                    >
-                      {r.status}
-                    </span>
-                  </span>
-                  <span className="flex flex-col items-end gap-1">
-                    <span
-                      className={cn(
-                        "font-mono text-[14px]",
-                        r.kind === "est" || r.kind === "cant"
-                          ? "text-muted"
-                          : r.kind === "fail"
-                            ? "mark-circle"
-                            : "text-ink",
-                      )}
-                    >
-                      {r.value}
-                    </span>
-                    <span
-                      className={cn(
-                        "rounded-[4px] border px-1.5 py-px font-semibold text-meta",
-                        r.evidenceTone === "ink"
-                          ? "border-ink text-ink"
-                          : "border-pencil border-dashed text-muted",
-                      )}
-                    >
-                      {r.evidence}
-                    </span>
-                  </span>
+                  <ProofRowBody row={r} />
                 </Link>
               </li>
             );
@@ -146,5 +107,50 @@ export function ProofPanel({
         </ol>
       </div>
     </section>
+  );
+}
+
+/** A proof row's mark, rule, status and evidence (the workspace and the live solve). */
+export function ProofRowBody({ row }: { row: ProofRowView }) {
+  return (
+    <>
+      <span className="relative">
+        <StatusIcon kind={row.kind} />
+      </span>
+      <span className="flex min-w-0 flex-col gap-[3px]">
+        <span className="font-semibold text-[14.5px] leading-[1.3]">
+          {row.rule}
+        </span>
+        <span
+          className={cn("font-semibold text-[12.5px]", STATUS_TONE[row.kind])}
+        >
+          {row.status}
+        </span>
+      </span>
+      <span className="flex flex-col items-end gap-1">
+        <span
+          className={cn(
+            "font-mono text-[14px]",
+            row.kind === "est" || row.kind === "cant"
+              ? "text-muted"
+              : row.kind === "fail"
+                ? "mark-circle"
+                : "text-ink",
+          )}
+        >
+          {row.value}
+        </span>
+        <span
+          className={cn(
+            "rounded-[4px] border px-1.5 py-px font-semibold text-meta",
+            row.evidenceTone === "ink"
+              ? "border-ink text-ink"
+              : "border-pencil border-dashed text-muted",
+          )}
+        >
+          {row.evidence}
+        </span>
+      </span>
+    </>
   );
 }
