@@ -310,9 +310,11 @@ export function CheckoutPanel({ planId }: { planId: string }) {
             <p>No contract is ready for checkout yet.</p>
           )}
           {data.instruments.length === 0 ? (
-            <Link href="/settings/payment" className="text-ink underline">
+            // A full page load, not <Link>: proxy.ts only allows the card
+            // provider's script and frames in that route's own CSP.
+            <a href="/settings/payment" className="text-ink underline">
               Add a payment method
-            </Link>
+            </a>
           ) : (
             <label className="block">
               Payment method

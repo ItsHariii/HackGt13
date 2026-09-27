@@ -35,6 +35,31 @@ declare global {
     }) => void;
   }
 }
+const libraries = new Map<string, Promise<void>>();
+/**
+ * Loads the Microform library once per URL. next/script is not used here: it
+ * caches a failed load and never calls onReady for it again, so a retry after
+ * a blocked or failed script hung on "Opening secure card fields…".
+ */
+function loadLibrary(src: string, integrity: string): Promise<void> {
+  const cached = libraries.get(src);
+  if (cached) return cached;
+  const loading = new Promise<void>((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.integrity = integrity;
+    script.crossOrigin = "anonymous";
+    script.onload = () => resolve();
+    script.onerror = () => {
+      script.remove();
+      libraries.delete(src);
+      reject(new Error("microform_unavailable"));
+    };
+    document.body.appendChild(script);
+  });
+  libraries.set(src, loading);
+  return loading;
+}
 export function PaymentSettings() {
   const [config, setConfig] = useState<Config | null>(null);
   const [context, setContext] = useState<{
@@ -117,22 +142,40 @@ export function PaymentSettings() {
       setBusy(false);
     }
   }
-  function mountFields() {
-    if (!context || !window.Flex || microform.current) return;
-    const form = new window.Flex(context.captureContext).microform({
-      styles: { input: { "font-size": "16px", color: "#2b2a28" } },
-    });
-    const number = form.createField("number", { placeholder: "Card number" });
-    const security = form.createField("securityCode", {
-      placeholder: "Security code",
-    });
-    number.load("#card-number");
-    security.load("#security-code");
-    fields.current = [number, security];
-    microform.current = form;
-    setReady(true);
-    setMessage("");
-  }
+  useEffect(() => {
+    if (!context) return;
+    let current = true;
+    const fail = () =>
+      setMessage(
+        "Secure card fields could not load. Reload the page and try again.",
+      );
+    loadLibrary(context.clientLibrary, context.clientLibraryIntegrity)
+      .then(() => {
+        if (!current || microform.current) return;
+        if (!window.Flex) return fail();
+        const form = new window.Flex(context.captureContext).microform({
+          styles: { input: { "font-size": "16px", color: "#2b2a28" } },
+        });
+        const number = form.createField("number", {
+          placeholder: "Card number",
+        });
+        const security = form.createField("securityCode", {
+          placeholder: "Security code",
+        });
+        number.load("#card-number");
+        security.load("#security-code");
+        fields.current = [number, security];
+        microform.current = form;
+        setReady(true);
+        setMessage("");
+      })
+      .catch(() => {
+        if (current) fail();
+      });
+    return () => {
+      current = false;
+    };
+  }, [context]);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!microform.current || busy) return;
@@ -239,17 +282,6 @@ export function PaymentSettings() {
               className="mt-8 space-y-5 border border-border bg-paper-raised p-6"
               onSubmit={submit}
             >
-              <Script
-                src={context.clientLibrary}
-                integrity={context.clientLibraryIntegrity}
-                crossOrigin="anonymous"
-                onReady={mountFields}
-                onError={() =>
-                  setMessage(
-                    "Secure card fields could not load. Please try again.",
-                  )
-                }
-              />
               <p className="text-sm text-muted">
                 Card number and security code go directly to Visa Acceptance.
               </p>
