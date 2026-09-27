@@ -7,6 +7,7 @@ import {
   conflictClaims,
   freshnessText,
   ruleText,
+  sourceLabel,
 } from "./workspace";
 
 async function flagship(waived = true) {
@@ -197,5 +198,38 @@ describe("evidence conflicts and freshness", () => {
     ).toMatch(/^Stale by 2/);
     const { freshUntil: _drop, ...noExpiry } = f;
     expect(freshnessText(noExpiry, at)).toBe("No expiry");
+  });
+});
+
+describe("sourceLabel", () => {
+  it("names unnamed sources by who stated them, never by id", async () => {
+    const v7 = await flagshipV7();
+    const id = "9f20b0cb-04d9-4742-be53-1cfb22bd9dae";
+    const checkout = {
+      ...v7.snapshot,
+      quotes: (v7.snapshot.quotes ?? []).map((q) => ({
+        ...q,
+        merchant: "greathub",
+      })),
+      sources: {
+        [id]: { authority: "merchant" as const },
+        "0b58f275-6e13-4b3e-9ac1-6c0fb11b15d9": {
+          authority: "merchant_checkout" as const,
+        },
+      },
+    };
+    expect(sourceLabel(checkout, id)).toBe("GreatHub listing");
+    expect(sourceLabel(checkout, "0b58f275-6e13-4b3e-9ac1-6c0fb11b15d9")).toBe(
+      "GreatHub checkout",
+    );
+    expect(sourceLabel(checkout, "missing")).toBe("Source");
+  });
+  it("keeps a stored name", async () => {
+    const v7 = await flagshipV7();
+    const checkout = {
+      ...v7.snapshot,
+      sources: { s: { authority: "manufacturer" as const, name: "Icecat" } },
+    };
+    expect(sourceLabel(checkout, "s")).toBe("Icecat");
   });
 });

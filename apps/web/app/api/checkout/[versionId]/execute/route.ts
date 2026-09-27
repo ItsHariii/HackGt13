@@ -1,7 +1,9 @@
 import { jsonResponse, UUID, userId } from "@/lib/catalog";
 import { runCheckout } from "@/lib/checkout";
 import type { CheckoutResult } from "@/lib/checkout-service";
+import { receiptUrl } from "@/lib/orders";
 import { paymentError, sameOrigin } from "@/lib/payment-config";
+import { createClient } from "@/lib/supabase/server";
 export async function POST(
   request: Request,
   ctx: { params: Promise<{ versionId: string }> },
@@ -20,9 +22,14 @@ export async function POST(
       !UUID.test(body.instrumentId ?? "")
     )
       return jsonResponse({ error: "invalid_instrument" }, 400);
+    // Made before any stream starts, while the request's cookies are in scope.
+    const db = await createClient();
     if (request.headers.get("accept")?.includes("application/x-ndjson"))
-      return streamed(versionId, owner, key, body.instrumentId);
-    const result = await runCheckout(versionId, owner, key, body.instrumentId);
+      return streamed(versionId, owner, key, body.instrumentId, db);
+    const result = await withReceipt(
+      await runCheckout(versionId, owner, key, body.instrumentId),
+      db,
+    );
     return jsonResponse(
       result,
       result.status === "paused"
@@ -36,6 +43,18 @@ export async function POST(
   } catch (error) {
     return paymentError(error);
   }
+}
+
+type Db = Awaited<ReturnType<typeof createClient>>;
+
+/** A paid result carries its receipt page, so the checkout can go straight to it. */
+async function withReceipt(
+  result: CheckoutResult,
+  db: Db,
+): Promise<CheckoutResult & { receiptUrl?: string }> {
+  if (result.status !== "paid") return result;
+  const url = await receiptUrl(db, result.executionId).catch(() => null);
+  return url ? { ...result, receiptUrl: url } : result;
 }
 
 function statusFor(result: CheckoutResult): number {
@@ -60,6 +79,7 @@ function streamed(
   owner: string,
   key: string,
   instrumentId: string,
+  db: Db,
 ) {
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
@@ -67,13 +87,16 @@ function streamed(
       const send = (line: unknown) =>
         controller.enqueue(encoder.encode(`${JSON.stringify(line)}\n`));
       try {
-        const result = await runCheckout(
-          versionId,
-          owner,
-          key,
-          instrumentId,
-          (step, ms, detail) =>
-            send({ type: "step", step, ms, ...(detail ? { detail } : {}) }),
+        const result = await withReceipt(
+          await runCheckout(
+            versionId,
+            owner,
+            key,
+            instrumentId,
+            (step, ms, detail) =>
+              send({ type: "step", step, ms, ...(detail ? { detail } : {}) }),
+          ),
+          db,
         );
         send({ type: "result", httpStatus: statusFor(result), body: result });
       } catch (error) {

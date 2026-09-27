@@ -23,6 +23,7 @@ import {
   sumMoney,
   timesQty,
 } from "@cartel/proof-engine";
+import { merchantName, sourceNameFor } from "./merchant-names";
 
 /*
  * The workspace screen as plain data (TASKS T11.3, T11.4). Everything the
@@ -187,6 +188,22 @@ const EXTRACTOR_LABEL: Record<string, string> = {
   icecat: "Icecat",
 };
 
+/**
+ * A source's display name. Proof reports saved before sources carried names
+ * fall back to who stated it, never the raw source id.
+ */
+export function sourceLabel(checkout: CheckoutState, sourceId: string): string {
+  const source = checkout.sources?.[sourceId];
+  if (source?.name) return source.name;
+  if (!source) return "Source";
+  return sourceNameFor(
+    source.authority,
+    merchantName(
+      checkout.quotes?.[0]?.merchant ?? checkout.offers[0]?.merchant,
+    ),
+  );
+}
+
 function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -325,7 +342,7 @@ export function conflictClaims(
     .map((f) => {
       const authority = checkout.sources?.[f.sourceId]?.authority;
       return {
-        source: checkout.sources?.[f.sourceId]?.name ?? f.sourceId,
+        source: sourceLabel(checkout, f.sourceId),
         claimedBy: authority
           ? (AUTHORITY_LABEL[authority] ?? authority)
           : "Unknown",
@@ -350,7 +367,7 @@ export function buildWorkspace(input: WorkspaceInput): WorkspaceView {
   }
 
   const sourceName = (f: Fact | undefined, scope: ProofResult["scope"]) => {
-    if (f) return checkout.sources?.[f.sourceId]?.name ?? f.sourceId;
+    if (f) return sourceLabel(checkout, f.sourceId);
     if (scope.kind === "order") return "Your order settings";
     const merchant = checkout.quotes?.[0]?.merchant;
     return merchant
@@ -480,7 +497,7 @@ export function buildWorkspace(input: WorkspaceInput): WorkspaceView {
               state: f.state,
               ...(f.raw ? { raw: f.raw } : {}),
               ...(f.quote ? { quote: f.quote } : {}),
-              source: checkout.sources?.[f.sourceId]?.name ?? f.sourceId,
+              source: sourceLabel(checkout, f.sourceId),
               extractor: f.extractor,
               retrievedAt: f.retrievedAt,
               ...(f.freshUntil ? { freshUntil: f.freshUntil } : {}),

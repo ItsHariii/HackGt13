@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type GuardStep,
@@ -135,6 +136,8 @@ export function CheckoutPanel({ planId }: { planId: string }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [done, setDone] = useState<Done>(new Map());
   const [handoffUrl, setHandoffUrl] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<string | null>(null);
+  const router = useRouter();
   const keys = useRef(new Map<string, string>());
   const [uncertain, setUncertain] = useState(new Set<string>());
   const load = useCallback(async () => {
@@ -152,6 +155,16 @@ export function CheckoutPanel({ planId }: { planId: string }) {
       .then(() => setMessage(""))
       .catch((e) => setMessage(e.message));
   }, [load]);
+  // Let the high-five land, then open the receipt; no wait with reduced motion.
+  useEffect(() => {
+    if (!receipt) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = window.setTimeout(
+      () => router.push(`${receipt}?paid=1`),
+      still ? 0 : 1500,
+    );
+    return () => window.clearTimeout(timer);
+  }, [receipt, router]);
   async function execute(merchant: MerchantStatus) {
     if (busy) return;
     setBusy(true);
@@ -206,6 +219,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
         status?: string;
         error?: unknown;
         diffId?: string;
+        receiptUrl?: string;
       };
       const ok = final.httpStatus < 400;
       const before =
@@ -227,7 +241,13 @@ export function CheckoutPanel({ planId }: { planId: string }) {
               : "uncertain",
       );
       if (result.status === "paid") {
-        setMessage("Payment authorized. Your order is recorded.");
+        setMessage(
+          result.receiptUrl
+            ? "Payment authorized. Printing your receipt…"
+            : "Payment authorized. Your order is recorded.",
+        );
+        if (result.receiptUrl?.startsWith("/orders/"))
+          setReceipt(result.receiptUrl);
         setUncertain((old) => {
           const next = new Set(old);
           next.delete(merchant.versionId);
@@ -312,7 +332,10 @@ export function CheckoutPanel({ planId }: { planId: string }) {
           {data.instruments.length === 0 ? (
             // A full page load, not <Link>: proxy.ts only allows the card
             // provider's script and frames in that route's own CSP.
-            <a href="/settings/payment" className="text-ink underline">
+            <a
+              href={`/settings/payment?return=${encodeURIComponent(`/plans/${planId}/checkout`)}`}
+              className="text-ink underline"
+            >
               Add a payment method
             </a>
           ) : (
@@ -371,8 +394,16 @@ export function CheckoutPanel({ planId }: { planId: string }) {
             {phase === "paused" && <GuardStepIn h={88} />}
           </div>
           {phase === "paid" && (
-            <div className="mt-6">
+            <div className="mt-6 flex flex-wrap items-center gap-6">
               <HighFive h={96} delay={300} />
+              {receipt && (
+                <Link
+                  href={`${receipt}?paid=1`}
+                  className="bg-ink px-5 py-3 text-paper"
+                >
+                  View receipt
+                </Link>
+              )}
             </div>
           )}
         </>

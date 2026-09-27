@@ -60,7 +60,12 @@ function loadLibrary(src: string, integrity: string): Promise<void> {
   libraries.set(src, loading);
   return loading;
 }
-export function PaymentSettings() {
+export function PaymentSettings({
+  returnTo = null,
+}: {
+  /** A validated plan checkout path to go back to once a card is saved. */
+  returnTo?: string | null;
+}) {
   const [config, setConfig] = useState<Config | null>(null);
   const [context, setContext] = useState<{
     captureContext: string;
@@ -102,6 +107,11 @@ export function PaymentSettings() {
           "The payment method could not be saved. Open a new card form and try again.",
         );
       await load();
+      if (returnTo) {
+        setMessage("Payment method saved. Returning to checkout…");
+        window.location.assign(returnTo);
+        return;
+      }
       setMessage("Payment method saved.");
     } catch (error) {
       setMessage((error as Error).message);
@@ -214,6 +224,11 @@ export function PaymentSettings() {
     "mt-2 w-full rounded border border-border bg-white p-3 text-[#2b2a28] focus:outline-2 focus:outline-ink";
   return (
     <div className="mx-auto max-w-3xl px-6 py-14">
+      {returnTo && (
+        <a href={returnTo} className="mb-6 inline-block text-ink underline">
+          ← Back to checkout
+        </a>
+      )}
       <p className="font-mono text-xs uppercase tracking-widest text-muted">
         Settings / Payment
       </p>
