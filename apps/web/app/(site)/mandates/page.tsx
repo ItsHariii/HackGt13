@@ -1,6 +1,8 @@
 import { ContractBody, MandateTrigger } from "@cartel/contracts";
 import Link from "next/link";
 import { MandateActionButton } from "@/components/mandates/mandate-action-button";
+import { DemoNote } from "@/components/plan/plan-header";
+import { flagshipMandates } from "@/lib/flagship";
 import { createClient } from "@/lib/supabase/server";
 import { armMandateAction, cancelMandateAction } from "./actions";
 
@@ -73,6 +75,7 @@ type Row = {
 };
 
 export default async function MandatesPage() {
+  const demo = await flagshipMandates();
   const client = await createClient();
   const user = client ? (await client.auth.getUser()).data.user : null;
   let mandates: Row[] = [];
@@ -239,6 +242,36 @@ export default async function MandatesPage() {
           )}
         </section>
       ) : null}
+
+      <section className="mt-12" aria-labelledby="demo-heading">
+        <h2
+          id="demo-heading"
+          className="flex items-center gap-3 font-serif text-2xl"
+        >
+          Demo plan <DemoNote />
+        </h2>
+        <ul className="mt-4 divide-y divide-border border-border border-y">
+          {demo.map((m) => (
+            <li
+              key={m.id}
+              className="flex flex-wrap items-start justify-between gap-4 py-4"
+            >
+              <div>
+                <p className="font-semibold">Execute when {m.trigger}</p>
+                <p className="text-muted text-small">
+                  {m.planTitle} · contract v{m.version} · until {m.notAfter}
+                </p>
+                <p className="text-small">
+                  {STATUS[m.status] ?? m.status}. {m.detail}
+                </p>
+              </div>
+              <Link href={m.href} className="underline underline-offset-4">
+                See why it paused
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
     </main>
   );
 }

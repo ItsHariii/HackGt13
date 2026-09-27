@@ -80,16 +80,26 @@ export function useDiffEvent(planId: string | null): ConsentDiffEvent | null {
 export function useSearchStatus(
   query: string | null,
   sources: readonly string[],
-): { sources: SourceState[]; loading: boolean; products: unknown[] } {
+  /** Bump to search again (Retry). */
+  attempt = 0,
+): {
+  sources: SourceState[];
+  loading: boolean;
+  products: unknown[];
+  facets: unknown[];
+} {
   const [states, setStates] = useState<SourceState[]>([]);
   const [products, setProducts] = useState<unknown[]>([]);
+  const [facets, setFacets] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(false);
   const expected = sources.join("\u0000");
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `attempt` only re-runs the search (Retry)
   useEffect(() => {
     if (!query) return;
     const abort = new AbortController();
     setStates(startSearch(expected ? expected.split("\u0000") : []));
     setProducts([]);
+    setFacets([]);
     setLoading(true);
     (async () => {
       const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
@@ -107,6 +117,7 @@ export function useSearchStatus(
           const chunk = JSON.parse(line);
           setStates((s) => applySearchChunk(s, chunk));
           setProducts((p) => [...p, ...(chunk.products ?? [])]);
+          setFacets((f) => [...f, ...(chunk.facets ?? [])]);
         }
       }
     })()
@@ -122,8 +133,8 @@ export function useSearchStatus(
         if (!abort.signal.aborted) setLoading(false);
       });
     return () => abort.abort();
-  }, [query, expected]);
-  return { sources: states, loading, products };
+  }, [query, expected, attempt]);
+  return { sources: states, loading, products, facets };
 }
 
 export type BenchCase = { id: string; category: string; caught: boolean };

@@ -9,7 +9,16 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       <footer className="border-rule border-t bg-paper">
         <div className="mx-auto flex max-w-[1320px] flex-wrap justify-between gap-4 px-5 py-6 text-muted text-small sm:px-10">
           <span>Demo merchant and sandbox payments. Built at HackGT 13.</span>
-          <span className="flex gap-5">
+          <span className="flex flex-wrap gap-5">
+            <Link href="/orders" className="underline underline-offset-4">
+              Orders
+            </Link>
+            <Link href="/mandates" className="underline underline-offset-4">
+              Mandates
+            </Link>
+            <Link href="/bench" className="underline underline-offset-4">
+              ProofBench
+            </Link>
             <Link href="/trust" className="underline underline-offset-4">
               How Cartel works
             </Link>

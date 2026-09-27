@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { removePasskey } from "@/app/(site)/settings/signing/actions";
 import { Button } from "@/components/ui/button";
 import { registerSigningKey, signingMessage } from "@/lib/signing-client";
 
@@ -65,10 +66,22 @@ export function SigningSettings({ keys }: { keys: SigningKey[] | null }) {
               className="flex flex-wrap justify-between gap-2 border-b border-border py-5 last:border-0"
             >
               <span>{key.label ?? "Signing passkey"}</span>
-              <span className="font-mono text-sm">
-                {key.lastUsedAt
-                  ? `last used ${new Date(key.lastUsedAt).toLocaleDateString()}`
-                  : `added ${new Date(key.createdAt).toLocaleDateString()}`}
+              <span className="flex items-center gap-4">
+                <span className="font-mono text-sm">
+                  {key.lastUsedAt
+                    ? `last used ${new Date(key.lastUsedAt).toLocaleDateString()}`
+                    : `added ${new Date(key.createdAt).toLocaleDateString()}`}
+                </span>
+                <form action={removePasskey}>
+                  <input type="hidden" name="id" value={key.id} />
+                  <button
+                    type="submit"
+                    aria-label={`Remove ${key.label ?? "signing passkey"}`}
+                    className="min-h-6 text-ink text-sm underline underline-offset-4"
+                  >
+                    Remove
+                  </button>
+                </form>
               </span>
             </div>
           ))}

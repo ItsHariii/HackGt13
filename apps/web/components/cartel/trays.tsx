@@ -11,11 +11,15 @@ export function PlanTray({
   count,
   total,
   href,
+  onOpen,
   className,
 }: {
   count: number;
   total?: string | undefined;
-  href: string;
+  /** Where "Open" goes, or… */
+  href?: string | undefined;
+  /** …what it does, e.g. open a bottom sheet. */
+  onOpen?: (() => void) | undefined;
   className?: string | undefined;
 }) {
   return (
@@ -42,12 +46,23 @@ export function PlanTray({
           </span>
         )}
       </p>
-      <Link
-        href={href}
-        className="inline-flex h-10 items-center rounded-card border border-graphite px-4 font-semibold text-ui hover:bg-paper"
-      >
-        Open
-      </Link>
+      {onOpen ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-haspopup="dialog"
+          className="inline-flex h-10 items-center rounded-card border border-graphite px-4 font-semibold text-ui hover:bg-paper"
+        >
+          Open
+        </button>
+      ) : (
+        <Link
+          href={href ?? "#"}
+          className="inline-flex h-10 items-center rounded-card border border-graphite px-4 font-semibold text-ui hover:bg-paper"
+        >
+          Open
+        </Link>
+      )}
     </aside>
   );
 }

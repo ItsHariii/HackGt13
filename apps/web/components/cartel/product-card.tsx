@@ -58,7 +58,7 @@ export function ProductCard({
         <span className="rounded-pill border border-rule px-2 py-px text-meta text-muted">
           {product.source}
         </span>
-        <CheckoutTierBadge tier={product.tier} />
+        <CheckoutTierBadge tier={product.tier} explain />
       </p>
       {onCompare && (
         <label className="relative z-10 flex min-h-6 w-fit items-center gap-2 text-small">

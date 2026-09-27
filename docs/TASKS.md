@@ -441,14 +441,14 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 - [ ] **T10B.6 Placements** (each with its reduced-motion version and text equivalent, SDD §17.9):
   - Timings and announcements come from the Motion Storyboards (DESIGN.md): proof stamping ≈ 150 ms per row, announcing only the summary; signing stamp ≤ 600 ms after the server-verified assertion; Guard in ≤ 600 ms with Pay disabled in the same frame first; receipt prints in ≈ 1.1 s; eases out `cubic-bezier(.2,.7,.2,1)`, slam `cubic-bezier(.6,0,.9,.4)`; transform and opacity only.
   - [x] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking). `PulledSheet` on "The trap": reads scroll position (rAF-throttled, only while visible), moves by `transform`, pull1→pull3 by progress; no Motion dependency.
-  - [ ] Search loading: the Scout runs between source icons; ✓ + count per source.
+  - [x] Search loading: the Scout runs between source icons; ✓ + count per source. (Pose advances per source answer, not on a timer.)
   - [x] Proof streaming: the Inspector stamps rows as they arrive. It waits by the headline, then walks down the list gutter to each arriving row (`ProofWalker`) and ends with a thumbs-up when all pass.
-  - [ ] Signing: the Notary stamps "SIGNED v{n}".
-  - [ ] Auto-accepted change: the Inspector's thumbs-up in the ledger.
-  - [ ] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value.
-  - [ ] Paid: the receipt prints down; high-five.
-  - [ ] Bench: Gremlin vs. Guard with the counter.
-  - [ ] Empty plan (Scout on basket), 404 (map upside down, "This page wandered off."), source error (tangled). 404 and the error page are done; empty plan and source error wait for their screens (T11).
+  - [x] Signing: the Notary stamps "SIGNED v{n}". (On saved contracts, the Notary stamps once `/api/signing/verify` accepts the assertion; demo contracts show the signed pose.)
+  - [x] Auto-accepted change: the Inspector's thumbs-up in the ledger.
+  - [x] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value. (Static on the paused page; the live step-in waits on a streamed checkout.)
+  - [x] Paid: the receipt prints down; high-five.
+  - [x] Bench: Gremlin vs. Guard with the counter.
+  - [x] Empty plan (Scout on basket), 404 (map upside down, "This page wandered off."), source error (tangled).
   - [ ] Mobile pull-to-refresh on the plan page (stretch; drawn in Mobile Workspace with Scout `pull3` and "Refreshing prices…").
 - [ ] **T10B.7 Accessibility and performance check**
   - ✅ All figures `aria-hidden`; every state has its text equivalent in an `aria-live` region. (`test:a11y` covers `/dev/figures` and the 404.)
@@ -462,55 +462,63 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 
 Build every screen against **mock data from the Zod fixtures first**, then switch to real data once the lanes land.
 
-- [ ] **T11.1 `/new`**:
+Implementation notes: [PHASE11.md](PHASE11.md). The flagship plan (`/plans/flagship`) runs every screen on the fixtures through the real engine; saved plans, orders, ledgers, mandates and kits read Supabase through the visitor's session where the table exists.
+
+- [x] **T11.1 `/new`**:
   - Design (Brief and Requirements): "What do you need?", a lined notebook textarea with a 2,000-character counter, the Scout beside it, template chips Home office / Wedding guest / Carry-on kit / Linen shirt, "Nothing is bought until you sign a contract.", primary "Build my plan". brief textarea; scenario template buttons; pack auto-detection shown as a chip; submit → `createPlan`
-- [ ] **T11.2 Requirements review** `/plans/[id]/requirements`
+- [x] **T11.2 Requirements review** `/plans/[id]/requirements`
   - Design: headline "Here's what I understood. These are the rules I won't break without asking you."; YOU SAID rows with a Hard / Preference toggle and edit; hovering a rule highlights its words in the pinned brief card on the right; I ASSUMED rows with Confirm / Edit / Remove; a NEEDS YOUR ANSWER card with two option buttons that show the rule each produces (`desk.width ≤ 48 in` vs `desk.width + arm.reach ≤ 48 in`); pack Default rows with remove; sticky footer "8 rules · 2 to confirm · 1 question", "Edit rules by hand (AI off)", "Find plans".
-  - [ ] Three groups: **You said** (the quote shown on hover), **I assumed, confirm?**, **Needs your answer** (question cards).
-  - [ ] Edit value and unit, toggle hard/preference, delete, add. **Manual builder form** (the "AI off" path).
-  - ✅ With the AI off, the user can build the flagship requirement set entirely by form.
+  - [x] Three groups: **You said** (the quote shown on hover), **I assumed, confirm?**, **Needs your answer** (question cards).
+  - [x] Edit value and unit, toggle hard/preference, delete, add. **Manual builder form** (the "AI off" path). Saved plans store a new requirement set; the demo plan keeps edits on the page.
+  - ✅ With the AI off, the user can build the flagship requirement set entirely by form. (`lib/manual-rule.test.ts`)
 - [ ] **T11.3 Workspace** `/plans/[id]`
   - Design (Workspace + Blueprint): header with the stepper Brief ✓ · Rules ✓ · 3 Plans · 4 Contract; requirements rail with strength tags and provenance chips (You said / I assumed → confirmed / Default / I assumed + Confirm / ? Can't check · Waived by you); plan tabs "Plan A · Balanced / B · Cheapest / C · Better chair"; plan sheet with role, item, spec, merchant pill and price, totals with a dashed "~ Estimate" tax, the "Full Cartel checkout" badge, and "Review contract" disabled until every hard rule is checked; PROOF panel ("Deterministic engine · no AI") with the n-of-12 headline, a 12-tick bar, the stamping Inspector while streaming, and a command bar "Ask Cartel… e.g. 'Make it $100 cheaper without changing the monitor'" (⌘K).
-  - [ ] Left: requirements (compact). Center: the plan (items, delivered total, plan switcher A/B/C). Right: the Proof panel, **streaming rows via Realtime**.
-  - [ ] Command bar: a refinement → `RequirementPatch` preview → confirm → re-solve → changed items highlighted.
+  - [ ] Left: requirements (compact). Center: the plan (items, delivered total, plan switcher A/B/C). Right: the Proof panel, **streaming rows via Realtime**. (Panes done; rows don't stream yet, and saved plans show a "no plans yet" state until solving stored plans is wired. Plans A–C live on Compare.)
+  - [ ] Command bar: a refinement → `RequirementPatch` preview → confirm → re-solve → changed items highlighted. (Needs the A4 refine call wired into the web app.)
 - [ ] **T11.4 Evidence drawer** (intercepting route)
   - Design: verdict box ("Pass · 90 W ≥ 65 W"), SOURCE SNAPSHOT with the highlighted quote, a provenance table (Claimed by, Source, Retrieved, Extractor, Extracted `field = value`), the "Untrusted text" note, "Open source page" and the snapshot hash.: the source snapshot in a sandboxed iframe or rendered JSON, with the quote highlighted; provenance (source type, URL, retrieved-at, extractor); freshness; conflicts side by side; an **"Untrusted text"** badge for listing prose
-- [ ] **T11.5 Compare** `/plans/[id]/compare`: a requirement-first table (rows = requirements, columns = plans); tradeoff line per plan; the **minimal conflict banner** with one-click relax actions
+- [x] **T11.5 Compare** `/plans/[id]/compare`: a requirement-first table (rows = requirements, columns = plans); tradeoff line per plan; the **minimal conflict banner** with one-click relax actions
 - [ ] **T11.6 Contract** `/plans/[id]/contract`
   - Design (Contract v2 is current for paper; Contract Blueprint for dark): a §1–§8 section rail (Intent, Approved items, Hard rules, Waivers, Economics, Autonomy, Standing mandate, Expires); a formal white sheet with a contract number (`CT-HO-…`) and hash pill; the waiver line "? Can't check — Chair comfort… I accept this"; a boxed MAXIMUM TOTAL; the Strict / Balanced / Flexible autonomy table (price drops, price rises within max, seller change, rule fails); the Notary in the right gutter once signed; bottom bar "Touch ID signs this exact version. Any change creates v8." → after signing "Armed: waiting for the monitor to reach $320." with Cancel mandate. The OS passkey prompt is a placeholder, not designed.
-  - [ ] **Not designed yet:** the blocked state (Sign disabled because a hard rule fails or an unknown isn't waived). Design it before building.
-  - [ ] Exact SKUs, merchant, seller, economics with max total, the autonomy preset selector (with the table from SDD §7.6 shown), waivers (the user must tick each `unknown` hard requirement), the mandate builder (trigger + not-after), `HashPill`.
-  - [ ] **Sign with passkey** (T12).
-  - ✅ The Sign button stays disabled until every hard requirement is `pass` or waived.
+  - [x] **Not designed yet:** the blocked state (Sign disabled because a hard rule fails or an unknown isn't waived). Built as a red-pen note beside the disabled Sign button listing each reason; needs a design pass.
+  - [x] Exact SKUs, merchant, seller, economics with max total, the autonomy preset selector (with the table from SDD §7.6 shown), waivers (the user must tick each `unknown` hard requirement), the mandate builder (trigger + not-after), `HashPill`.
+  - [x] **Sign with passkey** (T12). Saved versions in `awaiting_signature` mount `SignContract`; the Notary stamps after the server verifies. Their terms are read-only on screen, since the passkey signs the stored body. Drafting new versions from a saved plan is still open.
+  - ✅ The Sign button stays disabled until every hard requirement is `pass` or waived. (`signReady` in `lib/flagship.test.ts`)
 - [ ] **T11.7 Checkout guard** `/plans/[id]/checkout`: a `GuardStepper` (Refresh cart → Re-fetch specs → Re-prove → Diff → Guard → Pay → Order), each step streaming with timing
-- [ ] **T11.8 Purchase paused** `/plans/[id]/diff/[diffId]`
+  - [x] Stepper on the demo plan's two guard runs and on the real checkout panel, from each run's outcome.
+  - [ ] Per-step streaming with timings (needs the execute route to stream steps).
+- [x] **T11.8 Purchase paused** `/plans/[id]/diff/[diffId]`
   - Design (Purchase Paused + Blueprint + mobile): the red PURCHASE PAUSED stamp, the GreatHub checkout card with a disabled Pay behind the Guard's velvet rope, the 4-layer table whose last layer is **"Cartel re-check"**, the approved-vs-current table with a red-pen circle on the failing value, a dashed "AI summary" card ("Written by AI. The tables are the record."), and the compliant alternative with "Review revised contract". The v{n} → v{n+1} ContractDiff lives on the revised-contract screen (Revised and Receipt), not here.
-  - [ ] Headline "PURCHASE PAUSED · NO PAYMENT WAS MADE".
-  - [ ] **LayersTable** (cart hash / merchant / amount / Cartel).
-  - [ ] An approved-vs-current table; a plain-language explanation (template, with an optional A5 rewording).
-  - [ ] **Compliant alternatives** (solver with the failing item's role re-opened).
-  - [ ] The `ContractDiff` for v{n} → v{n+1}, then re-sign.
-  - [ ] An `aria-live="assertive"` announcement.
-- [ ] **T11.9 Orders** `/orders`, `/orders/[id]`
-  - Design (Revised and Receipt): revised contract v8 with the git-style ContractDiff, bracket notes and "Sign v8 with passkey"; the paid receipt printing from a slot (header "CARTEL · RECEIPT"), Paid → Confirmed → Shipped stepper, Download Evidence Pack, Scan delivery, and the Scout + Inspector high-five.: purchase record, rail and transaction ID, contract hash, proof at purchase, return-policy snapshot, order timeline, **Download Evidence Pack**, **Scan delivery**
-- [ ] **T11.10 Ledger** `/ledger/[planId]`: a timeline of events with actor badges (YOU, SYS, AI dashed, MER) and hash pills; a **Verify chain** button → "✓ Chain intact · n entries" or the broken seq; a blocked execution row is red with "✗ Blocked · no payment"
-- [ ] **T11.11 Mandates** `/mandates`: active, fired, blocked and expired; next check; cancel
+  - [x] Headline "PURCHASE PAUSED · NO PAYMENT WAS MADE".
+  - [x] **LayersTable** (cart hash / merchant / amount / Cartel).
+  - [x] An approved-vs-current table; a plain-language explanation (template, with an optional A5 rewording). Template only; labeled as such.
+  - [x] **Compliant alternatives** (solver with the failing item's role re-opened). The demo shows contract v8's Halden, proved by the engine; re-opening the role in the solver comes with stored-plan solving.
+  - [x] The `ContractDiff` for v{n} → v{n+1}, then re-sign. (On the revised contract, `/contract?review=1`; re-sign is T12.)
+  - [x] An `aria-live="assertive"` announcement.
+- [x] **T11.9 Orders** `/orders`, `/orders/[id]`
+  - Design (Revised and Receipt): revised contract v8 with the git-style ContractDiff, bracket notes and "Sign v8 with passkey"; the paid receipt printing from a slot (header "CARTEL · RECEIPT"), Paid → Confirmed → Shipped stepper, Download Evidence Pack, Scan delivery, and the Scout + Inspector high-five.: purchase record, rail and transaction ID, contract hash, proof at purchase, return-policy snapshot, order timeline, **Download Evidence Pack**, **Scan delivery** (Scan delivery is disabled until T15; the demo Evidence Pack is JSON with ledger payload text verbatim.)
+- [x] **T11.10 Ledger** `/ledger/[planId]`: a timeline of events with actor badges (YOU, SYS, AI dashed, MER) and hash pills; a **Verify chain** button → "✓ Chain intact · n entries" or the broken seq; a blocked execution row is red with "✗ Blocked · no payment"
+- [x] **T11.11 Mandates** `/mandates`: active, fired, blocked and expired; next check; cancel (Phase 14's page with arm and cancel, plus the demo plan's blocked mandate.)
 - [ ] **T11.12 Bench** `/bench`: the latest CI run ("62 / 62 caught · 0 false blocks"), a Gremlin-vs-Guard strip of three attack cards, per-category rows (Identity … Security caught, Benign allowed), a scenario list with expected vs actual, **Run live**
-- [ ] **T11.13 Settings**: `/settings/payment` (Microform card entry; shows brand, last 4 and expiry) and `/settings/signing` (register or remove the signing passkey)
-- [ ] **T11.14 States pass**
+  - [x] Gremlin-vs-Guard strip and **Run live**: five live attacks through the real consent diff, expected vs actual, counter from `useBenchProgress`.
+  - [ ] Latest CI run and per-category rows: rendered from `bench_runs` when a run exists; the 62-scenario suite is Phase 16.
+- [x] **T11.13 Settings**: `/settings/payment` (Microform card entry; shows brand, last 4 and expiry) and `/settings/signing` (register or remove the signing passkey)
+  - [x] `/settings/payment` (Phase 13) and `/settings/signing`: Phase 12's register flow, plus Remove through RLS.
+- [x] **T11.14 States pass**
   - Design (Edge States): empty plan, 404, source error with Retry, no plan fits (the minimal conflict with two relax buttons, e.g. "Raise budget +$84" / "Arrive Wednesday"), sources disagree (side by side with a red bracket; the rule becomes ? Can't check), passkey cancelled ("Nothing was signed." + Try again / Use my phone), hand-off ("Re-checked at 10:42. After this, the store's checkout decides."), AI off.: every screen has loading, empty, error and degraded states per SDD §17.4; no bare spinners
-- [ ] **T11.15 `/explore`**: categories, kits shelf, "Passes popular kits" shelves, recently viewed; works signed out
-- [ ] **T11.16 `/search`**
+  - Dashed skeleton `loading.tsx` on plan, catalog, order, ledger and mandate routes; all eight Edge States at `/dev/states` (covered by `test:a11y`).
+- [x] **T11.15 `/explore`**: categories, kits shelf, "Passes popular kits" shelves, recently viewed; works signed out
+- [x] **T11.16 `/search`**
   - Design (Search): per-source strip with the running Scout while loading and ✓ + count per source; dashed skeleton cards (never a spinner); facet rows with "+ Add as rule" and its tooltip ("Filters hide products. Rules are checked against evidence before you pay."); cards with Compare, evidence chip, source pill and tier badge; empty PlanTray at the bottom; mobile filter bottom sheet. Sources in the design say Best Buy; build them as UPCitemdb (T7.9).: search bar; per-source status strip (streaming NDJSON); result grid of `ProductCard`s; facet panel (bottom sheet on mobile) with **Add as rule** on each facet; empty and timeout states
-- [ ] **T11.17 Product page** `/p/[productId]`
+- [x] **T11.17 Product page** `/p/[productId]`
   - Design (Product): active-plan pill in the header, an offers table with a radio per offer and tier badge, "Checks against your plan" with the Inspector, "Specs with receipts" with "+ Make this a rule" on hover, a "Sources disagree" row with a red bracket, and a mobile sticky bar. The design's Best Buy offer becomes a UPCitemdb "Seen at {merchant}" reference offer (proof only, never used for price rules).
-  - [ ] Gallery; offers table (one row per source/merchant with price, availability, delivery, tier badge).
-  - [ ] **Specs with receipts**: `SpecReceiptRow`s grouped by category; conflicts shown side by side under **Sources disagree**; click → evidence drawer.
-  - [ ] **Checks against your plan** (when a plan is active); **Add to plan** (role picker); **Add as rule** on spec rows.
-  - ✅ The Halden M27Q-USBC page shows "USB-C power · 65 W · Manufacturer says" and passes the flagship plan's monitor rules.
-- [ ] **T11.18 Kits** `/kits/[slug]`: rules and starter basket; **Make it mine** → `forkKit`
-- [ ] **T11.19 Trays**: global `PlanTray` (bottom sheet: items, live pass/fail summary, "Review contract") and `CompareTray` (up to 4 products → rule-by-rule compare)
-- [ ] **T11.20 Checkout tier UX**: `CheckoutTierBadge` everywhere an offer appears, with a tooltip explaining Full / Hand off / Proof only; plan-level summary when items span tiers
+  - [x] Gallery; offers table (one row per source/merchant with price, availability, delivery, tier badge). (Image placeholder until products carry images.)
+  - [x] **Specs with receipts**: `SpecReceiptRow`s grouped by category; conflicts shown side by side under **Sources disagree**; click → evidence drawer. (The drawer link needs a plan-scoped result; product specs open no drawer yet.)
+  - [x] **Checks against your plan** (when a plan is active); **Add to plan** (role picker); **Add as rule** on spec rows.
+  - ✅ The Halden M27Q-USBC page shows "USB-C power · 65 W · Manufacturer says" and passes the flagship plan's monitor rules. (`lib/product-view.test.ts`)
+- [x] **T11.18 Kits** `/kits/[slug]`: rules and starter basket; **Make it mine** → `forkKit`
+- [x] **T11.19 Trays**: global `PlanTray` (bottom sheet: items, live pass/fail summary, "Review contract") and `CompareTray` (up to 4 products → rule-by-rule compare)
+- [x] **T11.20 Checkout tier UX**: `CheckoutTierBadge` everywhere an offer appears, with a tooltip explaining Full / Hand off / Proof only; plan-level summary when items span tiers
 
 ---
 

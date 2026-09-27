@@ -16,6 +16,7 @@ import {
   type FieldDef,
   fieldDef,
   formatMoneyText,
+  formatTarget,
   formatValue,
   type Pack,
   signGate,
@@ -134,6 +135,11 @@ const OP_SYMBOL: Partial<Record<Operator, string>> = {
   gte: "≥",
   neq: "≠",
   before: "before",
+  excludes: "without",
+  contains: "including",
+  in: "one of",
+  not_in: "none of",
+  between: "between",
 };
 
 const TIER_LABEL: Record<Tier, string> = {
@@ -175,7 +181,7 @@ function display(v: Value | null, def?: FieldDef): string {
 function roleLabel(role: string, packs: readonly Pack[]): string {
   for (const p of packs) {
     const r = p.roles.find((x) => x.role === role);
-    if (r) return r.label;
+    if (r) return capitalize(r.label);
   }
   return capitalize(role.replace(/_/g, " "));
 }
@@ -190,10 +196,18 @@ export function ruleText(r: Requirement, packs: readonly Pack[]): string {
       const lower = /^[A-Z][a-z]/.test(label)
         ? label.charAt(0).toLowerCase() + label.slice(1)
         : label;
-      label = `${role} ${lower}`;
+      // "USB-C cable" + "Cable power rating" reads "USB-C cable power rating".
+      const roleLast = role.toLowerCase().split(" ").pop();
+      const [first, ...rest] = lower.split(" ");
+      label =
+        rest.length && first?.toLowerCase() === roleLast
+          ? `${role} ${rest.join(" ")}`
+          : `${role} ${lower}`;
     }
   }
   if (r.op === "exists") return label;
+  if (r.op === "between")
+    return `${label} ${formatTarget(r.op, r.target, def)}`;
   if (r.op === "eq" && typeof r.target === "boolean") {
     return r.target ? label : `No ${label.toLowerCase()}`;
   }

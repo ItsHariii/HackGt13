@@ -2,10 +2,58 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  type GuardStep,
+  GuardStepper,
+} from "@/components/cartel/guard-stepper";
+import {
   type MerchantStatus,
   MerchantStatusTable,
 } from "./merchant-status-table";
 
+type Phase = "idle" | "busy" | "paid" | "paused" | "declined" | "uncertain";
+const STEPS = [
+  "Refresh cart",
+  "Re-fetch specs",
+  "Re-prove",
+  "Diff",
+  "Guard",
+  "Pay",
+  "Order",
+] as const;
+/** The guard's steps for an outcome; the server answers once, so no step is invented. */
+function stepsFor(phase: Phase): GuardStep[] {
+  const stop =
+    phase === "paused"
+      ? 4
+      : phase === "declined" || phase === "uncertain"
+        ? 5
+        : phase === "busy"
+          ? 0
+          : 7;
+  return STEPS.map((label, i) => ({
+    label,
+    state:
+      i < stop
+        ? "done"
+        : i === stop
+          ? phase === "busy" || phase === "uncertain"
+            ? "current"
+            : "failed"
+          : "pending",
+    meta:
+      i === stop
+        ? phase === "busy"
+          ? "Checking…"
+          : phase === "paused"
+            ? "Blocked · no payment"
+            : phase === "declined"
+              ? "Declined"
+              : phase === "uncertain"
+                ? "Outcome unresolved"
+                : undefined
+        : undefined,
+  }));
+}
 type State = {
   merchants: MerchantStatus[];
   instruments: { id: string; brand: string | null; last4: string | null }[];
@@ -17,6 +65,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
   const [message, setMessage] = useState("Loading checkout…");
   const [busy, setBusy] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [phase, setPhase] = useState<Phase>("idle");
   const [handoffUrl, setHandoffUrl] = useState<string | null>(null);
   const keys = useRef(new Map<string, string>());
   const [uncertain, setUncertain] = useState(new Set<string>());
@@ -39,6 +88,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
     if (busy) return;
     setBusy(true);
     setPaused(false);
+    setPhase("busy");
     setMessage("Refreshing the checkout and checking your signed rules…");
     const key = keys.current.get(merchant.versionId) ?? crypto.randomUUID();
     keys.current.set(merchant.versionId, key);
@@ -49,6 +99,15 @@ export function CheckoutPanel({ planId }: { planId: string }) {
         body: JSON.stringify({ instrumentId }),
       });
       const result = await res.json();
+      setPhase(
+        result.status === "paid"
+          ? "paid"
+          : result.status === "declined"
+            ? "declined"
+            : result.status === "paused"
+              ? "paused"
+              : "uncertain",
+      );
       if (result.status === "paid") {
         setMessage("Payment authorized. Your order is recorded.");
         setUncertain((old) => {
@@ -74,6 +133,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
       }
       await load();
     } catch {
+      setPhase("uncertain");
       setUncertain((old) => new Set(old).add(merchant.versionId));
       setMessage(
         "The connection was interrupted. Check status to reconcile the existing attempt.",
@@ -189,6 +249,11 @@ export function CheckoutPanel({ planId }: { planId: string }) {
               ))}
           </div>
         </>
+      )}
+      {phase !== "idle" && (
+        <div className="mt-8">
+          <GuardStepper steps={stepsFor(phase)} label="Guard steps" />
+        </div>
       )}
       <p
         aria-live={paused ? "assertive" : "polite"}

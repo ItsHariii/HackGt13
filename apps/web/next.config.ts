@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     "@cartel/platform",
     "@cartel/proof-engine",
     "@cartel/rule-packs",
+    "@cartel/solver",
     "@cartel/tap",
   ],
   poweredByHeader: false,

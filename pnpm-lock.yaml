@@ -108,6 +108,9 @@ importers:
       '@cartel/rule-packs':
         specifier: workspace:*
         version: link:../../packages/rule-packs
+      '@cartel/solver':
+        specifier: workspace:*
+        version: link:../../packages/solver
       '@cartel/tap':
         specifier: workspace:*
         version: link:../../packages/tap

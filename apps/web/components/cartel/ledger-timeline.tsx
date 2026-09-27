@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { HashPill } from "./hash-pill";
 
@@ -12,6 +13,8 @@ export type LedgerEntry = {
   hash: string;
   /** A blocked execution, drawn as a red row with "✗ Blocked · no payment". */
   blocked?: boolean | undefined;
+  /** Decoration beside the entry, e.g. the Inspector's thumbs-up. */
+  extra?: ReactNode;
 };
 
 const ACTOR: Record<
@@ -69,6 +72,7 @@ export function LedgerTimeline({ entries }: { entries: LedgerEntry[] }) {
             <div className="flex min-w-0 flex-col gap-0.5">
               <code className="num font-semibold text-small">{e.type}</code>
               <p className="text-small">{e.description}</p>
+              {e.extra}
               {e.blocked && (
                 <p className="font-semibold text-red-pen text-small">
                   <span aria-hidden="true">✗ </span>Blocked · no payment
