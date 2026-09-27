@@ -220,11 +220,22 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                   return (
                     <li key={p.id}>
                       <Link href={`/p/${p.slug}`} className="gh-row">
-                        <CategoryIcon
-                          category={p.category}
-                          department={p.department}
-                          size={20}
-                        />
+                        {p.imagePath ? (
+                          // biome-ignore lint/performance/noImgElement: fixed-size WebP from public/, no optimizer needed.
+                          <img
+                            src={p.imagePath}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            className="gh-row-photo"
+                          />
+                        ) : (
+                          <CategoryIcon
+                            category={p.category}
+                            department={p.department}
+                            size={20}
+                          />
+                        )}
                         <span className="gh-row-name">
                           {p.name}
                           <span className="gh-row-brand">{p.brand}</span>
