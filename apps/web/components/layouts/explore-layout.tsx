@@ -43,7 +43,7 @@ export function ExploreLayout({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="mx-auto grid w-full max-w-[1440px] flex-1 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[272px_minmax(0,1fr)] lg:gap-8 lg:px-10">
+      <div className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-[minmax(0,1fr)] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[272px_minmax(0,1fr)] lg:gap-8 lg:px-10">
         <aside aria-labelledby={filtersId} className="hidden lg:block">
           <h2
             id={filtersId}
@@ -121,7 +121,7 @@ export function ExploreGrid({
   return (
     <ul
       aria-label={label}
-      className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 2xl:grid-cols-4 [&>li]:flex [&>li>*]:flex-1"
+      className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 2xl:grid-cols-4 [&>li]:flex [&>li]:min-w-0 [&>li>*]:min-w-0 [&>li>*]:flex-1"
     >
       {children}
     </ul>

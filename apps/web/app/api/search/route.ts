@@ -7,6 +7,7 @@ import {
   catalogReady,
 } from "@/lib/catalog";
 import { ALL_PACKS } from "@/lib/evidence";
+import { limitCurrentRequest, tooManyRequests } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,6 +25,8 @@ export async function GET(request: Request) {
     )
       throw new CatalogError("invalid_search", 400);
     catalogReady();
+    const quota = await limitCurrentRequest("search");
+    if (!quota.allowed) return tooManyRequests(quota.retryAfterMs);
     const requirements = await activeRequirements(url);
     return new Response(
       searchStream({

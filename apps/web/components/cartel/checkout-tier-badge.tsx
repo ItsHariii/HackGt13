@@ -44,7 +44,7 @@ export function CheckoutTierBadge({
     <span
       title={explain ? undefined : t.blurb}
       className={cn(
-        "inline-flex items-center gap-1 whitespace-nowrap rounded-[5px] px-2 py-0.5 font-semibold text-meta",
+        "inline-flex items-center gap-1 rounded-[5px] px-2 py-0.5 font-semibold text-meta sm:whitespace-nowrap",
         tier === "full"
           ? "bg-graphite text-paper-raised"
           : tier === "handoff"
@@ -59,7 +59,7 @@ export function CheckoutTierBadge({
   );
   if (!explain) return badge;
   return (
-    <span className="group/tier relative inline-flex items-center gap-1">
+    <span className="group/tier relative inline-flex min-w-0 items-center gap-1">
       {badge}
       <button
         type="button"

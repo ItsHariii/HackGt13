@@ -18,7 +18,7 @@ import {
 import { shopify } from "./catalog";
 import { loadCheckout } from "./checkout";
 import { CheckoutError } from "./checkout-service";
-import { ALL_PACKS } from "./evidence";
+import { ALL_PACKS, sources } from "./evidence";
 
 /** Checkout totals are authoritative; catalog facts stay source_stated. */
 export async function handoffCheckout(versionId: string, owner: string) {
@@ -51,7 +51,7 @@ export async function handoffCheckout(versionId: string, owner: string) {
   const origin = contract.merchants[0]?.origin;
   const profile = process.env.SHOPIFY_AGENT_PROFILE_URL;
   const token = process.env.SHOPIFY_ACCESS_TOKEN;
-  if (!origin || !profile || !token)
+  if (!origin || !profile || !token || !sources().has("shopify"))
     throw new CheckoutError("handoff_not_configured", 503);
   const client = new ShopifyHandoffClient({
     origin,

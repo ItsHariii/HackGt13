@@ -10,6 +10,8 @@ export type ProductCardData = {
   /** One headline fact, e.g. "100% linen". */
   fact?: string | undefined;
   evidence: EvidenceLevel;
+  /** Source and age of the fact's receipt, e.g. "GreatHub · 2 min ago". */
+  evidenceDetail?: string | undefined;
   source: string;
   tier: CheckoutTier;
   href?: string | undefined;
@@ -51,7 +53,10 @@ export function ProductCard({
       {product.fact && (
         <p className="flex flex-wrap items-center gap-1.5 text-small">
           {product.fact}
-          <EvidenceBadge level={product.evidence} />
+          <EvidenceBadge
+            level={product.evidence}
+            detail={product.evidenceDetail}
+          />
         </p>
       )}
       <p className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">

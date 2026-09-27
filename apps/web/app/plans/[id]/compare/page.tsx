@@ -188,7 +188,7 @@ export default async function ComparePage({
             <div
               // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrolling table must be reachable by keyboard (WCAG 2.1.1)
               tabIndex={0}
-              className="overflow-x-auto"
+              className="relative overflow-x-auto"
             >
               <table className="sheet-formal w-full min-w-[720px] border-collapse text-left text-small">
                 <caption className="pb-2 text-left font-semibold font-serif text-h4">

@@ -12,6 +12,19 @@ import {
 } from "./merchant-status-table";
 
 type Phase = "idle" | "busy" | "paid" | "paused" | "declined" | "uncertain";
+/**
+ * Errors the server raises before any payment attempt exists (SDD §17.4), so
+ * the page can say plainly that nothing was charged. Anything else stays
+ * "unresolved" until the attempt is reconciled.
+ */
+const BEFORE_PAYMENT: Record<string, string> = {
+  merchant_not_configured:
+    "The merchant is unavailable right now. No payment was made. Try again in a few minutes.",
+  instrument_invalid:
+    "That payment method can't be used on this rail. No payment was made. Choose another card.",
+  contract_expired:
+    "This contract has expired. No payment was made. Sign a new version to continue.",
+};
 const STEPS = [
   "Refresh cart",
   "Re-fetch specs",
@@ -100,6 +113,15 @@ export function CheckoutPanel({ planId }: { planId: string }) {
         body: JSON.stringify({ instrumentId }),
       });
       const result = await res.json();
+      const before =
+        !res.ok && typeof result.error === "string"
+          ? BEFORE_PAYMENT[result.error]
+          : undefined;
+      if (before) {
+        setPhase("idle");
+        setMessage(before);
+        return;
+      }
       setPhase(
         result.status === "paid"
           ? "paid"

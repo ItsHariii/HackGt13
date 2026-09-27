@@ -288,6 +288,11 @@ export function productCard(
         : "Price not listed",
     fact: spec ? `${spec.label} ${spec.value}` : undefined,
     evidence: spec?.level ?? "cant",
+    // "Confirmed" always names its source and age (SDD §17.3).
+    evidenceDetail:
+      spec?.level === "confirmed"
+        ? `${spec.source} · ${spec.checked}`
+        : undefined,
     source: offer ? (MERCHANT_NAME[offer.source] ?? offer.source) : "Catalog",
     tier: offer ? uiTier(offer.tier) : "proof",
     href: `/p/${encodeURIComponent(p.id)}`,

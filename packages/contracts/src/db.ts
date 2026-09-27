@@ -1900,6 +1900,20 @@ export type Database = {
           isSetofReturn: false;
         };
       };
+      srv_take_rate_token: {
+        Args: {
+          p_bucket: string;
+          p_capacity: number;
+          p_cost?: number;
+          p_refill_per_s: number;
+          p_subject: string;
+        };
+        Returns: {
+          allowed: boolean;
+          remaining: number;
+          retry_after_ms: number;
+        }[];
+      };
       srv_transition_contract: {
         Args: {
           p_actor?: string;

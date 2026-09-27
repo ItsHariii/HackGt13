@@ -76,6 +76,20 @@ export function OfferPicker({
                 {o.referenceOnly
                   ? " · reference only, never used for price rules"
                   : ""}
+                {o.url && /^https?:\/\//.test(o.url) && (
+                  <>
+                    {" · "}
+                    <a
+                      href={o.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-2 hover:text-ink"
+                    >
+                      View the source listing
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                  </>
+                )}
               </span>
             </span>
             <span className="num font-semibold text-[17px] text-ink">

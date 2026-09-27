@@ -8,6 +8,7 @@
     "./health": "./src/health.ts",
     "./logger": "./src/logger.ts",
     "./request-id": "./src/request-id.ts",
+    "./security-headers": "./src/security-headers.ts",
     "./jwks": "./src/jwks.ts"
   },
   "scripts": {

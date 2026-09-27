@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
  */
 export function LiveBench({ cases }: { cases: LiveCase[] }) {
   const [results, setResults] = useState<Record<string, LiveResult>>({});
+  const [waitS, setWaitS] = useState<number | null>(null);
   const {
     start,
     running,
@@ -23,9 +24,14 @@ export function LiveBench({ cases }: { cases: LiveCase[] }) {
     caught,
   } = useBenchProgress(async function* () {
     setResults({});
+    setWaitS(null);
     for (const c of cases) {
       const r = await runCase(c.id);
       if (!r) continue;
+      if ("error" in r) {
+        setWaitS(Math.ceil(r.retryAfterMs / 1000));
+        return;
+      }
       setResults((all) => ({ ...all, [c.id]: r }));
       yield { id: c.id, category: c.category, caught: r.caught };
     }
@@ -41,6 +47,11 @@ export function LiveBench({ cases }: { cases: LiveCase[] }) {
             Each run edits GreatHub's checkout and asks the real engine what to
             do with contract v7.
           </p>
+          {waitS !== null && (
+            <p role="alert" className="font-semibold text-red-pen text-small">
+              Too many runs in a row. Try again in {waitS} s.
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-4">
           <p role="status" className="num font-semibold text-ui">

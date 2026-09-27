@@ -140,7 +140,7 @@ export function SearchView({
           <label htmlFor="search-q" className="sr-only">
             Search products
           </label>
-          <div className="flex h-12 flex-1 items-center gap-2 rounded-[10px] border border-graphite bg-paper-raised px-3 shadow-offset">
+          <div className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-[10px] border border-graphite bg-paper-raised px-3 shadow-offset">
             <Search size={18} aria-hidden="true" className="text-muted" />
             <input
               id="search-q"

@@ -54,7 +54,7 @@ export function SourceStrip({
     <div className="relative flex flex-col">
       <div aria-hidden="true" className="h-11">
         <div
-          className="transition-transform duration-500 ease-[cubic-bezier(.2,.7,.2,1)]"
+          className="w-fit transition-transform duration-500 ease-[cubic-bezier(.2,.7,.2,1)]"
           style={{ transform: `translateX(${x}px)` }}
         >
           <Figure who="scout" pose={pose} h={44} />
