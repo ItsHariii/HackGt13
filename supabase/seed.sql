@@ -749,22 +749,34 @@ join greathub.offers o on o.listing_id = l.id
 join greathub.policies pol on pol.id = o.return_policy_id;
 
 -- BEGIN GENERATED (scripts/product-photos.mjs) --
--- 48 Unsplash stock photos served by GreatHub (apps/greathub/public/products).
+-- 95 Unsplash stock photos served by GreatHub (apps/greathub/public/products).
 -- The catalog links to GreatHub's copy, with the same origin rule as product links above.
 update greathub.products set image_path = '/products/' || slug || '.webp'
 where slug in (
-  'aster-ballet-flat', 'aster-block-heel', 'aster-leather-loafer', 'aster-strappy-sandal',
-  'atlas-international-carry-on', 'birchline-compact-desk-46', 'birchline-standard-desk-48', 'fieldnote-squeeze-bottles-4-oz',
+  'aster-ballet-flat', 'aster-block-heel', 'aster-leather-loafer', 'aster-mini-clutch',
+  'aster-pointed-pump', 'aster-strappy-sandal', 'atlas-international-carry-on', 'atlas-travel-pillow',
+  'atlas-weekender-duffel', 'birchline-compact-desk-46', 'birchline-felt-desk-mat', 'birchline-mini-desk-44',
+  'birchline-single-monitor-arm', 'birchline-standard-desk-48', 'birchline-wide-desk-52', 'brightfold-bamboo-plate-set-serves-12',
+  'brightfold-compostable-party-set-serves-24', 'brightfold-mini-tea-party-set-serves-8', 'brightfold-molded-fiber-plates-and-cups-set-serves-16', 'brightfold-plastic-plates-and-cups-set-serves-20',
+  'brightfold-space-themed-tableware-serves-12', 'brightfold-superhero-themed-tableware-serves-12', 'brightfold-under-the-sea-themed-tableware-serves-12', 'brightfold-unicorn-themed-tableware-serves-12',
+  'fernway-almond-butter', 'fernway-baby-carrots-2-lb', 'fernway-brown-rice-penne', 'fernway-cheddar-cheese-slices',
+  'fernway-chocolate-milk-boxes-12-pack', 'fernway-corn-flakes', 'fernway-corn-tortillas-30-count', 'fernway-creamy-peanut-butter',
+  'fernway-honey-nut-cereal', 'fernway-lemonade-pouches-10-pack', 'fernway-rolled-oats', 'fernway-soy-milk',
+  'fernway-still-water-bottles-8-oz-24-pack', 'fernway-strawberry-jam', 'fieldnote-21-carry-on', 'fieldnote-squeeze-bottles-4-oz',
   'fieldnote-travel-bottles-3-4-oz', 'galloon-classic-party-decoration-kit', 'galloon-dinosaur-party-decoration-kit', 'galloon-foil-number-balloon',
-  'galloon-happy-birthday-banner', 'galloon-latex-free-foil-balloon-bouquet', 'galloon-rainbow-party-decoration-kit', 'halden-h24f',
-  'halden-m27q-usbc', 'halden-q27', 'hearthbake-classic-birthday-cake-quarter-sheet', 'hearthbake-confetti-sprinkle-cake-quarter-sheet',
+  'galloon-happy-birthday-banner', 'galloon-jungle-safari-party-decoration-kit', 'galloon-latex-free-foil-balloon-bouquet', 'galloon-paper-streamers-6-rolls',
+  'galloon-rainbow-party-decoration-kit', 'galloon-space-party-decoration-kit', 'galloon-superhero-party-decoration-kit', 'galloon-under-the-sea-party-decoration-kit',
+  'galloon-unicorn-party-decoration-kit', 'halden-h24f', 'halden-m27q-usbc', 'halden-q27',
+  'hearthbake-classic-birthday-cake-quarter-sheet', 'hearthbake-confetti-sprinkle-cake-quarter-sheet', 'hearthbake-dinosaur-birthday-cake-8-round', 'hearthbake-dinosaur-dig-cake-7-round',
   'hearthbake-flourless-chocolate-torte', 'hearthbake-free-from-celebration-cake-6-round', 'hearthbake-free-from-celebration-cake-8-round', 'hearthbake-free-from-celebration-cake-half-sheet',
-  'hearthbake-free-from-celebration-cake-quarter-sheet', 'hearthbake-gluten-free-vanilla-cupcakes-12-pack', 'hearthbake-gluten-free-vanilla-cupcakes-24-pack', 'hearthbake-rainbow-birthday-cake-8-round',
-  'hearthbake-space-birthday-cake-quarter-sheet', 'hearthbake-superhero-birthday-cake-8-round', 'hearthbake-tiered-unicorn-showpiece-cake', 'hearthbake-vanilla-cupcakes-12-pack',
-  'hearthbake-vanilla-cupcakes-24-pack', 'kestrel-basic-task-chair', 'kestrel-ergo-pro-chair', 'loop-usb-c-cable-240w',
-  'loop-usb-c-cable-60w', 'marlow-heather-wrap-dress', 'marlow-navy-midi-dress', 'marlow-navy-sheath-dress',
-  'marlow-navy-wrap-dress', 'vireo-p3223', 'vireo-u2727', 'volt-10k-power-bank',
-  'volt-20k-power-bank', 'volt-26800-power-bank', 'volt-30k-power-bank', 'volt-universal-travel-adapter'
+  'hearthbake-free-from-celebration-cake-quarter-sheet', 'hearthbake-gluten-free-vanilla-cupcakes-12-pack', 'hearthbake-gluten-free-vanilla-cupcakes-24-pack', 'hearthbake-jungle-safari-birthday-cake-6-round',
+  'hearthbake-rainbow-birthday-cake-8-round', 'hearthbake-space-birthday-cake-quarter-sheet', 'hearthbake-superhero-birthday-cake-8-round', 'hearthbake-tiered-unicorn-showpiece-cake',
+  'hearthbake-under-the-sea-birthday-cake-quarter-sheet', 'hearthbake-unicorn-birthday-cake-6-round', 'hearthbake-vanilla-cupcakes-12-pack', 'hearthbake-vanilla-cupcakes-24-pack',
+  'kestrel-basic-task-chair', 'kestrel-ergo-pro-chair', 'kestrel-mesh-task-chair', 'loop-usb-c-cable-100w',
+  'loop-usb-c-cable-240w', 'loop-usb-c-cable-60w', 'marlow-heather-wrap-dress', 'marlow-linen-shift-dress',
+  'marlow-navy-midi-dress', 'marlow-navy-sheath-dress', 'marlow-navy-wrap-dress', 'pica-4k-webcam',
+  'vireo-p3223', 'vireo-u2727', 'volt-10k-power-bank', 'volt-20k-power-bank',
+  'volt-26800-power-bank', 'volt-30k-power-bank', 'volt-universal-travel-adapter'
 );
 update public.products p
 set image_url = coalesce(nullif(current_setting('app.greathub_origin', true), ''), 'http://localhost:3001')
