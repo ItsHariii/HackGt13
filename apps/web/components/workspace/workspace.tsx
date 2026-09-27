@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { PullToRefresh } from "@/components/doodle/pull-to-refresh";
 import type { WorkspaceView } from "@/lib/workspace";
 import { CommandBar } from "./command-bar";
 import { PlanPanel } from "./plan-panel";
@@ -27,51 +28,53 @@ export function Workspace({
       className="dot-grid flex min-h-dvh flex-col text-graphite xl:h-dvh"
     >
       <WorkspaceHeader title={view.title} path={view.path} current={3} />
-      <main className="relative flex min-h-0 flex-1 flex-col gap-4 px-4 pt-5 sm:px-6">
-        <nav
-          aria-label="This plan"
-          className="flex flex-wrap gap-x-5 gap-y-1 text-small"
-        >
-          {[
-            ["Compare plans", `/plans/${view.planId}/compare`],
-            ["Contract", `/plans/${view.planId}/contract`],
-            ["Checkout", `/plans/${view.planId}/checkout`],
-            ["Ledger", `/ledger/${view.planId}`],
-          ].map(([label, href]) => (
-            <Link
-              key={href}
-              href={href as string}
-              className="text-ink underline underline-offset-4 hover:text-graphite"
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-        <WorkspaceTabs
-          rules={
-            <RequirementsRail
-              planId={view.planId}
-              requirements={view.requirements}
-            />
-          }
-          plan={
-            <PlanPanel
-              planId={view.planId}
-              plans={view.plans}
-              canReviewContract={view.canReviewContract}
-              ctaNote={view.ctaNote}
-            />
-          }
-          proof={
-            <ProofPanel
-              planId={view.planId}
-              proof={view.proof}
-              activeId={activeId}
-            />
-          }
-        />
-        {drawer}
-      </main>
+      <PullToRefresh className="flex min-h-0 flex-1 flex-col">
+        <main className="relative flex min-h-0 flex-1 flex-col gap-4 px-4 pt-5 sm:px-6">
+          <nav
+            aria-label="This plan"
+            className="flex flex-wrap gap-x-5 gap-y-1 text-small"
+          >
+            {[
+              ["Compare plans", `/plans/${view.planId}/compare`],
+              ["Contract", `/plans/${view.planId}/contract`],
+              ["Checkout", `/plans/${view.planId}/checkout`],
+              ["Ledger", `/ledger/${view.planId}`],
+            ].map(([label, href]) => (
+              <Link
+                key={href}
+                href={href as string}
+                className="text-ink underline underline-offset-4 hover:text-graphite"
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+          <WorkspaceTabs
+            rules={
+              <RequirementsRail
+                planId={view.planId}
+                requirements={view.requirements}
+              />
+            }
+            plan={
+              <PlanPanel
+                planId={view.planId}
+                plans={view.plans}
+                canReviewContract={view.canReviewContract}
+                ctaNote={view.ctaNote}
+              />
+            }
+            proof={
+              <ProofPanel
+                planId={view.planId}
+                proof={view.proof}
+                activeId={activeId}
+              />
+            }
+          />
+          {drawer}
+        </main>
+      </PullToRefresh>
       <div className="shrink-0 px-4 pt-4 pb-5 sm:px-6">
         <CommandBar />
       </div>

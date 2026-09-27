@@ -7,6 +7,7 @@ import {
   TIER,
 } from "@/components/cartel/checkout-tier-badge";
 import { CompareTray, PlanTray } from "@/components/cartel/trays";
+import { Figure } from "@/components/doodle/figure";
 import { StatusMark } from "@/components/paper/status-mark";
 import { trays, trayTotal, useTrays } from "@/lib/tray-store";
 
@@ -60,10 +61,16 @@ export function GlobalTrays() {
         </div>
         <div className="mx-auto flex w-full max-w-[860px] flex-col gap-5 overflow-y-auto px-5 py-4">
           {t.items.length === 0 && t.rules.length === 0 ? (
-            <p className="text-muted text-ui">
-              Nothing yet. Use “Add to plan” on a product, or “Add as rule” on a
-              filter or spec.
-            </p>
+            <div className="flex items-center gap-4">
+              {/* Empty plan (SDD §17.9): the Scout sits on the empty basket. */}
+              <span aria-hidden="true">
+                <Figure who="scout" pose="sit" h={72} />
+              </span>
+              <p className="text-muted text-ui">
+                Nothing yet. Use “Add to plan” on a product, or “Add as rule” on
+                a filter or spec.
+              </p>
+            </div>
           ) : (
             <>
               <p aria-live="polite" className="font-semibold text-ui">

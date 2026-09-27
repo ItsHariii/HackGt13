@@ -438,19 +438,19 @@ Everything lives in `apps/web/components/doodle/`. Nothing here may block the sp
 - [x] **T10B.3 Props**: magnifier, clipboard, stamp, stop sign, rope, basket, map, price tag, satchel, binoculars, cap, bow tie
 - [x] **T10B.4 The cast**: `Scout` (ink), `Inspector` (green-check), `Notary` (red-pen), `Guard` (highlighter; the sign bar stays graphite, including in Blueprint), `Gremlin` (tape) per SDD §17.8 and the Character Sheet (48–96 px in the app). The Notary sits beside the contract, never inside it; the Guard stands next to Pay, never on it. The Gremlin belongs to GreatHub; `/bench` is its one Cartel appearance. GreatHub's own cast (Captain Inkwell, the Gull) is T6B.8.
 - [x] **T10B.5 Event hooks**: `useSearchStatus` (per-source state), `useProofStream` (proof_results broadcast), `useSignatureEvent`, `useDiffEvent`, `usePaymentEvent`, `useBenchProgress`. Figures animate only from these hooks, never from timers. Shared `plan:{id}` channel in `lib/plan-channel.ts`; plus `useAutoAcceptedEvent`. `useBenchProgress` takes the runner's stream once `/bench` exists.
-- [ ] **T10B.6 Placements** (each with its reduced-motion version and text equivalent, SDD §17.9):
+- [x] **T10B.6 Placements** (each with its reduced-motion version and text equivalent, SDD §17.9):
   - Timings and announcements come from the Motion Storyboards (DESIGN.md): proof stamping ≈ 150 ms per row, announcing only the summary; signing stamp ≤ 600 ms after the server-verified assertion; Guard in ≤ 600 ms with Pay disabled in the same frame first; receipt prints in ≈ 1.1 s; eases out `cubic-bezier(.2,.7,.2,1)`, slam `cubic-bezier(.6,0,.9,.4)`; transform and opacity only.
   - [x] Landing: the Scout on a rope pulls the next paper sheet down (Motion `useScroll`; no scroll hijacking). `PulledSheet` on "The trap": reads scroll position (rAF-throttled, only while visible), moves by `transform`, pull1→pull3 by progress; no Motion dependency.
-  - [x] Search loading: the Scout runs between source icons; ✓ + count per source. (Pose advances per source answer, not on a timer.)
+  - [x] Search loading: the Scout runs between source icons; ✓ + count per source. (`SourceStrip`: the run cycle loops only while sources are loading, and the Scout moves along a lane above the pills to the first one still searching, then sits.)
   - [x] Proof streaming: the Inspector stamps rows as they arrive. It waits by the headline, then walks down the list gutter to each arriving row (`ProofWalker`) and ends with a thumbs-up when all pass.
   - [x] Signing: the Notary stamps "SIGNED v{n}". (On saved contracts, the Notary stamps once `/api/signing/verify` accepts the assertion; demo contracts show the signed pose.)
-  - [x] Auto-accepted change: the Inspector's thumbs-up in the ledger.
-  - [x] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value. (Static on the paused page; the live step-in waits on a streamed checkout.)
-  - [x] Paid: the receipt prints down; high-five.
+  - [x] Auto-accepted change: the Inspector's thumbs-up in the ledger (demo and stored ledgers).
+  - [x] Purchase paused: the Guard steps in front of Pay; red-pen circle on the failing value. (`GuardStepIn`: on the paused page and on the live checkout when execution returns `paused`; Pay is disabled first, the Guard walks in 46 px beside it.)
+  - [x] Paid: the receipt prints down; high-five. (`HighFive` lands after the ≈1.1 s print on the order page, and on the live checkout when payment is authorized.)
   - [x] Bench: Gremlin vs. Guard with the counter.
-  - [x] Empty plan (Scout on basket), 404 (map upside down, "This page wandered off."), source error (tangled).
-  - [ ] Mobile pull-to-refresh on the plan page (stretch; drawn in Mobile Workspace with Scout `pull3` and "Refreshing prices…").
-- [ ] **T10B.7 Accessibility and performance check**
+  - [x] Empty plan (Scout on basket), 404 (map upside down, "This page wandered off."), source error (tangled). The empty plan tray shows the sitting Scout too.
+  - [x] Mobile pull-to-refresh on the plan page (stretch; drawn in Mobile Workspace with Scout `pull3` and "Refreshing prices…"). `PullToRefresh`: touch screens below 1280 px, only from the top, passive listeners; reloads the plan from the server, so it says "Refreshing the plan…".
+- [x] **T10B.7 Accessibility and performance check**
   - ✅ All figures `aria-hidden`; every state has its text equivalent in an `aria-live` region. (`test:a11y` covers `/dev/figures` and the 404.)
   - ✅ `prefers-reduced-motion`: still poses, no scroll-linked motion.
   - ✅ Doodle bundle ≤ 30 kB gzipped on first load (measured: figures + hooks 5.3 kB, rough-notation 3.9 kB); figures below the fold lazy-load; `transform`/`opacity` only; < 4 ms per frame in the Performance panel. `test:perf` measures script + style + layout per frame: 0.6 ms scrolling the rope, 2.5 ms with the run loop, stamps and walker (headless Chromium, paint excluded).
