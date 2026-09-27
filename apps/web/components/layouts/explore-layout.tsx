@@ -43,15 +43,17 @@ export function ExploreLayout({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-[minmax(0,1fr)] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[272px_minmax(0,1fr)] lg:gap-8 lg:px-10">
+      <div className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-[minmax(0,1fr)] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[272px_minmax(0,1fr)] lg:gap-10 lg:px-12">
         <aside aria-labelledby={filtersId} className="hidden lg:block">
           <h2
             id={filtersId}
-            className="mb-3 font-semibold text-meta uppercase tracking-label"
+            className="mb-0 border-graphite border-b pb-3.5 font-semibold font-serif text-[22px] tracking-[-0.02em]"
           >
             Filters
           </h2>
-          <div className="sticky top-6 flex flex-col gap-5">{filters}</div>
+          <div className="sticky top-6 flex flex-col [&>fieldset]:border-rule [&>fieldset]:border-b [&>fieldset]:py-[18px]">
+            {filters}
+          </div>
         </aside>
         <main className="flex min-w-0 flex-col gap-4">
           {status}
@@ -121,7 +123,7 @@ export function ExploreGrid({
   return (
     <ul
       aria-label={label}
-      className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 2xl:grid-cols-4 [&>li]:flex [&>li]:min-w-0 [&>li>*]:min-w-0 [&>li>*]:flex-1"
+      className="grid grid-cols-2 gap-2.5 sm:gap-6 md:grid-cols-3 [&>li]:flex [&>li]:min-w-0 [&>li>*]:min-w-0 [&>li>*]:flex-1"
     >
       {children}
     </ul>

@@ -121,12 +121,20 @@ export function SearchView({
 
   const heading = (
     <div>
-      <h1 className="font-serif text-h3">
-        {query ? <Mark type="highlight">“{query}”</Mark> : "Search products"}
+      <h1 className="font-semibold font-serif text-[28px] tracking-[-0.025em] sm:text-[34px]">
+        {query ? (
+          <>
+            “<Mark type="highlight">{query}</Mark>”
+          </>
+        ) : (
+          "Search products"
+        )}
       </h1>
       {query && (
-        <p className="text-muted text-small">
-          {filtered.length} of {products.length} results
+        <p className="pt-2 text-[15px] text-muted">
+          <span className="num text-graphite">{filtered.length}</span> of{" "}
+          <span className="num text-graphite">{products.length}</span>{" "}
+          {loading ? "so far" : "results"}
           {demo ? " · demo catalog" : ""}
         </p>
       )}
@@ -140,55 +148,60 @@ export function SearchView({
           <label htmlFor="search-q" className="sr-only">
             Search products
           </label>
-          <div className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-[10px] border border-graphite bg-paper-raised px-3 shadow-offset">
-            <Search size={18} aria-hidden="true" className="text-muted" />
+          <div className="flex h-[52px] min-w-0 max-w-[760px] flex-1 items-center gap-3 rounded-[10px] border border-graphite bg-paper-raised pr-2 pl-[18px] shadow-offset">
+            <Search size={18} aria-hidden="true" />
             <input
               id="search-q"
               name="q"
               defaultValue={query}
               placeholder="Search products or describe what you need"
-              className="min-w-0 flex-1 bg-transparent text-[16px] outline-none placeholder:text-muted"
+              className="min-w-0 flex-1 bg-transparent text-[17px] outline-none placeholder:text-muted"
             />
           </div>
           <button
             type="submit"
-            className="h-12 rounded-card bg-graphite px-4 font-semibold text-paper-raised"
+            className="h-[52px] rounded-card bg-graphite px-5 font-semibold text-paper-raised shadow-primary"
           >
             Search
           </button>
         </form>
       </search>
       {query && (
-        <div>
-          <SourceStrip
-            loading={loading}
-            waitingFor={
-              loading
-                ? (live.sources.find((x) => x.state === "searching")?.source ??
-                  null)
-                : null
-            }
-          >
-            {demo ? (
-              <span data-source="demo">
-                <SourcePill
-                  name="Demo catalog"
-                  state="done"
-                  count={demo.products.length}
-                />
-              </span>
-            ) : (
-              live.sources.map((s) => (
-                <span key={s.source} data-source={s.source}>
+        <div className="flex flex-wrap items-end gap-x-7 gap-y-2 rounded-card border border-rule bg-paper-raised px-5 pt-1 pb-4 shadow-[2px_2px_0_-1px_#f4eedf,2px_2px_0_0_var(--color-rule)] sm:px-7 dark:shadow-none">
+          <span className="pb-1.5 font-semibold text-[12px] text-muted uppercase tracking-[0.08em]">
+            Sources
+          </span>
+          <div className="min-w-0 flex-1">
+            <SourceStrip
+              loading={loading}
+              waitingFor={
+                loading
+                  ? (live.sources.find((x) => x.state === "searching")
+                      ?.source ?? null)
+                  : null
+              }
+            >
+              {demo ? (
+                <span data-source="demo">
                   <SourcePill
-                    name={MERCHANT_NAME[s.source] ?? s.source}
-                    state={s.state}
-                    count={s.count}
+                    name="Demo catalog"
+                    state="done"
+                    count={demo.products.length}
                   />
                 </span>
-              ))
-            )}
-          </SourceStrip>
+              ) : (
+                live.sources.map((s) => (
+                  <span key={s.source} data-source={s.source}>
+                    <SourcePill
+                      name={MERCHANT_NAME[s.source] ?? s.source}
+                      state={s.state}
+                      count={s.count}
+                    />
+                  </span>
+                ))
+              )}
+            </SourceStrip>
+          </div>
           <p aria-live="polite" className="sr-only">
             {demo
               ? `Demo catalog: ${demo.products.length} results.`
