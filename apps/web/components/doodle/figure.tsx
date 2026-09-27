@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
-import { HIGHFIVE, POSES, type Who } from "./poses";
+import { HIGHFIVE, PAIR_READY, POSES, type Who } from "./poses";
 import { Prop, Scene, UPRIGHT } from "./props";
 import {
   BONE,
@@ -279,7 +279,10 @@ export function Figure({
               transform="translate(18 4)"
               style={{ "--fig-accent": ACCENT.scout } as CSSProperties}
             >
-              <Body who="scout" pose={HIGHFIVE.scout} />
+              <Body
+                who="scout"
+                pose={pose === "ready" ? PAIR_READY.scout : HIGHFIVE.scout}
+              />
             </g>
             <g
               transform="translate(58 4)"
@@ -287,7 +290,12 @@ export function Figure({
             >
               <Body
                 who="inspector"
-                pose={{ ...HIGHFIVE.inspector, handL: null }}
+                pose={{
+                  ...(pose === "ready"
+                    ? PAIR_READY.inspector
+                    : HIGHFIVE.inspector),
+                  handL: null,
+                }}
               />
             </g>
           </>

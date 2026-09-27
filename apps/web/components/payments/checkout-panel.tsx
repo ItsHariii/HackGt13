@@ -5,6 +5,7 @@ import {
   type GuardStep,
   GuardStepper,
 } from "@/components/cartel/guard-stepper";
+import { GuardStepIn, HighFive } from "@/components/doodle/moments";
 import {
   type MerchantStatus,
   MerchantStatusTable,
@@ -213,7 +214,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
               </select>
             </label>
           )}
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-5 flex flex-wrap items-end gap-3">
             {data.merchants
               .filter((m) => m.handoff)
               .map((m) => (
@@ -233,7 +234,7 @@ export function CheckoutPanel({ planId }: { planId: string }) {
                 <button
                   key={m.merchant}
                   type="button"
-                  disabled={busy || !instrumentId}
+                  disabled={busy || paused || !instrumentId}
                   onClick={() => void execute(m)}
                   className="bg-ink px-5 py-3 text-paper disabled:opacity-50"
                 >
@@ -247,7 +248,14 @@ export function CheckoutPanel({ planId }: { planId: string }) {
                         : `Check and pay ${m.merchant}`}
                 </button>
               ))}
+            {/* Beside Pay, never on it (SDD §17.9). */}
+            {phase === "paused" && <GuardStepIn h={88} />}
           </div>
+          {phase === "paid" && (
+            <div className="mt-6">
+              <HighFive h={96} delay={300} />
+            </div>
+          )}
         </>
       )}
       {phase !== "idle" && (

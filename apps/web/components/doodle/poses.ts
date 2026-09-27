@@ -196,7 +196,25 @@ export const POSE_KEYS: Record<Who | "pair", string[]> = {
   notary: ["idle", "q", "stamp1", "stamp2", "stamp3"],
   guard: ["idle", "q", "block"],
   gremlin: ["idle", "q", "swap", "edit"],
-  pair: ["highfive"],
+  pair: ["ready", "highfive"],
+};
+
+/** The pair side by side before the high-five. */
+export const PAIR_READY: { scout: Pose; inspector: Pose } = {
+  scout: {
+    armL: [26, -14],
+    armR: [-26, 14],
+    legL: [8, 0],
+    legR: [-6, 0],
+    ms: 220,
+  },
+  inspector: {
+    armL: [26, -14],
+    armR: [-26, 14],
+    legL: [6, 0],
+    legR: [-8, 0],
+    ms: 220,
+  },
 };
 
 /** Hands meet between the two figures (drawn 40 px apart in the pair box). */

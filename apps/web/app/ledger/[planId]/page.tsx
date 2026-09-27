@@ -44,11 +44,7 @@ export default async function LedgerPage({
       hash: r.hash,
       blocked: r.blocked,
       extra:
-        r.type === "change.auto_accepted" ? (
-          <span aria-hidden="true" className="block pt-1">
-            <Figure who="inspector" pose="thumbs" h={48} />
-          </span>
-        ) : undefined,
+        r.type === "change.auto_accepted" ? <AutoAcceptedThumb /> : undefined,
     }));
   } else {
     const stored = await storedLedger(planId);
@@ -63,6 +59,8 @@ export default async function LedgerPage({
       description: r.payloadText === "{}" ? "" : r.payloadText,
       hash: r.hash,
       blocked: r.type === "execution.blocked",
+      extra:
+        r.type === "change.auto_accepted" ? <AutoAcceptedThumb /> : undefined,
     }));
   }
   return (
@@ -96,5 +94,14 @@ export default async function LedgerPage({
         )}
       </main>
     </div>
+  );
+}
+
+/** Auto-accepted change (SDD §17.9): the Inspector's thumbs-up; the entry's text says it. */
+function AutoAcceptedThumb() {
+  return (
+    <span aria-hidden="true" className="block pt-1">
+      <Figure who="inspector" pose="thumbs" h={48} />
+    </span>
   );
 }
