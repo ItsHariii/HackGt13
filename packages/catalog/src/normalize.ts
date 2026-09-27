@@ -2,6 +2,7 @@ import { UNIT_DIMENSION, Value } from "@cartel/contracts";
 import type {
   IcecatSheet,
   NormalizedProduct,
+  OffProduct,
   SnapshotStore,
   UcpProduct,
   UpcItem,
@@ -14,6 +15,8 @@ import {
   normalizeGtin,
   normalizeUcpProduct,
   normalizeUpcItem,
+  offClaims,
+  offIdentity,
 } from "@cartel/evidence";
 import {
   type FieldDef,
@@ -133,6 +136,34 @@ export function mapIcecat(
       attributes: {},
       offers: [],
       facts: icecatClaims(sheet, { packs, roles }),
+    },
+    packs,
+  );
+}
+
+/** An Open Food Facts record as a catalog product (grocery pack facts only, no offers). */
+export function mapOpenFoodFacts(
+  product: OffProduct,
+  packs: readonly Pack[],
+  requestedGtin?: string,
+): NormalizedProduct {
+  const identity = offIdentity(product);
+  const gtin = normalizeGtin(requestedGtin) ?? identity.gtin;
+  if (requestedGtin && identity.gtin && identity.gtin !== gtin)
+    throw new Error("Open Food Facts GTIN mismatch");
+  return normalizeProduct(
+    {
+      source: "openfoodfacts",
+      externalId: gtin ?? product.code ?? "",
+      title: identity.title ?? "Grocery item",
+      ...(identity.brand ? { brand: identity.brand } : {}),
+      ...(gtin ? { gtin } : {}),
+      ...(identity.category ? { category: identity.category } : {}),
+      ...(identity.imageUrl ? { imageUrl: identity.imageUrl } : {}),
+      roles: ["food"],
+      attributes: {},
+      offers: [],
+      facts: offClaims(product, { packs }),
     },
     packs,
   );

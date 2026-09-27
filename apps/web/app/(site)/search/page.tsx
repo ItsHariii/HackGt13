@@ -7,7 +7,13 @@ import { ALL_PACKS, sources } from "@/lib/evidence";
 
 export const metadata: Metadata = { title: "Search" };
 
-const SEARCHABLE = ["greathub", "upcitemdb", "shopify", "icecat"];
+const SEARCHABLE = [
+  "greathub",
+  "upcitemdb",
+  "shopify",
+  "icecat",
+  "openfoodfacts",
+];
 
 /** /search (TASKS T11.16). */
 export default async function SearchPage({
