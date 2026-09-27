@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Wordmark } from "@/components/brand/wordmark";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { StatusIcon } from "@/components/workspace/status-icon";
+import { cn } from "@/lib/utils";
 
 const STEPS = ["Brief", "Rules", "Plans", "Contract"] as const;
 
@@ -17,6 +18,8 @@ export function PlanHeader({
   step,
   right,
   demo = false,
+  title,
+  tall = false,
 }: {
   back?: { href: string; label: string } | undefined;
   /** 1-based index into Brief · Rules · Plans · Contract. */
@@ -24,10 +27,24 @@ export function PlanHeader({
   right?: ReactNode;
   /** Shows that the plan is the flagship demo, served from fixtures. */
   demo?: boolean | undefined;
+  /** The plan's name beside the logo (Requirements design). */
+  title?: string | undefined;
+  /** The 84 px flow header (Brief and Requirements); 64 px otherwise. */
+  tall?: boolean | undefined;
 }) {
   return (
-    <header className="flex min-h-16 shrink-0 flex-wrap items-center gap-x-5 gap-y-2 border-graphite border-b-[3px] border-double bg-paper px-4 py-2 text-graphite sm:px-7">
-      <Wordmark className="text-[22px]" />
+    <header
+      className={cn(
+        "flex shrink-0 flex-wrap items-center gap-x-5 gap-y-2 border-graphite border-b-[3px] border-double bg-paper px-4 py-2 text-graphite",
+        tall ? "min-h-[84px] gap-x-10 sm:px-12" : "min-h-16 sm:px-7",
+      )}
+    >
+      <Wordmark
+        className={tall ? "text-[24px]" : "text-[22px]"}
+        size={tall ? 31 : 29}
+      />
+      {title && <span className="text-[15px] text-muted">{title}</span>}
+      {back && <span aria-hidden="true" className="h-6 w-px bg-rule" />}
       {back && (
         <Link
           href={back.href}

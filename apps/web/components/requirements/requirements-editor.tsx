@@ -140,9 +140,11 @@ export function RequirementsEditor({
   });
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-      <div className="flex flex-col gap-8 pb-28">
+    <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="flex flex-col gap-11 pb-36">
         <Section
+          variant="said"
+          note="Taken from your brief"
           title="You said"
           empty="Nothing yet. Add a rule by hand below."
           count={groups.said.length}
@@ -171,8 +173,9 @@ export function RequirementsEditor({
 
         {groups.assumed.length > 0 && (
           <Section
+            variant="assumed"
+            note="Not checked until you confirm"
             title="I assumed, confirm?"
-            dashed
             count={groups.assumed.length}
           >
             {groups.assumed.map((r) => {
@@ -216,17 +219,50 @@ export function RequirementsEditor({
         )}
 
         {questions.length > 0 && (
-          <Section title="Needs your answer" count={openQuestions.length}>
+          <Section
+            variant="question"
+            note="I can't pick for you"
+            title="Needs your answer"
+            count={openQuestions.length}
+          >
             {questions.map((q) => (
               <li
                 key={q.id}
-                className="sheet flex flex-col gap-3 p-4 text-graphite"
+                className="flex flex-col gap-[18px] rounded-card border border-graphite bg-paper-raised px-6 pt-6 pb-[22px] text-graphite shadow-offset"
               >
-                <p className="font-semibold text-ui">{q.text}</p>
+                <p className="flex items-start gap-3.5 text-pretty font-semibold font-serif text-[23px] leading-[1.3] tracking-[-0.015em]">
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 20 20"
+                    aria-hidden="true"
+                    className="mt-0.5 shrink-0"
+                  >
+                    <circle
+                      cx="10"
+                      cy="10"
+                      r="8.3"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    />
+                    <text
+                      x="10"
+                      y="14.2"
+                      textAnchor="middle"
+                      fontWeight="700"
+                      fontSize="11.5"
+                      fill="currentColor"
+                    >
+                      ?
+                    </text>
+                  </svg>
+                  {q.text}
+                </p>
                 <div
                   role="radiogroup"
                   aria-label={q.text}
-                  className="grid gap-2 sm:grid-cols-2"
+                  className="grid gap-2.5 sm:grid-cols-2 sm:pl-[42px]"
                 >
                   {q.options.map((o, i) => (
                     // biome-ignore lint/a11y/useSemanticElements: a card-sized radio with a code preview
@@ -240,14 +276,16 @@ export function RequirementsEditor({
                         setStatus(`Answered: ${o.label}.`);
                       }}
                       className={cn(
-                        "flex flex-col items-start gap-1.5 rounded-card border p-3 text-left",
+                        "flex min-h-[52px] flex-col items-start gap-0.5 rounded-card border border-graphite bg-paper-sheet px-4 py-2.5 text-left",
                         answers[q.id] === i
-                          ? "border-graphite bg-paper-raised shadow-primary"
-                          : "border-rule hover:border-graphite",
+                          ? "shadow-primary"
+                          : "hover:bg-paper-raised",
                       )}
                     >
-                      <span className="font-semibold text-ui">{o.label}</span>
-                      <code className="num rounded-[4px] bg-paper-shade px-1.5 py-0.5 text-ink text-small">
+                      <span className="font-semibold text-[15px]">
+                        {o.label}
+                      </span>
+                      <code className="font-mono text-[13px] text-muted">
                         {o.rule}
                       </code>
                     </button>
@@ -260,7 +298,9 @@ export function RequirementsEditor({
 
         {groups.default.length > 0 && (
           <Section
-            title="Defaults from the rule pack"
+            variant="default"
+            note="From the rule pack"
+            title="Defaults"
             count={groups.default.length}
           >
             {groups.default.map((r) => (
@@ -311,32 +351,46 @@ export function RequirementsEditor({
       </div>
 
       <aside aria-label="Your brief" className="order-first lg:order-none">
-        <div className="sheet sticky top-6 flex flex-col gap-3 p-5 text-graphite">
-          <h2 className="font-semibold text-meta text-muted uppercase tracking-label">
-            Your brief
-          </h2>
-          <p className="font-serif text-[16.5px] text-graphite-2 leading-[1.65]">
-            {quoteSpan ? (
-              <>
-                {brief.slice(0, quoteSpan[0])}
-                <mark className="mark-highlight text-graphite">
-                  {brief.slice(quoteSpan[0], quoteSpan[1])}
-                </mark>
-                {brief.slice(quoteSpan[1])}
-              </>
-            ) : (
-              brief || "No brief. Rules were added by hand."
-            )}
-          </p>
-          <p className="text-muted text-small">
-            Hover or focus a “You said” rule to see the words it came from.
+        <div className="sticky top-6 mt-2 flex flex-col gap-3.5">
+          <div className="relative rotate-[.4deg] rounded-card border border-rule bg-paper-raised bg-[repeating-linear-gradient(180deg,transparent_0,transparent_31px,#e2e8f1_31px,#e2e8f1_32px)] bg-[position:0_58px] px-[26px] pt-6 pb-[26px] text-graphite shadow-[3px_3px_0_-1px_#f4eedf,3px_3px_0_0_var(--color-rule),6px_6px_0_-1px_#f4eedf,6px_6px_0_0_var(--color-rule),0_20px_34px_-24px_rgb(43_42_40/.4)] dark:bg-none">
+            <span
+              aria-hidden="true"
+              className="absolute -top-[11px] left-10 h-6 w-[84px] -rotate-[4deg] bg-tape/90 [clip-path:polygon(3%_0,97%_6%,100%_50%,96%_100%,2%_94%,0_48%)]"
+            />
+            <div className="flex h-[34px] items-baseline justify-between">
+              <h2 className="font-semibold text-[13px] text-muted uppercase tracking-[0.08em]">
+                Your brief
+              </h2>
+              <Link
+                href="/new"
+                className="text-[14px] text-ink underline-offset-[3px] hover:underline"
+              >
+                Edit
+              </Link>
+            </div>
+            <p className="font-serif text-[18px] text-graphite leading-8">
+              {quoteSpan ? (
+                <>
+                  {brief.slice(0, quoteSpan[0])}
+                  <mark className="mark-highlight text-graphite">
+                    {brief.slice(quoteSpan[0], quoteSpan[1])}
+                  </mark>
+                  {brief.slice(quoteSpan[1])}
+                </>
+              ) : (
+                brief || "No brief. Rules were added by hand."
+              )}
+            </p>
+          </div>
+          <p className="px-1 text-[13px] text-muted leading-normal">
+            Hover a rule to see the words it came from.
           </p>
         </div>
       </aside>
 
       <div className="fixed inset-x-0 bottom-0 z-10 border-graphite border-t bg-paper-raised">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3 sm:px-8">
-          <p className="num text-small">
+        <div className="flex min-h-24 flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 sm:px-16">
+          <p className="num text-[15px] text-graphite-2">
             {rules.length} rules · {toConfirm} to confirm ·{" "}
             {openQuestions.length}{" "}
             {openQuestions.length === 1 ? "question" : "questions"}
@@ -348,7 +402,7 @@ export function RequirementsEditor({
               builder.current?.scrollIntoView({ block: "center" });
               builder.current?.querySelector("summary")?.focus();
             }}
-            className="min-h-6 text-ink text-small underline underline-offset-4"
+            className="order-last min-h-6 font-medium text-[15px] text-ink underline-offset-[3px] hover:underline sm:order-none"
           >
             Edit rules by hand (AI off)
           </button>
@@ -364,20 +418,22 @@ export function RequirementsEditor({
             </p>
           )}
           {mode === "demo" ? (
-            <Button asChild>
-              <Link href={`/plans/${planId}`}>
-                Find plans <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-            </Button>
+            <Link
+              href={`/plans/${planId}`}
+              className="inline-flex h-[54px] items-center gap-2.5 rounded-card bg-graphite px-[30px] font-semibold text-[16px] text-paper-raised no-underline shadow-primary hover:opacity-90"
+            >
+              Find plans <ArrowRight size={16} aria-hidden="true" />
+            </Link>
           ) : (
-            <Button
+            <button
               type="button"
               onClick={findPlans}
               disabled={saving || rules.length === 0}
+              className="inline-flex h-[54px] items-center gap-2.5 rounded-card bg-graphite px-[30px] font-semibold text-[16px] text-paper-raised shadow-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving ? "Saving rules…" : "Find plans"}
               <ArrowRight size={16} aria-hidden="true" />
-            </Button>
+            </button>
           )}
         </div>
       </div>
@@ -385,35 +441,73 @@ export function RequirementsEditor({
   );
 }
 
+const SECTION = {
+  said: {
+    rule: "border-ink border-solid",
+    chip: "bg-ink text-paper-raised",
+  },
+  assumed: {
+    rule: "border-pencil border-dashed",
+    chip: "border border-pencil border-dashed text-muted",
+  },
+  question: {
+    rule: "border-graphite border-solid",
+    chip: "border border-graphite text-graphite",
+  },
+  default: {
+    rule: "border-rule border-solid",
+    chip: "bg-tag text-muted",
+  },
+} as const;
+
+/** A group of rules, headed by its provenance chip (Requirements design). */
 function Section({
   title,
   count,
-  dashed = false,
+  variant,
+  note,
   empty,
   children,
 }: {
   title: string;
   count: number;
-  dashed?: boolean;
+  variant: keyof typeof SECTION;
+  note: string;
   empty?: string;
   children: React.ReactNode;
 }) {
   const id = useId();
+  const v = SECTION[variant];
   return (
     <section aria-labelledby={id} className="flex flex-col gap-3">
-      <h2
-        id={id}
-        className="flex items-center gap-2 border-graphite border-b pb-2 font-bold text-meta uppercase tracking-label"
-      >
-        {title}
-        <span className="num font-normal text-muted">{count}</span>
-      </h2>
+      <div className={cn("flex items-center gap-3 border-b pb-2.5", v.rule)}>
+        <h2
+          id={id}
+          className={cn(
+            "inline-flex h-[26px] items-center gap-1.5 rounded-[5px] px-2.5 font-bold text-[12px] uppercase tracking-[0.08em]",
+            v.chip,
+          )}
+        >
+          {variant === "question" && <span aria-hidden="true">?</span>}
+          {title}
+        </h2>
+        <span className="text-[14px] text-muted">{note}</span>
+        <span className="flex-1" />
+        <span className="font-mono text-[13px] text-muted">
+          {count}{" "}
+          {variant === "question"
+            ? count === 1
+              ? "question"
+              : "questions"
+            : count === 1
+              ? "rule"
+              : "rules"}
+        </span>
+      </div>
       {count === 0 && empty ? (
         <p className="text-muted text-small">{empty}</p>
       ) : (
-        <ul className={cn("flex flex-col gap-2.5", dashed && "")}>
-          {children}
-        </ul>
+        <ul className="flex flex-col gap-3">{children}</ul>
       )}
     </section>
   );
@@ -452,23 +546,27 @@ function RuleRow({
       onFocus={() => onHover(rule.id)}
       onBlur={() => onHover(null)}
       className={cn(
-        "flex flex-col gap-2.5 rounded-card border bg-paper-raised px-4 py-3 text-graphite",
-        assumed ? "border-pencil border-dashed" : "border-rule",
+        "flex flex-col gap-2.5 rounded-card border bg-paper-raised py-3.5 pr-3.5 pl-[18px] text-graphite transition-[border-color,box-shadow]",
+        assumed
+          ? "border-pencil border-dashed hover:border-muted"
+          : "border-rule hover:border-ink hover:shadow-offset focus-within:border-ink",
       )}
     >
       <div className="flex flex-wrap items-start gap-3">
         <span
           aria-hidden="true"
           className={cn(
-            "mt-1.5 size-2.5 shrink-0",
-            assumed ? "border border-pencil border-dashed" : "bg-ink",
+            "mt-1 size-3.5 shrink-0 rounded-[3px]",
+            assumed
+              ? "rounded-full border-[1.8px] border-pencil border-dashed"
+              : "bg-ink",
           )}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <span
             className={cn(
-              "font-semibold text-[15.5px]",
-              assumed ? "text-muted" : "text-ink",
+              "font-semibold text-[17px]",
+              assumed ? "text-graphite-2" : "text-ink",
             )}
           >
             {text}
@@ -484,7 +582,14 @@ function RuleRow({
               <RequirementChip kind="assumed" />
             )}
             <span className="font-mono">{hard ? "HARD" : "PREF"}</span>
-            {quote && <span>From your brief: “{quote}”</span>}
+            {quote && (
+              <span className="flex items-baseline gap-2 text-[14px]">
+                From your brief:
+                <span className="rounded-[2px] bg-highlighter/55 px-1 py-px font-serif text-[16px] text-graphite">
+                  “{quote}”
+                </span>
+              </span>
+            )}
           </span>
         </div>
         <div className="flex items-center gap-1">
@@ -494,7 +599,7 @@ function RuleRow({
               onClick={onEdit}
               aria-expanded={editing}
               aria-label={`Edit ${text}`}
-              className="inline-flex size-9 items-center justify-center rounded-card border border-rule hover:border-graphite"
+              className="inline-flex size-8 items-center justify-center rounded-[6px] border border-rule bg-paper-raised hover:border-graphite"
             >
               <Pencil size={14} aria-hidden="true" />
             </button>
@@ -503,7 +608,7 @@ function RuleRow({
             type="button"
             onClick={onRemove}
             aria-label={`Remove ${text}`}
-            className="inline-flex size-9 items-center justify-center rounded-card border border-rule hover:border-red-pen hover:text-red-pen"
+            className="inline-flex size-8 items-center justify-center rounded-[6px] border border-rule bg-paper-raised hover:border-red-pen hover:text-red-pen"
           >
             <Trash2 size={14} aria-hidden="true" />
           </button>
@@ -530,7 +635,7 @@ function StrengthToggle({
     <div
       role="radiogroup"
       aria-label={`Strength of ${label}`}
-      className="flex w-fit rounded-card border border-rule p-0.5 text-small"
+      className="flex h-8 w-fit overflow-hidden rounded-[6px] border border-graphite font-semibold text-[13px]"
     >
       {(["hard", "preference"] as const).map((v) => (
         // biome-ignore lint/a11y/useSemanticElements: a segmented control
@@ -541,8 +646,10 @@ function StrengthToggle({
           aria-checked={value === v}
           onClick={() => onChange(v)}
           className={cn(
-            "h-8 rounded-[6px] px-3 font-semibold",
-            value === v ? "bg-graphite text-paper-raised" : "text-graphite",
+            "px-3",
+            value === v
+              ? "bg-graphite text-paper-raised"
+              : "text-graphite hover:bg-paper",
           )}
         >
           {v === "hard" ? "Hard" : "Preference"}

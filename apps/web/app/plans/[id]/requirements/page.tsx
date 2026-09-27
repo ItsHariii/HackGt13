@@ -42,17 +42,10 @@ export default async function RequirementsPage({
   const title = demo ? "Home office" : (stored?.title ?? "Plan");
   return (
     <div className="dot-grid min-h-dvh text-graphite">
-      <PlanHeader
-        back={{ href: "/new", label: "Brief" }}
-        step={2}
-        demo={demo}
-      />
-      <main className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 pt-10 sm:px-8">
+      <PlanHeader title={title} step={2} demo={demo} tall />
+      <main className="flex flex-col gap-11 px-5 pt-14 sm:px-16">
         <div className="flex flex-col gap-2">
-          <p className="font-semibold text-meta text-muted uppercase tracking-label">
-            {title} · Rules
-          </p>
-          <h1 className="max-w-[28ch] font-semibold font-serif text-h3 tracking-heading sm:text-h2">
+          <h1 className="max-w-[820px] text-balance font-semibold font-serif text-[34px] leading-[1.1] tracking-[-0.03em] sm:text-[44px]">
             Here's what I understood. These are the rules I won't break without
             asking you.
           </h1>

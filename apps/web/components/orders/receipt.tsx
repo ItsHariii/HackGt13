@@ -1,5 +1,4 @@
 import { HashPill } from "@/components/cartel/hash-pill";
-import { Stamp } from "@/components/paper/stamp";
 import type { OrderView } from "@/lib/flagship";
 
 /**
@@ -11,42 +10,54 @@ export function Receipt({ order }: { order: OrderView }) {
     <div className="flex flex-col items-center">
       <div
         aria-hidden="true"
-        className="h-3 w-[min(420px,100%)] rounded-pill bg-graphite"
+        className="h-[18px] w-[min(500px,100%)] rounded-b-[6px] bg-graphite shadow-[0_6px_10px_-4px_rgb(43_42_40/.5)]"
       />
-      <div className="receipt-print w-[min(380px,94%)] overflow-hidden">
+      <div className="receipt-print -mt-1.5 w-[min(440px,92%)] overflow-hidden pb-3 [filter:drop-shadow(0_14px_16px_rgb(43_42_40/.18))]">
         <section
           aria-label="Receipt"
-          className="receipt-edge flex flex-col gap-4 bg-paper-sheet px-6 pt-6 pb-10 font-mono text-[13px] text-graphite shadow-page"
+          className="flex flex-col bg-paper-sheet bg-[linear-gradient(180deg,rgb(43_42_40/.08),transparent_22px)] px-[34px] pt-[34px] pb-[26px] font-mono text-[13.5px] text-graphite"
         >
           <header className="flex flex-col items-center gap-1 text-center">
-            <p className="font-semibold tracking-[0.2em]">CARTEL · RECEIPT</p>
-            <p className="text-muted">
+            <p className="font-semibold font-serif text-[17px] tracking-[0.14em]">
+              CARTEL · RECEIPT
+            </p>
+            <p className="text-[12px] text-muted">
               {order.when} · {order.merchant}
             </p>
           </header>
-          <div className="flex items-center justify-between">
-            <Stamp tone="paid">PAID</Stamp>
-            <span className="font-semibold text-[20px]">{order.total}</span>
+          <div className="mt-[22px] mb-[18px] flex items-center justify-between border-pencil border-y border-dashed py-3.5">
+            <span className="-rotate-[4deg] rounded-[3px] border-[3px] border-green-check px-3.5 py-1 font-bold text-[24px] text-green-check tracking-[0.2em] [filter:url(#stamp)]">
+              PAID
+            </span>
+            <span className="font-semibold text-[30px] tabular-nums tracking-[-0.02em]">
+              {order.total}
+            </span>
           </div>
-          <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 border-rule border-y border-dashed py-3">
+          <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-[7px] tabular-nums">
             {order.lines.map((l) => (
               <div key={l.label} className="contents">
                 <dt className="truncate">{l.label}</dt>
                 <dd className="text-right">{l.amount}</dd>
               </div>
             ))}
-            <dt>Shipping</dt>
-            <dd className="text-right">{order.shipping}</dd>
-            <dt>Tax</dt>
+            <dt className="border-[#c9c1af] border-t border-dashed pt-1.5 text-muted">
+              Shipping
+            </dt>
+            <dd className="border-[#c9c1af] border-t border-dashed pt-1.5 text-right">
+              {order.shipping}
+            </dd>
+            <dt className="text-muted">Tax</dt>
             <dd className="text-right">{order.tax}</dd>
-            <dt className="pt-1 font-semibold">TOTAL</dt>
-            <dd className="pt-1 text-right font-semibold">{order.total}</dd>
+            <dt className="border-graphite border-t pt-1.5 font-bold">TOTAL</dt>
+            <dd className="border-graphite border-t pt-1.5 text-right font-bold">
+              {order.total}
+            </dd>
           </dl>
-          <dl className="grid grid-cols-[108px_1fr] gap-x-3 gap-y-1.5">
+          <dl className="mt-5 grid grid-cols-[118px_1fr] gap-x-2.5 gap-y-2 border-pencil border-t border-dashed pt-4 text-[12.5px]">
             <dt className="text-muted">PROCESSOR</dt>
             <dd>{order.processor}</dd>
             <dt className="text-muted">STATUS</dt>
-            <dd>{order.status}</dd>
+            <dd className="font-bold">{order.status}</dd>
             <dt className="text-muted">ORDER</dt>
             <dd>{order.id}</dd>
             <dt className="text-muted">CONTRACT</dt>
@@ -63,6 +74,10 @@ export function Receipt({ order }: { order: OrderView }) {
             <dd>{order.returnPolicy}</dd>
           </dl>
         </section>
+        <div
+          aria-hidden="true"
+          className="h-3 bg-[radial-gradient(circle_at_8px_0,var(--color-paper-sheet)_7.5px,transparent_8px)] bg-[length:16px_12px] bg-repeat-x"
+        />
       </div>
     </div>
   );
