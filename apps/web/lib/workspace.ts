@@ -53,6 +53,8 @@ export type ItemView = {
   spec: string;
   merchant: string;
   price: string;
+  /** The product's photo; the plan shows a placeholder without one. */
+  imageUrl?: string | null;
   /** Differs from the same plan before the last refinement. */
   changed?: boolean;
 };
@@ -148,6 +150,8 @@ export type WorkspaceInput = {
   report: ProofReport;
   packs: readonly Pack[];
   waivers: readonly Waiver[];
+  /** Product photos by product ID (lib/product-images.ts). */
+  images?: ReadonlyMap<string, string>;
 };
 
 const OP_SYMBOL: Partial<Record<Operator, string>> = {
@@ -570,6 +574,7 @@ export function buildWorkspace(input: WorkspaceInput): WorkspaceView {
           timesQty(offer.price, line.qty).amountMinor,
           offer.price.currency,
         ),
+        imageUrl: input.images?.get(offer.productId) ?? null,
       },
     ];
   });

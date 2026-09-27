@@ -5,6 +5,7 @@ import type { ConflictSet, SolverProblem } from "@cartel/solver";
 import type { CompareContext } from "./compare";
 import { ALL_PACKS } from "./evidence";
 import { loadStoredPlan, type StoredPlan } from "./plans";
+import { productImages } from "./product-images";
 import { createClient } from "./supabase/server";
 import { buildWorkspace, type WorkspaceView } from "./workspace";
 
@@ -98,6 +99,9 @@ export async function loadStoredSolve(
   const before = await previousSkus(db, plan.id, run.data.id);
 
   const path = `/plans/${plan.id}`;
+  const images = await productImages(
+    solved.flatMap((s) => s.checkout.offers.map((o) => o.productId)),
+  );
   const views = solved.map((s) =>
     buildWorkspace({
       planId: plan.id,
@@ -109,6 +113,7 @@ export async function loadStoredSolve(
       report: s.report,
       packs: plan.packs.length > 0 ? plan.packs : ALL_PACKS,
       waivers: [],
+      images,
     }),
   );
   const active = Math.max(

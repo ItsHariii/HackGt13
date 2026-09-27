@@ -255,14 +255,24 @@ export default async function PausedPage({
             </span>
           </div>
           <div className="grid items-center gap-7 rounded-card border border-rule bg-paper-raised px-6 py-[22px] shadow-stack md:grid-cols-[120px_minmax(0,1fr)_auto]">
-            <div
-              aria-hidden="true"
-              className="flex h-24 w-[120px] items-center justify-center rounded-sheet border border-rule bg-[repeating-linear-gradient(135deg,#f3eee2_0_7px,#ece5d6_7px_14px)] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_7px,#223556_7px_14px)]"
-            >
-              <span className="rounded-[3px] bg-paper px-[5px] py-px font-mono text-[11px] text-muted">
-                photo
-              </span>
-            </div>
+            {p.alternative.imageUrl ? (
+              // biome-ignore lint/performance/noImgElement: merchant image hosts vary per catalog source; next/image would need each one configured.
+              <img
+                src={p.alternative.imageUrl}
+                alt=""
+                decoding="async"
+                className="h-24 w-[120px] rounded-sheet border border-rule bg-paper object-cover"
+              />
+            ) : (
+              <div
+                aria-hidden="true"
+                className="flex h-24 w-[120px] items-center justify-center rounded-sheet border border-rule bg-[repeating-linear-gradient(135deg,#f3eee2_0_7px,#ece5d6_7px_14px)] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_7px,#223556_7px_14px)]"
+              >
+                <span className="rounded-[3px] bg-paper px-[5px] py-px font-mono text-[11px] text-muted">
+                  photo
+                </span>
+              </div>
+            )}
             <div className="flex flex-col gap-2.5">
               <p className="flex flex-wrap items-baseline gap-4">
                 <span className="font-semibold font-serif text-[24px] tracking-[-0.02em]">

@@ -120,10 +120,21 @@ export function PlanPanel({
               <span className="col-span-3 font-semibold text-meta text-muted uppercase tracking-[0.06em] sm:col-span-1">
                 {it.role}
               </span>
-              <span
-                aria-hidden="true"
-                className="h-12 w-14 rounded-sheet border border-rule bg-[repeating-linear-gradient(135deg,#f3eee2_0_5px,#ece5d6_5px_10px)] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_5px,#223556_5px_10px)]"
-              />
+              {it.imageUrl ? (
+                // biome-ignore lint/performance/noImgElement: merchant image hosts vary per catalog source; next/image would need each one configured.
+                <img
+                  src={it.imageUrl}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="h-12 w-14 rounded-sheet border border-rule bg-paper object-cover"
+                />
+              ) : (
+                <span
+                  aria-hidden="true"
+                  className="h-12 w-14 rounded-sheet border border-rule bg-[repeating-linear-gradient(135deg,#f3eee2_0_5px,#ece5d6_5px_10px)] dark:bg-[repeating-linear-gradient(135deg,#1f3352_0_5px,#223556_5px_10px)]"
+                />
+              )}
               <span className="flex min-w-0 flex-col gap-1">
                 <span className="font-semibold text-[15px] leading-[1.3]">
                   {it.title}
