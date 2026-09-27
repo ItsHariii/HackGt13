@@ -109,6 +109,7 @@ const SLUG_QUERY = {
   "grainhouse-certified-gluten-free-oats": "oatmeal",
   "grainhouse-greek-yogurt-cups-4-pack": "greek yogurt bowl",
   "grainhouse-sunflower-seed-butter": "nut butter jar",
+  "pipit-veggie-straws-12-pack": "veggie chips snack",
   "grainhouse-mini-pizza-kit": "mini pizza",
   "pipit-tortilla-chips-and-salsa-cups-12-pack": "tortilla chips salsa",
   "pipit-sunflower-seed-butter-cups-12-pack": "sunflower seed butter",
@@ -149,6 +150,7 @@ const REJECTED = new Set([
   "y7WOG7G6bwI", // a latte, not oats
   "k2m_KNqF-Ac", // a real brand's yogurt cup
   "liOAS02GnfY", // a grocery aisle
+  "FWrvze4cqu4", // drinking straws, not the snack
 ]);
 
 /** "Sea Salt Popcorn, 12 pack" -> "sea salt popcorn"; "Gluten-Free Oats" -> "oats". */
