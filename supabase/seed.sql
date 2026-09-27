@@ -355,8 +355,11 @@ from seed_catalog s
 join greathub.variants v on v.sku = s.sku
 join greathub.listings l on l.variant_id = v.id;
 
+-- Links use `app.greathub_origin` when set (`set app.greathub_origin = 'https://…'` before
+-- seeding a hosted database); `pnpm demo:reset` rebases them to GREATHUB_PUBLIC_ORIGIN too.
 insert into public.product_external_refs (product_id, source, external_id, upid, gtin, url)
-select p.id, 'greathub', p.external_id, p.upid, p.gtin, 'http://localhost:3001/p/' || s.slug
+select p.id, 'greathub', p.external_id, p.upid, p.gtin,
+  coalesce(nullif(current_setting('app.greathub_origin', true), ''), 'http://localhost:3001') || '/p/' || s.slug
 from public.products p join seed_catalog s on s.sku = p.external_id
 where p.source = 'greathub';
 
@@ -367,7 +370,8 @@ insert into public.offers (
 select p.id, 'greathub', o.id, 'greathub', o.seller_id, o.price_minor, o.currency,
   (case o.availability when 'limited' then 'limited' when 'out_of_stock' then 'out_of_stock' else 'in_stock' end)::public.availability,
   current_date + o.delivery_min_days, current_date + o.delivery_max_days, o.final_sale, pol.terms,
-  'http://localhost:3001/p/' || s.slug, now(), now()
+  coalesce(nullif(current_setting('app.greathub_origin', true), ''), 'http://localhost:3001') || '/p/' || s.slug,
+  now(), now()
 from seed_catalog s
 join public.products p on p.source = 'greathub' and p.external_id = s.sku
 join greathub.variants v on v.sku = s.sku
