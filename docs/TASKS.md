@@ -280,10 +280,10 @@ Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the merchant-
   - [x] Call `POST /pts/v2/payments` (Visa Acceptance sandbox) with the instrument, `capture: true`, `clientReferenceInformation.code = contractId@v`, and `merchantDefinedInformation` = [contract ID, body hash, grant ID].
   - [x] Map decline and error codes to ACP `messages[]`.
 - [x] **T6.9 Order webhooks out**: `order_created` / `order_updated` → Cartel, HMAC `X-Signature` + timestamp; outbox with retries (1s, 5s, 30s)
-- [ ] **T6.10 Chaos Panel** `/chaos` (admin token)
+- [x] **T6.10 Chaos Panel** `/chaos` (admin token)
   - [x] One button per mutation from SDD §16, each with a parameter form (for example, the new PD watts).
   - [x] **Scenario scripts**: "Flagship deal trap" (Vireo `U2727`: price $329 → $319 **and** USB-C power 90 → 15 W on the same SKU), "Webcam −$4", "Final-sale trap", "Seller rotation", "Injection listing".
-  - [ ] The Gull appears next to each mutation in the Catch history (T6B.8; replaces the Gremlin here).
+  - [x] The Gull appears next to each mutation in the Catch history (T6B.8; replaces the Gremlin here): the Gull's avatar marks each catch and the Gull holds the flagship card's price tag.
   - [x] **Reset** restores the seed state; **Run mandate tick now** calls Cartel's worker.
   - [x] Mutation log shown live.
   - ✅ Each mutation is visible on the product page and through the ACP GET within 1 s.
@@ -296,23 +296,24 @@ Implementation notes: [PHASE6.md](PHASE6.md). T6.10 stays open for the merchant-
 
 GreatHub is designed as a GitHub parody set in a harbor ("Dock", "Starfish", "Barnacles", "Captain Inkwell"). Screens, copy and tokens are indexed in [DESIGN.md](DESIGN.md#greathub-merchant-appsgreathub). The behavior from Phase 6 stays as it is; this phase is the visual layer. **Rule for every screen: jokes live in labels and empty states. Prices, specs, SKUs, hashes and verification results stay plain.**
 
-- [ ] **T6B.1 Theme** (design: GreatHub Style Tile)
-  - [ ] Fonts: Hubot Sans (display, wordmark), Mona Sans (UI and body), Monaspace Neon (prices, SKUs, hashes, logs), self-hosted or via `next/font/local`.
-  - [ ] Tokens: Deep Harbor Navy `#0B1B2B`, Sand `#F4ECDD`, card `#FFFDF8`, Sea Glass `#D6F0E0`→`#1E7A4E`, Buoy Red `#D2452F` / Buoy Ink `#A8321F`, Brass `#B8893A` / Light `#E8C77E` / Ink `#7A5A1F`, Rope Tan `#C9A36B`, Driftwood `#5A5046`. Brass and Rope Tan are fills and borders only; brass-colored text uses Brass Ink.
-  - [ ] Shared chrome: navy header with the porthole logo, "TEST MERCHANT" pill, the banner "GreatHub is a test merchant for the Cartel demo. Nothing here ships. Not even to the harbor.", and the footer "We yam what we yam: a test merchant. Built at HackGT 13."
-  - [ ] Buttons (Load the hold, Set sail (agents only), View Ship's Log, Pull into port, Force-ship), 3 px navy focus ring, dashed disabled state; status icons differ by shape (round check, square cross).
+- [x] **T6B.1 Theme** (design: GreatHub Style Tile)
+  - [x] Fonts: Hubot Sans (display, wordmark), Mona Sans (UI and body), Monaspace Neon (prices, SKUs, hashes, logs), self-hosted or via `next/font/local`.
+  - [x] Tokens: Deep Harbor Navy `#0B1B2B`, Sand `#F4ECDD`, card `#FFFDF8`, Sea Glass `#D6F0E0`→`#1E7A4E`, Buoy Red `#D2452F` / Buoy Ink `#A8321F`, Brass `#B8893A` / Light `#E8C77E` / Ink `#7A5A1F`, Rope Tan `#C9A36B`, Driftwood `#5A5046`. Brass and Rope Tan are fills and borders only; brass-colored text uses Brass Ink.
+  - [x] Shared chrome: navy header with the porthole logo, "TEST MERCHANT" pill, the banner "GreatHub is a test merchant for the Cartel demo. Nothing here ships. Not even to the harbor.", and the footer "We yam what we yam: a test merchant. Built at HackGT 13."
+  - [x] Buttons (Load the hold, Set sail (agents only), View Ship's Log, Pull into port, Force-ship), 3 px navy focus ring, dashed disabled state; status icons differ by shape (round check, square cross).
   - ✅ Every text pairing in the Style Tile's contrast table passes AA (or AA large where marked).
-- [ ] **T6B.2 Home** `/` (design: GreatHub Home, desktop + mobile): dock breadcrumb `greathub / the-workday-edit`, Starfish and Hooks counters, section tabs, the Ship's Log hero with Captain Inkwell (`lean`), the catalog as commit-style rows, About with topic pills, and the "Catches this season" tide chart.
-- [ ] **T6B.3 Product** `/p/[slug]` (design: GreatHub Product): porthole photo frame, a disabled "Load the hold" with "Checkout at GreatHub happens through signed AI agents (ACP). Humans: enjoy the view.", a Raw / Rendered specs toggle, and after a `spec_edit` the changed row carries the "Gull footprint" marker. JSON-LD stays identical to the visible specs (T6.1).
-- [ ] **T6B.4 Chaos Deck** `/chaos` (design: GreatHub Chaos Deck, 1920 × 1080 projector layout)
-  - [ ] "Ring the ship's bell" = Run mandate tick now; "Reset to low tide" = Reset.
-  - [ ] "Stir the waters" groups every mutation with its nautical label. **Mutation ids stay the ones in `apps/greathub/lib/chaos.ts`** (`price_raise`, `shipping_fee_added`, `return_fee_added`, `return_window_shortened`, `delivery_slip`, …); the design's `price_hike` / `shipping_fee_add` / `return_fee_add` / `return_window_shorten` / `delivery_delay` are display drafts. Mutations the design doesn't draw (`recall_posted`, `seller_rotation`, `pack_size_shrink`, `subscription_added`) still get buttons.
-  - [ ] Scenario cards (Flagship deal trap, Webcam −$4, Final-sale trap); "Catch history" is the live mutation log (`aria-live`), with the empty state "Calm seas. Nothing's been tampered with."
-- [ ] **T6B.5 Harbor Master's Log** `/agents`: verified-agent banner (Cartel, key `ct-agent-…`), the live table, the lighthouse sweep and bobbing buoy (off under reduced motion). The footer states the real TAP window (≤ 8 min, T6.5), not the design's "60 s".
-- [ ] **T6B.6 Cargo Manifest** `/orders`: order card with the verification aside ("MERCHANT-SIDE DISPUTE EVIDENCE": customer-signed contract + hash pill, scoped grant, Visa Acceptance sandbox transaction), and the empty state "No cargo yet. The hold is hungry." The design's `#PC-89211` becomes a `CT-` display id if one is added; the stored id is unchanged.
-- [ ] **T6B.7 Errors**: 404 "Well, blow me down! This page sank." (spyglass) and 500 "Something's knotted up." (tangled on rope).
-- [ ] **T6B.8 Cast**: `GHFigure` with poses `neutral`, `lean`, `point`, `net`, `spyglass`, `nap`, `gtag`, `gtangled` (props `tag`, `flip`). Captain Inkwell is the mascot, is never beside a failure state, and is at least 64 px tall (else the porthole icon). The Gull appears on the Chaos Deck only, and its price tag always shows the exact real value. Figures never sit on prices, specs, hashes or results. Same reduced-motion and `aria-hidden` rules as T10B.7.
-- `/policies` has no design; restyle it with the T6B.1 theme.
+- [x] **T6B.2 Home** `/` (design: GreatHub Home, desktop + mobile): dock breadcrumb `greathub / the-workday-edit`, Starfish and Hooks counters, section tabs, the Ship's Log hero with Captain Inkwell (`lean`), the catalog as commit-style rows, About with topic pills, and the "Catches this season" tide chart.
+- [x] **T6B.3 Product** `/p/[slug]` (design: GreatHub Product): porthole photo frame, a disabled "Load the hold" with "Checkout at GreatHub happens through signed AI agents (ACP). Humans: enjoy the view.", a Raw / Rendered specs toggle, and after a `spec_edit` the changed row carries the "Gull footprint" marker. JSON-LD stays identical to the visible specs (T6.1).
+- [x] **T6B.4 Chaos Deck** `/chaos` (design: GreatHub Chaos Deck, 1920 × 1080 projector layout)
+  - [x] "Ring the ship's bell" = Run mandate tick now; "Reset to low tide" = Reset.
+  - [x] "Stir the waters" groups every mutation with its nautical label. **Mutation ids stay the ones in `apps/greathub/lib/chaos.ts`** (`price_raise`, `shipping_fee_added`, `return_fee_added`, `return_window_shortened`, `delivery_slip`, …); the design's `price_hike` / `shipping_fee_add` / `return_fee_add` / `return_window_shorten` / `delivery_delay` are display drafts. Mutations the design doesn't draw (`recall_posted`, `seller_rotation`, `pack_size_shrink`, `subscription_added`) still get buttons.
+  - [x] Scenario cards (Flagship deal trap, Webcam −$4, Final-sale trap); "Catch history" is the live mutation log (`aria-live`), with the empty state "Calm seas. Nothing's been tampered with."
+- [x] **T6B.5 Harbor Master's Log** `/agents`: verified-agent banner (Cartel, key `ct-agent-…`), the live table, the lighthouse sweep and bobbing buoy (off under reduced motion). The footer states the real TAP window (≤ 8 min, T6.5), not the design's "60 s".
+- [x] **T6B.6 Cargo Manifest** `/orders`: order card with the verification aside ("MERCHANT-SIDE DISPUTE EVIDENCE": customer-signed contract + hash pill, scoped grant, Visa Acceptance sandbox transaction), and the empty state "No cargo yet. The hold is hungry." The design's `#PC-89211` becomes a `CT-` display id if one is added; the stored id is unchanged.
+- [x] **T6B.7 Errors**: 404 "Well, blow me down! This page sank." (spyglass) and 500 "Something's knotted up." (tangled on rope).
+- [x] **T6B.8 Cast**: `GHFigure` with poses `neutral`, `lean`, `point`, `net`, `spyglass`, `nap`, `gtag`, `gtangled` (props `tag`, `flip`). Captain Inkwell is the mascot, is never beside a failure state, and is at least 64 px tall (else the porthole icon). The Gull appears on the Chaos Deck only, and its price tag always shows the exact real value. Figures never sit on prices, specs, hashes or results. Same reduced-motion and `aria-hidden` rules as T10B.7.
+- `/policies` has no design; restyled with the T6B.1 theme.
+- Implementation notes: the home search box filters the catalog (`?q=`); the tide chart counts real mutations and orders per day; "last catch" lines and the Gull footprint come from `mutation_log` and `catalog_baseline`; the Chaos Deck keeps every mutation's parameter form and the webhook table below the design's three columns. Monaspace Neon is bundled (OFL, `app/fonts/`) because the CSP only allows self-hosted fonts.
 
 ---
 

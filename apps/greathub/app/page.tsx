@@ -1,18 +1,34 @@
 import Link from "next/link";
 import { CategoryIcon } from "@/components/category-icon";
+import { GHFigure } from "@/components/gh/figure";
+import {
+  Crate,
+  Dock,
+  Fishhook,
+  Logbook,
+  Starfish,
+} from "@/components/gh/icons";
+import { TideChart } from "@/components/gh/tide-chart";
 import { listProducts, type ProductView } from "@/lib/catalog";
-import { AVAILABILITY_LABEL, DEPARTMENTS, deliveryLabel } from "@/lib/labels";
+import { ago, catchAuthor, catchHash, catchMessage } from "@/lib/catches";
+import { latestBySku, recentCatches, tideCounts } from "@/lib/harbor";
+import { AVAILABILITY_LABEL, DEPARTMENTS } from "@/lib/labels";
 import { formatMinor } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
 type Department = keyof typeof DEPARTMENTS;
+const TOPIC: Record<Department, string> = {
+  home_office: "home-office",
+  apparel: "apparel",
+  travel: "travel",
+};
 
 function priceLabel(p: ProductView) {
   const prices = p.variants.map((v) => v.offer.priceMinor);
   const min = Math.min(...prices);
   return prices.some((x) => x !== min)
-    ? `From ${formatMinor(min)}`
+    ? `from ${formatMinor(min)}`
     : formatMinor(min);
 }
 
@@ -24,106 +40,223 @@ function stockOf(p: ProductView) {
   return "in_stock" as const;
 }
 
+function matches(p: ProductView, q: string) {
+  const hay = `${p.brand} ${p.name} ${p.category} ${p.variants
+    .map((v) => `${v.sku} ${v.title}`)
+    .join(" ")}`.toLowerCase();
+  return q
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((w) => hay.includes(w));
+}
+
 export default async function Home({ searchParams }: PageProps<"/">) {
-  const { d } = await searchParams;
+  const { d, q } = await searchParams;
   const department =
     typeof d === "string" && d in DEPARTMENTS ? (d as Department) : null;
-  const products = (await listProducts()).filter((p) => p.variants.length > 0);
-  const shown = department
-    ? products.filter((p) => p.department === department)
-    : products;
+  const query = typeof q === "string" ? q.trim() : "";
+  const [products, catches, tide] = await Promise.all([
+    listProducts().then((all) => all.filter((p) => p.variants.length > 0)),
+    recentCatches(50),
+    tideCounts(140),
+  ]);
+  const latest = latestBySku(catches);
+  const newest = catches[0];
+  const shown = products.filter(
+    (p) =>
+      (!department || p.department === department) &&
+      (!query || matches(p, query)),
+  );
+  const units = products.reduce(
+    (n, p) => n + p.variants.reduce((m, v) => m + v.offer.stock, 0),
+    0,
+  );
+  const heading = query
+    ? `“${query}”`
+    : department
+      ? DEPARTMENTS[department]
+      : "Catalog";
 
   return (
-    <main>
-      <section className="merchant-hero compact">
-        <div>
-          <p className="eyebrow">EVERYDAY THINGS. THOUGHTFULLY PICKED.</p>
-          <h1>
-            Good things.
-            <br />
-            <span>Honest listings.</span>
-          </h1>
-          <p>
-            {products.length} fictional products across home office, apparel and
-            travel. Agents buy through our ACP checkout; people just browse.
-          </p>
+    <main className="gh-page">
+      <div className="gh-dockbar">
+        <Dock size={20} />
+        <nav aria-label="Breadcrumb" className="gh-crumbs gh-crumbs-lg">
+          <Link href="/">greathub</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/" aria-current={department ? undefined : "page"}>
+            the-workday-edit
+          </Link>
+          {department ? (
+            <>
+              <span aria-hidden="true">/</span>
+              <strong aria-current="page">{TOPIC[department]}</strong>
+            </>
+          ) : null}
+        </nav>
+        <span className="gh-outline-pill">Public dock</span>
+        <div className="gh-counters" aria-hidden="true">
+          <span className="gh-counter">
+            <span>
+              <Starfish size={16} /> Starfish
+            </span>
+            <span className="gh-code">{products.length}</span>
+          </span>
+          <span className="gh-counter">
+            <span>
+              <Fishhook size={16} /> Hooks
+            </span>
+            <span className="gh-code">{catches.length}</span>
+          </span>
         </div>
-      </section>
-      <section
-        id="collection"
-        className="collection"
-        aria-labelledby="collection-title"
-      >
-        <div className="collection-heading">
-          <div>
-            <p className="eyebrow">THE CATALOG</p>
-            <h2 id="collection-title">
-              {department ? DEPARTMENTS[department] : "Everything"}
-            </h2>
-          </div>
-          <nav aria-label="Departments" className="chips">
-            <Link
-              href="/"
-              aria-current={department === null ? "page" : undefined}
-            >
-              All <span>{products.length}</span>
-            </Link>
+      </div>
+
+      <nav aria-label="Dock sections" className="gh-tabs">
+        <a href="#ships-log">Ship&apos;s Log</a>
+        <Link href="/#catalog" aria-current="page">
+          Catalog <span className="gh-count">{products.length}</span>
+        </Link>
+        <Link href="/agents">Harbor Master&apos;s Log</Link>
+        <Link href="/orders">Cargo Manifest</Link>
+      </nav>
+
+      <div className="gh-home">
+        <div className="gh-home-main">
+          <section id="ships-log" className="gh-card gh-shipslog">
+            <div className="gh-card-title">
+              <Logbook size={16} />
+              Ship&apos;s Log
+              <span className="gh-code gh-muted">SHIPSLOG.md</span>
+            </div>
+            <div className="gh-shipslog-body">
+              <h1>Good things. Great workspace.</h1>
+              <p>
+                Hand-picked gear, hauled in fresh daily. Captain Inkwell
+                approved. Agents buy through our ACP checkout; people just
+                browse.
+              </p>
+            </div>
+            <GHFigure pose="lean" className="gh-shipslog-figure" />
+          </section>
+
+          <section
+            id="catalog"
+            aria-labelledby="catalog-title"
+            className="gh-card gh-catalog"
+          >
+            <div className="gh-commitbar">
+              <span className="gh-avatar" aria-hidden="true" />
+              <strong>
+                {newest ? catchAuthor(newest) : "captain-inkwell"}
+              </strong>
+              <span className="gh-code gh-ellipsis">
+                {newest
+                  ? catchMessage(newest)
+                  : `restock: ${units} units docked`}
+              </span>
+              {newest ? (
+                <span className="gh-code gh-muted gh-nowrap">
+                  {catchHash(newest.id)} · {ago(newest.created_at)}
+                </span>
+              ) : null}
+              <h2 id="catalog-title" className="gh-commitbar-count">
+                {heading} · {shown.length} product
+                {shown.length === 1 ? "" : "s"}
+              </h2>
+            </div>
+            {shown.length === 0 ? (
+              <p className="gh-empty-row">
+                No barnacles, no products. Nothing matches that search.
+              </p>
+            ) : (
+              <ul className="gh-rows">
+                {shown.map((p) => {
+                  const first = p.variants[0];
+                  const hit = p.variants
+                    .map((v) => latest.get(v.sku))
+                    .find(Boolean);
+                  const stock = stockOf(p);
+                  const held = p.variants.reduce(
+                    (n, v) => n + v.offer.stock,
+                    0,
+                  );
+                  return (
+                    <li key={p.id}>
+                      <Link href={`/p/${p.slug}`} className="gh-row">
+                        <CategoryIcon
+                          category={p.category}
+                          department={p.department}
+                          size={20}
+                        />
+                        <span className="gh-row-name">
+                          {p.name}
+                          <span className="gh-row-brand">{p.brand}</span>
+                        </span>
+                        <span className="gh-code gh-muted gh-ellipsis">
+                          {hit
+                            ? catchMessage(hit)
+                            : stock === "out_of_stock"
+                              ? "empty hold: out of stock"
+                              : `restock: ${held} units docked${
+                                  p.variants.length > 1
+                                    ? ` · ${p.variants.length} options`
+                                    : ""
+                                }`}
+                        </span>
+                        <span className="gh-code gh-row-price">
+                          {priceLabel(p)}
+                        </span>
+                        <span
+                          className={`gh-code gh-row-stock stock-${stock}`}
+                          title={AVAILABILITY_LABEL[stock]}
+                        >
+                          <Crate size={14} />
+                          <span className="sr-only">
+                            {AVAILABILITY_LABEL[stock]},{" "}
+                          </span>
+                          {first ? held : 0}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+        </div>
+
+        <aside className="gh-home-aside">
+          <h2 className="gh-h3">About</h2>
+          <p>Everyday things. Thoughtfully netted.</p>
+          <nav aria-label="Topics" className="gh-topics">
             {(Object.keys(DEPARTMENTS) as Department[]).map((key) => (
               <Link
                 key={key}
-                href={`/?d=${key}`}
+                href={department === key ? "/" : `/?d=${key}`}
                 aria-current={department === key ? "page" : undefined}
               >
-                {DEPARTMENTS[key]}{" "}
-                <span>
-                  {products.filter((p) => p.department === key).length}
-                </span>
+                {TOPIC[key]}
               </Link>
             ))}
           </nav>
-        </div>
-        <ul className="product-grid">
-          {shown.map((p) => {
-            const first = p.variants[0];
-            const stock = stockOf(p);
-            return (
-              <li key={p.id} className="product-card">
-                <Link href={`/p/${p.slug}`}>
-                  <div className={`product-art tone-${p.department}`}>
-                    <span>{p.category.toUpperCase()}</span>
-                    <CategoryIcon
-                      category={p.category}
-                      department={p.department}
-                    />
-                  </div>
-                  <div className="product-info">
-                    <p className="brand">{p.brand}</p>
-                    <h3>{p.name}</h3>
-                    <p>{p.description}</p>
-                    <div>
-                      <strong>{priceLabel(p)}</strong>
-                      <span className={`stock stock-${stock}`}>
-                        {AVAILABILITY_LABEL[stock]}
-                      </span>
-                    </div>
-                    {first ? (
-                      <p className="fine">
-                        {deliveryLabel(
-                          first.offer.deliveryMinDays,
-                          first.offer.deliveryMaxDays,
-                        )}
-                        {p.variants.length > 1
-                          ? ` · ${p.variants.length} options`
-                          : ""}
-                      </p>
-                    ) : null}
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+          <ul className="gh-about-list">
+            <li>
+              <Crate size={16} /> Test merchant for Cartel
+            </li>
+            <li>
+              <Starfish size={16} /> {products.length} products in the hold
+            </li>
+            <li>
+              <Fishhook size={16} /> {catches.length} recent catches
+            </li>
+          </ul>
+          <div className="gh-aside-block">
+            <h3 className="gh-h4">Catches this season</h3>
+            <TideChart counts={tide} />
+          </div>
+        </aside>
+      </div>
     </main>
   );
 }

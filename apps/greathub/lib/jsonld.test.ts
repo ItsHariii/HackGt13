@@ -13,6 +13,7 @@ const product: ProductSummary = {
   description: "A monitor.",
 };
 const variant: VariantView = {
+  listingId: "dm_lst_u2727",
   sku: "U2727",
   gtin: "00812345000030",
   mpn: "VR-U2727-BK",

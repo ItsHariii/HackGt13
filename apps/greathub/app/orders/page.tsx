@@ -1,71 +1,52 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AdminSignIn } from "@/components/admin-sign-in";
-import { VerificationBadges } from "@/components/verification-badges";
+import { GHFigure } from "@/components/gh/figure";
+import { Manifest } from "@/components/gh/manifest";
 import { isAdminSession } from "@/lib/admin";
-import { formatMinor } from "@/lib/money";
-import { listOrders, type Payment, type Verification } from "@/lib/orders";
+import { listOrders } from "@/lib/orders";
 
-export const metadata: Metadata = { title: "Orders" };
+export const metadata: Metadata = { title: "Cargo Manifest" };
 export const dynamic = "force-dynamic";
+
+function Head() {
+  return (
+    <div className="gh-pagehead">
+      <p className="gh-code gh-muted">greathub / admin / orders</p>
+      <h1 className="gh-title">Cargo Manifest</h1>
+      <p className="gh-quip">
+        I&apos;ll gladly pay you Tuesday… just kidding. Authorized today.
+      </p>
+    </div>
+  );
+}
 
 export default async function OrdersPage() {
   if (!(await isAdminSession())) {
     return (
-      <main className="page narrow">
-        <p className="eyebrow">MERCHANT VIEW</p>
-        <h1 className="page-title">Orders</h1>
+      <main className="gh-page gh-signin-page">
+        <Head />
         <AdminSignIn next="/orders" />
       </main>
     );
   }
   const orders = await listOrders();
   return (
-    <main className="page wide">
-      <p className="eyebrow">MERCHANT VIEW</p>
-      <h1 className="page-title">Orders</h1>
-      <p className="lede">
-        Each order records what GreatHub checked before charging: the agent's
-        signature, Cartel's scoped grant, and the customer's passkey signature
-        over the exact contract.
-      </p>
+    <main className="gh-page gh-manifests">
+      <Head />
       {orders.length === 0 ? (
-        <p className="empty-card">
-          No orders yet. Cartel creates them through the ACP checkout.
-        </p>
+        <div className="gh-empty-hold">
+          <GHFigure pose="net" className="gh-empty-figure" />
+          <p className="gh-empty-title">No cargo yet. The hold is hungry.</p>
+          <p>Orders from signed agents appear here as they dock.</p>
+        </div>
       ) : (
-        <ul className="orders">
-          {orders.map((o) => {
-            const payment = o.payment as Payment;
-            return (
-              <li key={o.id}>
-                <div className="order-top">
-                  <Link href={`/orders/${o.id}`} className="mono">
-                    {o.id}
-                  </Link>
-                  <span className={`status-pill s-${o.status}`}>
-                    {o.status.replace("_", " ")}
-                  </span>
-                  <strong>{formatMinor(o.total_minor)}</strong>
-                </div>
-                <p className="fine">
-                  {new Date(o.created_at).toLocaleString("en-US", {
-                    timeZone: "UTC",
-                  })}{" "}
-                  UTC ·{" "}
-                  {payment.rail === "simulated"
-                    ? "Simulated payment"
-                    : "Visa Acceptance sandbox"}{" "}
-                  · transaction{" "}
-                  <span className="mono">{payment.transactionId ?? "—"}</span>
-                </p>
-                <VerificationBadges
-                  v={o.contract_verification as Verification | null}
-                />
-              </li>
-            );
-          })}
-        </ul>
+        <ol className="gh-manifest-list">
+          {orders.map((o) => (
+            <li key={o.id}>
+              <Manifest order={o} link />
+            </li>
+          ))}
+        </ol>
       )}
     </main>
   );

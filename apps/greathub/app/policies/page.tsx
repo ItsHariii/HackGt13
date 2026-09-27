@@ -4,10 +4,10 @@ export const metadata: Metadata = { title: "Policies" };
 
 export default function PoliciesPage() {
   return (
-    <main className="page narrow prose">
-      <p className="eyebrow">GREATHUB POLICIES</p>
-      <h1 className="page-title">Policies</h1>
-      <p className="lede">
+    <main className="gh-page gh-prose">
+      <p className="gh-code gh-muted">greathub / policies</p>
+      <h1 className="gh-title">Policies</h1>
+      <p className="gh-lede">
         GreatHub is a test merchant for Cartel. Products, sellers and prices are
         fictional and no goods ship. Payments run against the Visa Acceptance
         sandbox, or a clearly labeled simulator.
@@ -29,7 +29,7 @@ export default function PoliciesPage() {
         Agents must sign every request with RFC 9421 HTTP message signatures
         (Ed25519) from a key published in their JWKS. Checkout completion
         requires a scoped payment grant for the exact contract and total. The
-        Chaos Panel may change any listing at any time; that is the point.
+        Chaos Deck may change any listing at any time; that is the point.
       </p>
       <h2 id="privacy">Privacy</h2>
       <p>
