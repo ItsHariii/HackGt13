@@ -80,11 +80,36 @@ Root scripts: `pnpm ai:smoke`, `pnpm ai:cost [--since 24h|7d|YYYY-MM-DD]`, `pnpm
   - `extractQuotedFacts` passed the extractor function where the extractor label belonged.
 - **Untrusted text can't close its own block.** `<untrusted` / `</untrusted` inside brief or listing text is rewritten to `untrusted-text` before wrapping.
 
+## Meta fallback run (2026-09-27)
+
+`pnpm eval:ai --provider meta --model muse-spark-1.3` (with `AI_TIMEOUT_MS=90000`):
+
+| | Result |
+|---|---|
+| Hard requirements, field level | P 98.8% · R 100% (20 briefs; apparel and travel 100%, home office P 97.3%) |
+| Pack detection | 100% |
+| Injection set (A3) | 3 / 4: `fake-closing-tag` changes an extracted fact |
+| Latency | 35–50 s per A1 call (OpenAI `gpt-6-sol`: 4–5 s) |
+| Spend | $0.38 for the full run |
+
+The first two runs failed every call: the OpenAI-compatible provider asked only
+for "some JSON", so answers rarely matched the schema, and the 12 s timeout cut the
+rest off. `providers.ts` now sets `supportsStructuredOutputs: true`, which sends
+`response_format: json_schema`.
+
+Conclusion: accurate, but at 12 s the router gives up on Meta before it answers,
+so as configured it is not a working fallback. Options: raise `AI_TIMEOUT_MS` for
+the fallback only, or keep OpenAI alone (`AI_FALLBACK_PROVIDER=`).
+
+## Wired into the web app (2026-09-27)
+
+- A1 streams into the requirements review for saved plans (`/api/plans/[id]/draft`).
+- A2 roles feed plan solving (`lib/plan-solve.ts`), with the pack template as fallback.
+- A4 powers the workspace command bar: preview diff → confirm → re-solve. Prompts
+  now show current targets as text (`$1,000.00`), since JSON targets made the model
+  answer in JSON the parser couldn't read.
+
 ## Not done here
 
-- The `muse-spark-1.3` eval run before G4. It needs `META_MODEL_API_KEY` in `apps/web/.env.local`. `pnpm ai:smoke` reports the missing key as a failure.
-- `pnpm ai:cost` works, but the hosted Supabase project has no `ai_calls` table (PGRST205). Apply `supabase/migrations/0013_ops.sql` there first. The eval CLI keeps its own spend and doesn't write to `ai_calls`.
-- UI wiring: streaming A1 into the brief view, the A4 requirement diff with confirm, the "AI summary" label, and the per-session AI-off toggle. All of this lands with the workspace pages.
+- The "AI summary" (A5) on screens and a per-session AI-off toggle.
 - The root `pnpm --filter` scripts assume `pnpm` is on `PATH`. Locally they were run as `corepack pnpm` or through `jiti` directly, on Node 22 (the repo pins 24).
-
-Nothing is committed yet.
