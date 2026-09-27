@@ -638,6 +638,8 @@ Migration `0015_mandates.sql`; worker in `apps/web/lib/mandate-service.ts` (pure
 
 ## Phase 18: Demo and submission (M lead, everyone)
 
+Status and what is still needed: [PHASE18.md](PHASE18.md).
+
 - [x] **T18.1 Reset script** `pnpm demo:reset`: resets the GreatHub seed, clears the demo user's plans, keeps the enrolled card and signing passkey, warms the prompt cache, pre-runs the bench, and pre-warms the search cache for "navy linen shirt"
   - `scripts/demo-reset.mjs` (`--dry-run` changes nothing) and `pnpm ai:warm`. Configured by `.env.demo`; see [DEMO.md](DEMO.md) §1. Verified against local Supabase with both apps running: after the deal trap it restored U2727 to $329 and deleted only the demo user's plans, keeping the passkey, the card and the ledger. The bench step runs `@cartel/bench`'s `bench` script, which Phase 16 adds; until then it is skipped. The web app doesn't call A1 yet, so the warm-up only primes the provider cache and checks the key.
 - [ ] **T18.2 Demo environment check** (run 30 min before judging). `pnpm demo:check --visa` covers the scriptable items (health, JWKS, pages, rail, Visa smoke, bench row, ledgers, passkey and card, search); the rest are by hand in [DEMO.md](DEMO.md) §2.
