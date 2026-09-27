@@ -21,7 +21,7 @@ export type FieldOption = {
   kind: FieldDef["kind"];
   /** The role an item field belongs to (`desk` for `desk.width`). */
   role: string | null;
-  scope: "item" | "basket" | "order";
+  scope: "item" | "basket" | "merchant" | "order";
   units: Unit[];
   values: readonly string[];
 };
@@ -33,6 +33,7 @@ const OPS_BY_KIND: Partial<Record<FieldDef["kind"], Operator[]>> = {
   date: ["lte"],
   money: ["lte", "gte"],
   count: ["lte", "gte", "eq"],
+  list: ["excludes", "contains"],
 };
 
 export const OP_LABEL: Partial<Record<Operator, string>> = {
@@ -40,6 +41,8 @@ export const OP_LABEL: Partial<Record<Operator, string>> = {
   gte: "at least (≥)",
   eq: "exactly",
   neq: "anything but",
+  excludes: "none of",
+  contains: "includes",
 };
 
 /** Basket and order fields people set by hand; the rest are computed. */
@@ -54,44 +57,84 @@ export function opsFor(kind: FieldDef["kind"]): Operator[] {
   return OPS_BY_KIND[kind] ?? ITEM_OPS;
 }
 
+function unitsFor(def: FieldDef): Unit[] {
+  return (Object.keys(UNIT_DIMENSION) as Unit[]).filter(
+    (u) => UNIT_DIMENSION[u] === def.kind,
+  );
+}
+
+function optionFor(
+  field: string,
+  def: FieldDef,
+  role: string | null,
+): FieldOption {
+  const prefix = field.split(".")[0];
+  return {
+    field,
+    label: def.label,
+    kind: def.kind,
+    role,
+    scope:
+      prefix === "basket" || prefix === "merchant" || prefix === "order"
+        ? prefix
+        : "item",
+    units: unitsFor(def),
+    values: def.values ?? [],
+  };
+}
+
+/** A field people can type a value for: not computed, free text or taste. */
+function settable(field: string, def: FieldDef): boolean {
+  return (
+    !field.endsWith(".*") &&
+    def.kind !== "subjective" &&
+    def.kind !== "text" &&
+    field !== "basket.missing_roles"
+  );
+}
+
 /** Fields the form offers for these packs: item fields by role, then basket and order. */
 export function fieldOptions(packs: readonly Pack[]): FieldOption[] {
   const out: FieldOption[] = [];
-  const unitsFor = (def: FieldDef): Unit[] =>
-    (Object.keys(UNIT_DIMENSION) as Unit[]).filter(
-      (u) => UNIT_DIMENSION[u] === def.kind,
-    );
   for (const pack of packs) {
     for (const [field, def] of Object.entries(pack.fields)) {
-      if (field.endsWith(".*") || def.kind === "subjective") continue;
-      if (def.kind === "text" || def.kind === "list") continue;
+      if (!settable(field, def)) continue;
       const role = field.split(".")[0] ?? null;
       if (!pack.roles.some((r) => r.role === role)) continue;
-      out.push({
-        field,
-        label: def.label,
-        kind: def.kind,
-        role,
-        scope: "item",
-        units: unitsFor(def),
-        values: def.values ?? [],
-      });
+      out.push(optionFor(field, def, role));
     }
   }
   for (const field of CORE_CHOICES) {
     const def = CORE_FIELDS[field];
-    if (!def) continue;
-    out.push({
-      field,
-      label: def.label,
-      kind: def.kind,
-      role: null,
-      scope: field.startsWith("order.") ? "order" : "basket",
-      units: unitsFor(def),
-      values: def.values ?? [],
-    });
+    if (def) out.push(optionFor(field, def, null));
   }
   return out;
+}
+
+/**
+ * Any settable field a rule or a question can name, including core `offer.*`
+ * fields the form doesn't list. `role` is the item an `offer.*` rule is about.
+ */
+export function fieldOption(
+  field: string,
+  packs: readonly Pack[],
+  role?: string,
+): FieldOption | undefined {
+  const listed = fieldOptions(packs).find((o) => o.field === field);
+  if (listed) return listed;
+  const def =
+    CORE_FIELDS[field] ?? packs.find((p) => p.fields[field])?.fields[field];
+  if (!def || !settable(field, def)) return undefined;
+  const option = optionFor(field, def, role ?? null);
+  // An item rule needs a role; without one there is nothing to attach it to.
+  return option.scope === "item" && !option.role ? undefined : option;
+}
+
+/** The operator a one-value answer means: "by" a date, "at most" an amount, "none of" a list. */
+export function defaultOp(kind: FieldDef["kind"]): Operator {
+  if (kind === "list") return "excludes";
+  if (kind === "boolean" || kind === "enum") return "eq";
+  return "lte";
 }
 
 export type ManualRuleInput = {
@@ -117,6 +160,13 @@ function parseTarget(input: ManualRuleInput): Value | string {
       if (raw === "yes" || raw === "true") return true;
       if (raw === "no" || raw === "false") return false;
       return "Choose yes or no.";
+    case "list": {
+      const items = raw
+        .split(",")
+        .map((x) => x.trim().toLowerCase())
+        .filter(Boolean);
+      return items.length ? [...new Set(items)] : "List at least one item.";
+    }
     case "enum":
       return field.values.includes(raw)
         ? raw
@@ -186,6 +236,7 @@ function isValueString(input: ManualRuleInput, s: string): boolean {
 export function targetInput(r: Requirement): { value: string; unit?: Unit } {
   const t = r.target;
   if (typeof t === "boolean") return { value: t ? "yes" : "no" };
+  if (Array.isArray(t)) return { value: t.map(String).join(", ") };
   if (typeof t === "string" || typeof t === "number")
     return { value: String(t) };
   if (t && typeof t === "object" && !Array.isArray(t)) {
@@ -219,4 +270,45 @@ export function retarget(
   return parsed.success
     ? { ok: true, requirement: parsed.data }
     : { ok: false, error: "That value doesn't fit this rule." };
+}
+
+/** A fresh `u_…` id for a hand-made rule on this field. */
+export function manualRuleId(field: string, existing: readonly string[]) {
+  const base = `u_${field.replace(/[^a-z0-9]+/g, "_")}`.slice(0, 56);
+  let id = base;
+  for (let n = 2; existing.includes(id); n++) id = `${base}_${n}`;
+  return id;
+}
+
+/** A rule already covering this field and operator, so a second one would only duplicate it. */
+export function sameRule(
+  rules: readonly Requirement[],
+  candidate: Pick<Requirement, "field" | "op" | "role">,
+): Requirement | undefined {
+  return rules.find(
+    (r) =>
+      r.field === candidate.field &&
+      r.op === candidate.op &&
+      (r.role ?? null) === (candidate.role ?? null),
+  );
+}
+
+/** The hard rule a one-value answer to a question sets on its field. */
+export function answerRule(input: {
+  field: FieldOption;
+  value: string;
+  unit?: Unit | undefined;
+  rules: readonly Requirement[];
+}): ManualRuleResult {
+  return manualRule({
+    id: manualRuleId(
+      input.field.field,
+      input.rules.map((r) => r.id),
+    ),
+    field: input.field,
+    op: defaultOp(input.field.kind),
+    value: input.value,
+    unit: input.unit,
+    importance: "hard",
+  });
 }

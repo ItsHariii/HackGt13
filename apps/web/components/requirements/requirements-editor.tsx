@@ -6,7 +6,7 @@ import type {
   Unit,
 } from "@cartel/contracts";
 import { PACKS } from "@cartel/rule-packs";
-import { ArrowRight, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Check, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import {
   type FormEvent,
@@ -17,19 +17,26 @@ import {
   useState,
   useTransition,
 } from "react";
-import { saveRequirements } from "@/app/plans/[id]/requirements/actions";
+import {
+  answerQuestion,
+  saveRequirements,
+} from "@/app/plans/[id]/requirements/actions";
 import { RequirementChip } from "@/components/cartel/requirement-chip";
 import { AiOff } from "@/components/states/edge-states";
 import { Button } from "@/components/ui/button";
 import type { DraftLine } from "@/lib/brief-draft";
 import { splitLines } from "@/lib/figure-events";
 import {
+  answerRule,
   type FieldOption,
+  fieldOption,
   fieldOptions,
   manualRule,
+  manualRuleId,
   OP_LABEL,
   opsFor,
   retarget,
+  sameRule,
   targetInput,
 } from "@/lib/manual-rule";
 import { cn } from "@/lib/utils";
@@ -42,6 +49,8 @@ export type Question = {
   requirementId: string;
   /** Why it's being asked (AI questions); shown under the question. */
   why?: string;
+  /** The field an AI question's answer sets, when it names one. */
+  field?: string;
   /** Empty for an open AI question: the answer is a rule added by hand. */
   options: { label: string; rule: string }[];
 };
@@ -56,11 +65,18 @@ function fromAiQuestion(
   return {
     id: `ai_q_${i}`,
     text: q.question,
-    requirementId: q.field ?? "",
+    requirementId: "",
     why: q.why,
+    ...(q.field ? { field: q.field } : {}),
     options: [],
   };
 }
+
+/** How a question was settled: a picked option, rules it added, or skipped. */
+type Answer =
+  | { kind: "option"; index: number }
+  | { kind: "rules"; ruleIds: string[] }
+  | { kind: "skip" };
 
 type Group = "said" | "assumed" | "default";
 
@@ -116,7 +132,10 @@ export function RequirementsEditor({
     draftUrl && initial.length === 0 ? "reading" : "idle",
   );
   const touched = useRef(false);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [answers, setAnswers] = useState<Record<string, Answer>>({});
+  const [flash, setFlash] = useState<string | null>(null);
+  const [builderField, setBuilderField] = useState<string | undefined>();
+  const [builderKey, setBuilderKey] = useState(0);
   const [hover, setHover] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [builderOpen, setBuilderOpen] = useState(
@@ -201,6 +220,35 @@ export function RequirementsEditor({
   };
 
   const text = (r: Requirement) => ruleText(r, packs);
+
+  /** Adds rules the shopper made and briefly marks the new rows. */
+  const addRules = (added: Requirement[], message: string) => {
+    touched.current = true;
+    setRules((rs) => [...rs, ...added]);
+    setStatus(message);
+    setFlash(added[0]?.id ?? null);
+  };
+  useEffect(() => {
+    if (!flash) return;
+    const t = setTimeout(() => setFlash(null), 1800);
+    return () => clearTimeout(t);
+  }, [flash]);
+  const showRule = (id: string, edit = false) => {
+    if (edit) setEditing(id);
+    setFlash(id);
+    document
+      .getElementById(`rule-${id}`)
+      ?.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
+  const openBuilder = (field?: string) => {
+    setBuilderField(field);
+    setBuilderKey((k) => k + 1);
+    setBuilderOpen(true);
+    requestAnimationFrame(() =>
+      builder.current?.scrollIntoView({ block: "center", behavior: "smooth" }),
+    );
+  };
+  const aiOn = mode === "stored" && draft !== "off" && draft !== "unavailable";
   const groups: Record<Group, Requirement[]> = {
     said: [],
     assumed: [],
@@ -211,6 +259,10 @@ export function RequirementsEditor({
     (r) => r.provenance.kind === "ai_inferred" && !r.provenance.confirmed,
   ).length;
   const openQuestions = questions.filter((q) => answers[q.id] === undefined);
+  const receiptFor = (added: Requirement[]) =>
+    added.length === 1 && added[0]
+      ? `Added: ${text(added[0])}`
+      : `Added ${added.length} rules: ${added.map(text).join("; ")}`;
 
   const findPlans = () => {
     setError(null);
@@ -224,8 +276,9 @@ export function RequirementsEditor({
   const rowProps = (r: Requirement) => ({
     rule: r,
     text: text(r),
-    field: options.find((o) => o.field === r.field),
+    field: fieldOption(r.field, packs, r.role),
     editing: editing === r.id,
+    flash: flash === r.id,
     onEdit: () => setEditing(editing === r.id ? null : r.id),
     onSave: (next: Requirement) => {
       setEditing(null);
@@ -342,104 +395,53 @@ export function RequirementsEditor({
             count={openQuestions.length}
           >
             {questions.map((q) => (
-              <li
+              <QuestionCard
                 key={q.id}
-                className="flex flex-col gap-[18px] rounded-card border border-graphite bg-paper-raised px-6 pt-6 pb-[22px] text-graphite shadow-offset"
-              >
-                <p className="flex items-start gap-3.5 text-pretty font-semibold font-serif text-[23px] leading-[1.3] tracking-[-0.015em]">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                    className="mt-0.5 shrink-0"
-                  >
-                    <circle
-                      cx="10"
-                      cy="10"
-                      r="8.3"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
-                    <text
-                      x="10"
-                      y="14.2"
-                      textAnchor="middle"
-                      fontWeight="700"
-                      fontSize="11.5"
-                      fill="currentColor"
-                    >
-                      ?
-                    </text>
-                  </svg>
-                  {q.text}
-                </p>
-                {q.why && (
-                  <p className="text-muted text-small sm:pl-[42px]">{q.why}</p>
-                )}
-                {q.options.length === 0 ? (
-                  <div className="flex flex-wrap gap-2.5 sm:pl-[42px]">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      aria-pressed={answers[q.id] === 0}
-                      onClick={() => {
-                        setAnswers((a) => ({ ...a, [q.id]: 0 }));
-                        setBuilderOpen(true);
-                        builder.current?.scrollIntoView({ block: "center" });
-                        setStatus("Add the rule by hand below.");
-                      }}
-                    >
-                      Add a rule for this
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      aria-pressed={answers[q.id] === 1}
-                      onClick={() => {
-                        setAnswers((a) => ({ ...a, [q.id]: 1 }));
-                        setStatus("Skipped. No rule added.");
-                      }}
-                    >
-                      Doesn't matter
-                    </Button>
-                  </div>
-                ) : (
-                  <div
-                    role="radiogroup"
-                    aria-label={q.text}
-                    className="grid gap-2.5 sm:grid-cols-2 sm:pl-[42px]"
-                  >
-                    {q.options.map((o, i) => (
-                      // biome-ignore lint/a11y/useSemanticElements: a card-sized radio with a code preview
-                      <button
-                        key={o.label}
-                        type="button"
-                        role="radio"
-                        aria-checked={answers[q.id] === i}
-                        onClick={() => {
-                          setAnswers((a) => ({ ...a, [q.id]: i }));
-                          setStatus(`Answered: ${o.label}.`);
-                        }}
-                        className={cn(
-                          "flex min-h-[52px] flex-col items-start gap-0.5 rounded-card border border-graphite bg-paper-sheet px-4 py-2.5 text-left",
-                          answers[q.id] === i
-                            ? "shadow-primary"
-                            : "hover:bg-paper-raised",
-                        )}
-                      >
-                        <span className="font-semibold text-[15px]">
-                          {o.label}
-                        </span>
-                        <code className="font-mono text-[13px] text-muted">
-                          {o.rule}
-                        </code>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </li>
+                question={q}
+                answer={answers[q.id]}
+                field={q.field ? fieldOption(q.field, packs) : undefined}
+                rules={rules}
+                ruleText={text}
+                aiOn={aiOn}
+                onPick={(index, label) => {
+                  setAnswers((a) => ({
+                    ...a,
+                    [q.id]: { kind: "option", index },
+                  }));
+                  setStatus(`Answered: ${label}.`);
+                }}
+                onRules={(added) => {
+                  addRules(added, `${receiptFor(added)}.`);
+                  setAnswers((a) => ({
+                    ...a,
+                    [q.id]: { kind: "rules", ruleIds: added.map((r) => r.id) },
+                  }));
+                }}
+                onSkip={() => {
+                  setAnswers((a) => ({ ...a, [q.id]: { kind: "skip" } }));
+                  setStatus("Skipped. No rule added.");
+                }}
+                onReopen={() => {
+                  const a = answers[q.id];
+                  if (a?.kind === "rules") {
+                    touched.current = true;
+                    setRules((rs) =>
+                      rs.filter((r) => !a.ruleIds.includes(r.id)),
+                    );
+                  }
+                  setAnswers(({ [q.id]: _gone, ...rest }) => rest);
+                  setStatus("Question reopened.");
+                }}
+                onBuilder={() =>
+                  openBuilder(
+                    q.field && options.some((o) => o.field === q.field)
+                      ? q.field
+                      : undefined,
+                  )
+                }
+                onShow={showRule}
+                planId={planId}
+              />
             ))}
           </Section>
         )}
@@ -483,13 +485,17 @@ export function RequirementsEditor({
             </p>
           ) : (
             <RuleBuilder
+              key={builderKey}
               options={options}
-              existing={rules.map((r) => r.id)}
-              onAdd={(r) => {
-                touched.current = true;
-                setRules((rs) => [...rs, r]);
-                setStatus(`Added: ${text(r)} (You chose).`);
+              initialField={builderField}
+              rules={rules}
+              ruleText={text}
+              onAdd={(r) => addRules([r], `Added: ${text(r)} (You chose).`)}
+              onMerge={(r) => {
+                update(r.id, r, `Updated: ${text(r)}.`);
+                setFlash(r.id);
               }}
+              onShow={showRule}
             />
           )}
         </details>
@@ -540,15 +546,14 @@ export function RequirementsEditor({
       <div className="fixed inset-x-0 bottom-0 z-10 border-graphite border-t bg-paper-raised">
         <div className="flex min-h-24 flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 sm:px-16">
           <p className="num text-[15px] text-graphite-2">
-            {rules.length} rules · {toConfirm} to confirm ·{" "}
-            {openQuestions.length}{" "}
+            {rules.length} {rules.length === 1 ? "rule" : "rules"} · {toConfirm}{" "}
+            to confirm · {openQuestions.length}{" "}
             {openQuestions.length === 1 ? "question" : "questions"}
           </p>
           <button
             type="button"
             onClick={() => {
-              setBuilderOpen(true);
-              builder.current?.scrollIntoView({ block: "center" });
+              openBuilder();
               builder.current?.querySelector("summary")?.focus();
             }}
             className="order-last min-h-6 font-medium text-[15px] text-ink underline-offset-[3px] hover:underline sm:order-none"
@@ -667,6 +672,7 @@ function RuleRow({
   text,
   field,
   editing,
+  flash = false,
   assumed = false,
   onEdit,
   onSave,
@@ -678,6 +684,8 @@ function RuleRow({
   text: string;
   field: FieldOption | undefined;
   editing: boolean;
+  /** Just added or pointed at: marked for a moment so it's easy to find. */
+  flash?: boolean;
   assumed?: boolean;
   onEdit: () => void;
   onSave: (r: Requirement) => void;
@@ -690,12 +698,14 @@ function RuleRow({
   const hard = rule.importance === "hard" && !assumed;
   return (
     <li
+      id={`rule-${rule.id}`}
       onMouseEnter={() => onHover(rule.id)}
       onMouseLeave={() => onHover(null)}
       onFocus={() => onHover(rule.id)}
       onBlur={() => onHover(null)}
       className={cn(
-        "flex flex-col gap-2.5 rounded-card border bg-paper-raised py-3.5 pr-3.5 pl-[18px] text-graphite transition-[border-color,box-shadow]",
+        "flex scroll-mt-24 flex-col gap-2.5 rounded-card border bg-paper-raised py-3.5 pr-3.5 pl-[18px] text-graphite transition-[border-color,box-shadow]",
+        flash && "ring-4 ring-highlighter/70",
         assumed
           ? "border-pencil border-dashed hover:border-muted"
           : "border-rule hover:border-ink hover:shadow-offset focus-within:border-ink",
@@ -854,6 +864,16 @@ function ValueInput({
         ))}
       </select>
     );
+  if (field.kind === "list")
+    return (
+      <input
+        id={id}
+        value={value}
+        placeholder="e.g. nuts, milk"
+        onChange={(e) => onValue(e.target.value)}
+        className={cn(cls, "w-52")}
+      />
+    );
   if (field.kind === "date")
     return (
       <input
@@ -939,17 +959,39 @@ function EditTarget({
   );
 }
 
+/** A list target as items: A1 writes a one-item list as a plain string. */
+function listItems(r: Requirement): string[] | null {
+  if (r.op !== "excludes" && r.op !== "contains") return null;
+  if (typeof r.target === "string") return [r.target];
+  return Array.isArray(r.target) &&
+    r.target.every((x): x is string => typeof x === "string")
+    ? r.target
+    : null;
+}
+
 function RuleBuilder({
   options,
-  existing,
+  initialField,
+  rules,
+  ruleText,
   onAdd,
+  onMerge,
+  onShow,
 }: {
   options: FieldOption[];
-  existing: string[];
+  /** Preselected when a question sends the shopper here. */
+  initialField?: string | undefined;
+  rules: readonly Requirement[];
+  ruleText: (r: Requirement) => string;
   onAdd: (r: Requirement) => void;
+  /** A list rule that widens one the plan has ("none of nuts" + "sesame"). */
+  onMerge: (r: Requirement) => void;
+  onShow: (id: string, edit?: boolean) => void;
 }) {
   const id = useId();
-  const [fieldName, setFieldName] = useState(options[0]?.field ?? "");
+  const [fieldName, setFieldName] = useState(
+    initialField ?? options[0]?.field ?? "",
+  );
   const field = options.find((o) => o.field === fieldName) ?? options[0];
   const ops = field ? opsFor(field.kind) : [];
   const [op, setOp] = useState<Operator>(ops[0] ?? "lte");
@@ -957,15 +999,19 @@ function RuleBuilder({
   const [unit, setUnit] = useState<Unit | undefined>(undefined);
   const [importance, setImportance] = useState<Importance>("hard");
   const [error, setError] = useState<string | null>(null);
+  const [duplicate, setDuplicate] = useState<Requirement | null>(null);
+  const [added, setAdded] = useState<Requirement | null>(null);
+  const [merged, setMerged] = useState(false);
   if (!field) return null;
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const base = `u_${field.field.replace(/[^a-z0-9]+/g, "_")}`.slice(0, 56);
-    let n = 1;
-    let rid = base;
-    while (existing.includes(rid)) rid = `${base}_${++n}`;
+    setAdded(null);
+    setDuplicate(null);
     const r = manualRule({
-      id: rid,
+      id: manualRuleId(
+        field.field,
+        rules.map((x) => x.id),
+      ),
       field,
       op: ops.includes(op) ? op : (ops[0] ?? "eq"),
       value,
@@ -976,8 +1022,29 @@ function RuleBuilder({
       setError(r.error);
       return;
     }
+    const existing = sameRule(rules, r.requirement);
     setError(null);
+    const had = existing && listItems(existing);
+    const more = listItems(r.requirement);
+    if (existing && had && more) {
+      // Two list rules on one field combine instead of duplicating.
+      const widened: Requirement = {
+        ...existing,
+        target: [...new Set([...had, ...more])],
+      };
+      setValue("");
+      setAdded(widened);
+      setMerged(true);
+      onMerge(widened);
+      return;
+    }
+    if (existing) {
+      setDuplicate(existing);
+      return;
+    }
     setValue("");
+    setAdded(r.requirement);
+    setMerged(false);
     onAdd(r.requirement);
   };
   const groupsByRole = new Map<string, FieldOption[]>();
@@ -1000,6 +1067,8 @@ function RuleBuilder({
               setFieldName(e.target.value);
               setValue("");
               setUnit(undefined);
+              setError(null);
+              setDuplicate(null);
               const next = options.find((o) => o.field === e.target.value);
               if (next) setOp(opsFor(next.kind)[0] ?? "eq");
             }}
@@ -1060,9 +1129,335 @@ function RuleBuilder({
           {error}
         </p>
       )}
-      <Button type="submit" variant="outline" className="w-fit">
-        <Plus size={15} aria-hidden="true" /> Add rule
-      </Button>
+      {duplicate && (
+        <p role="alert" className="text-small">
+          You already have a rule for this: {ruleText(duplicate)}.{" "}
+          <button
+            type="button"
+            onClick={() => onShow(duplicate.id, true)}
+            className="font-semibold text-ink underline underline-offset-2"
+          >
+            Edit it above
+          </button>
+        </p>
+      )}
+      <div className="flex flex-wrap items-center gap-3">
+        <Button type="submit" variant="outline" className="w-fit">
+          <Plus size={15} aria-hidden="true" /> Add rule
+        </Button>
+        {added && rules.some((r) => r.id === added.id) && (
+          <p className="flex items-center gap-1.5 text-small">
+            <Check size={15} aria-hidden="true" className="text-ink" />
+            {merged ? "Updated" : "Added"}: {ruleText(added)}.
+            <button
+              type="button"
+              onClick={() => onShow(added.id)}
+              className="font-semibold text-ink underline underline-offset-2"
+            >
+              See it in You said
+            </button>
+          </p>
+        )}
+      </div>
     </form>
+  );
+}
+
+/**
+ * One open question. An AI question that names a field is answered in place
+ * with that field's input; any question can be answered in words (AI on),
+ * sent to the hand builder, or skipped. A settled question folds to one line
+ * that says what happened and can be undone.
+ */
+function QuestionCard({
+  question: q,
+  answer,
+  field,
+  rules,
+  ruleText,
+  aiOn,
+  planId,
+  onPick,
+  onRules,
+  onSkip,
+  onReopen,
+  onBuilder,
+  onShow,
+}: {
+  question: Question;
+  answer: Answer | undefined;
+  field: FieldOption | undefined;
+  rules: readonly Requirement[];
+  ruleText: (r: Requirement) => string;
+  aiOn: boolean;
+  planId: string;
+  onPick: (index: number, label: string) => void;
+  onRules: (added: Requirement[]) => void;
+  onSkip: () => void;
+  onReopen: () => void;
+  onBuilder: () => void;
+  onShow: (id: string) => void;
+}) {
+  const id = useId();
+  const [value, setValue] = useState("");
+  const [unit, setUnit] = useState<Unit | undefined>(undefined);
+  const [words, setWords] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [duplicate, setDuplicate] = useState<Requirement | null>(null);
+  const [aiGone, setAiGone] = useState(false);
+  const [reading, startReading] = useTransition();
+
+  const setAnswer = (e: FormEvent) => {
+    e.preventDefault();
+    if (!field) return;
+    setDuplicate(null);
+    const r = answerRule({ field, value, unit, rules });
+    if (!r.ok) {
+      setError(r.error);
+      return;
+    }
+    const existing = sameRule(rules, r.requirement);
+    if (existing) {
+      setError(null);
+      setDuplicate(existing);
+      return;
+    }
+    setError(null);
+    onRules([r.requirement]);
+  };
+
+  const readWords = (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setDuplicate(null);
+    startReading(async () => {
+      const result = await answerQuestion(planId, {
+        question: q.text,
+        answer: words,
+        rules,
+      });
+      if (!result.ok) {
+        setError(result.error);
+        if (result.aiOff) setAiGone(true);
+        return;
+      }
+      if (result.added.length === 0) {
+        setError(
+          "I didn't find a new rule in that answer. Try the field above or add it by hand.",
+        );
+        return;
+      }
+      setWords("");
+      onRules(result.added);
+    });
+  };
+
+  const settled = answer?.kind === "rules" || answer?.kind === "skip";
+  const added =
+    answer?.kind === "rules"
+      ? rules.filter((r) => answer.ruleIds.includes(r.id))
+      : [];
+
+  return (
+    <li
+      className={cn(
+        "flex flex-col rounded-card border border-graphite bg-paper-raised px-6 text-graphite",
+        settled ? "gap-2 py-4" : "gap-[18px] pt-6 pb-[22px] shadow-offset",
+      )}
+    >
+      <p
+        className={cn(
+          "flex items-start gap-3.5 text-pretty font-semibold font-serif leading-[1.3] tracking-[-0.015em]",
+          settled ? "text-[18px] text-graphite-2" : "text-[23px]",
+        )}
+      >
+        <svg
+          width={settled ? 22 : 28}
+          height={settled ? 22 : 28}
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+          className="mt-0.5 shrink-0"
+        >
+          <circle
+            cx="10"
+            cy="10"
+            r="8.3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <text
+            x="10"
+            y="14.2"
+            textAnchor="middle"
+            fontWeight="700"
+            fontSize="11.5"
+            fill="currentColor"
+          >
+            ?
+          </text>
+        </svg>
+        {q.text}
+      </p>
+
+      {settled ? (
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small sm:pl-[36px]">
+          {answer?.kind === "skip" ? (
+            <span className="text-muted">Skipped. No rule added.</span>
+          ) : (
+            <span className="flex items-center gap-1.5">
+              <Check size={15} aria-hidden="true" className="text-ink" />
+              {added.length
+                ? `Added: ${added.map(ruleText).join("; ")}`
+                : "Answered."}
+            </span>
+          )}
+          {added[0] && (
+            <button
+              type="button"
+              onClick={() => added[0] && onShow(added[0].id)}
+              className="font-semibold text-ink underline underline-offset-2"
+            >
+              See it in You said
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onReopen}
+            className="font-semibold text-ink underline underline-offset-2"
+          >
+            {answer?.kind === "skip" ? "Undo" : "Change"}
+          </button>
+        </p>
+      ) : (
+        <>
+          {q.why && (
+            <p className="text-muted text-small sm:pl-[42px]">{q.why}</p>
+          )}
+          {q.options.length > 0 ? (
+            <div
+              role="radiogroup"
+              aria-label={q.text}
+              className="grid gap-2.5 sm:grid-cols-2 sm:pl-[42px]"
+            >
+              {q.options.map((o, i) => {
+                const picked = answer?.kind === "option" && answer.index === i;
+                return (
+                  // biome-ignore lint/a11y/useSemanticElements: a card-sized radio with a code preview
+                  <button
+                    key={o.label}
+                    type="button"
+                    role="radio"
+                    aria-checked={picked}
+                    onClick={() => onPick(i, o.label)}
+                    className={cn(
+                      "flex min-h-[52px] flex-col items-start gap-0.5 rounded-card border border-graphite bg-paper-sheet px-4 py-2.5 text-left",
+                      picked ? "shadow-primary" : "hover:bg-paper-raised",
+                    )}
+                  >
+                    <span className="font-semibold text-[15px]">{o.label}</span>
+                    <code className="font-mono text-[13px] text-muted">
+                      {o.rule}
+                    </code>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 sm:pl-[42px]">
+              {field && (
+                <form
+                  onSubmit={setAnswer}
+                  className="flex flex-wrap items-end gap-2"
+                >
+                  <label
+                    htmlFor={`${id}-value`}
+                    className="flex flex-col gap-1 text-small"
+                  >
+                    {field.label}
+                    {field.kind === "date"
+                      ? " (by)"
+                      : field.kind === "money"
+                        ? " (at most)"
+                        : field.kind === "list"
+                          ? " (avoid)"
+                          : ""}
+                    <ValueInput
+                      field={field}
+                      value={value}
+                      unit={unit}
+                      onValue={setValue}
+                      onUnit={setUnit}
+                      id={`${id}-value`}
+                    />
+                  </label>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    className="min-h-10 px-4 py-1"
+                  >
+                    Set
+                  </Button>
+                </form>
+              )}
+              {aiOn && !aiGone && (
+                <form
+                  onSubmit={readWords}
+                  className="flex flex-wrap items-end gap-2"
+                >
+                  <label
+                    htmlFor={`${id}-words`}
+                    className="flex min-w-0 flex-1 flex-col gap-1 text-small"
+                  >
+                    {field ? "Or answer in your own words" : "Your answer"}
+                    <input
+                      id={`${id}-words`}
+                      value={words}
+                      maxLength={300}
+                      onChange={(e) => setWords(e.target.value)}
+                      placeholder="Type your answer"
+                      className="h-10 w-full min-w-0 rounded-card border border-rule bg-paper-sheet px-2.5 text-graphite"
+                    />
+                  </label>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    disabled={reading || !words.trim()}
+                    className="min-h-10 px-4 py-1"
+                  >
+                    {reading ? "Reading…" : "Use this answer"}
+                  </Button>
+                </form>
+              )}
+              {error && (
+                <p role="alert" className="text-red-pen text-small">
+                  {error}
+                </p>
+              )}
+              {duplicate && (
+                <p role="alert" className="text-small">
+                  You already have a rule for this: {ruleText(duplicate)}.{" "}
+                  <button
+                    type="button"
+                    onClick={() => onShow(duplicate.id)}
+                    className="font-semibold text-ink underline underline-offset-2"
+                  >
+                    See it
+                  </button>
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2.5">
+                <Button type="button" variant="ghost" onClick={onBuilder}>
+                  Add a rule by hand
+                </Button>
+                <Button type="button" variant="ghost" onClick={onSkip}>
+                  Doesn't matter
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </li>
   );
 }
